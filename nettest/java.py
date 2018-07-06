@@ -75,7 +75,7 @@ def main():
     print("public class Nettest {")
     nettest_instance = getattr(nettest_mod, "Nettest")()
     for event in nettest_instance.events:
-        print("  protected void on_" + event.key.replace(".", "_") + "(" +
+        print("  public void on_" + event.key.replace(".", "_") + "(" +
               event.__class__.__name__ + " event) {")
         print("    // TODO: override")
         print("  }")
@@ -97,7 +97,7 @@ def main():
         if isinstance(value, getattr(nettest_mod, "MapStringStringType")):
             print("      {")
             print("        org.openobservatory.measurement_kit.nettest.swig.MapStringString mss = new org.openobservatory.measurement_kit.nettest.swig.MapStringString();")
-            print("        for (String key : settings_." + name + ") {")
+            print("        for (String key : settings_." + name + ".keySet()) {")
             print("          String value = settings_." + name + ".get(key);")
             print("          mss.set(key, value);")
             print("        }")
@@ -129,39 +129,38 @@ def main():
               isinstance(value, getattr(nettest_mod, "DoubleType")) or
               isinstance(value, getattr(nettest_mod, "LongType")) or
               isinstance(value, getattr(nettest_mod, "StringType"))):
-            print("      swigSettings.set" + name.capitalize() + "(settings_." + name + ");")
+            print("      swigOptions.set" + name.capitalize() + "(settings_.options." + name + ");")
         else:
             print("      //", value, name)
     print("      swigSettings.setOptions(swigOptions);")
     print("    }")
 
-    print("    NettestWrapper wrapper = NettestWrapper(this, swigSettings);")
+    print("    NettestWrapper wrapper = new NettestWrapper(this, swigSettings);")
     print("    wrapper.run();")
     print("  }")
     print("")
+    print("  private Settings settings_ = new Settings();")
+    print("}")
 
-    print("  class NettestWrapper extends org.openobservatory.measurement_kit.swig.Nettest {")
-    print("    NettestWrapper(Nettest parent, org.openobservatory.measurement_kit.swig.Settings settings) {")
-    print("      super(settings);")
-    print("      parent_ = parent;")
-    print("    }")
+    begin_file("NettestWrapper.java")
+    print("class NettestWrapper extends org.openobservatory.measurement_kit.nettest.swig.Nettest {")
+    print("  NettestWrapper(Nettest parent, org.openobservatory.measurement_kit.nettest.swig.Settings settings) {")
+    print("    super(settings);")
+    print("    parent_ = parent;")
+    print("  }")
     print("")
     for event in nettest_instance.events:
-        print("    protected void on_" + event.key.replace(".", "_") + "(" +
-              "org.openobservatory.measurement_kit.swig." + event.__class__.__name__ + " swigEvent) {")
-        print("      " + event.__class__.__name__ + " event = new " + event.__class__.__name__ + "();")
+        print("  public void on_" + event.key.replace(".", "_") + "(" +
+              "org.openobservatory.measurement_kit.nettest.swig." + event.__class__.__name__ + " swigEvent) {")
+        print("    " + event.__class__.__name__ + " event = new " + event.__class__.__name__ + "();")
         for name in dir(event):
             if name.startswith("_") or name == "key":
                 continue
-            print("      event." + name + " = swigEvent.get" + name.capitalize() + "();")
-        print("      parent_->on_" + event.key.replace(".", "_") + "(event);")
-        print("    }")
+            print("    event." + name + " = swigEvent.get" + name.capitalize() + "();")
+        print("    parent_.on_" + event.key.replace(".", "_") + "(event);")
+        print("  }")
         print("")
-    print("    private Nettest parent_;")
-    print("  }")
-    print("")
-
-    print("  private Settings settings_ = new Settings();")
+    print("  private Nettest parent_;")
     print("}")
 
 if __name__ == "__main__":

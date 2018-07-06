@@ -15,7 +15,7 @@ def print_class_attribute(nettest_mod, name, value):
     elif isinstance(value, getattr(nettest_mod, "DoubleType")):
         print("  double " + name + " = " + json.dumps(value.value) + ";")
     elif isinstance(value, getattr(nettest_mod, "LongType")):
-        print("  uint64_t " + name + " = " + json.dumps(value.value) + ";")
+        print("  int64_t " + name + " = " + json.dumps(value.value) + ";")
     elif isinstance(value, getattr(nettest_mod, "MapStringStringType")):
         print("  std::map<std::string, std::string> " + name + ";")
     elif isinstance(value, getattr(nettest_mod, "Options")):
@@ -42,62 +42,74 @@ def main():
     print("#include <string>")
     print("#include <vector>")
     print("")
+    print("#include <measurement_kit/ffi.h>")
+    print("#include <nlohmann/json.hpp>")
+    print("")
     print("namespace mk {")
     print("namespace cxx11 {")
     print("")
 
     events = [name for name in dir(nettest_mod) if name.endswith("Event")]
     for event_name in events:
+        instance = getattr(nettest_mod, event_name)()
+        print("/// @brief " + instance.__doc__.strip())
         print("class " + event_name + " {")
         print(" public:")
-        instance = getattr(nettest_mod, event_name)()
         for name in dir(instance):
             if name.startswith("_") or name == "key":
                 continue
             value = getattr(instance, name)
+            print("  /// @brief " + value.__doc__.strip())
             print_class_attribute(nettest_mod, name, value)
         print("};")
         print("")
 
+    options_instance = getattr(nettest_mod, "Options")()
+    print("/// @brief " + options_instance.__doc__.strip())
     print("class Options {")
     print(" public:")
-    options_instance = getattr(nettest_mod, "Options")()
     for name in dir(options_instance):
-        if name.startswith("_"):
+        if name.startswith("_") or name == "name_to_mkname":
             continue
         value = getattr(options_instance, name)
+        print("  /// @brief " + value.__doc__.strip())
         print_class_attribute(nettest_mod, name, value)
     print("};")
     print("")
 
+    settings_instance = getattr(nettest_mod, "Settings")()
+    print("/// @brief " + settings_instance.__doc__.strip())
     print("class Settings {")
     print(" public:")
-    settings_instance = getattr(nettest_mod, "Settings")()
     for name in dir(settings_instance):
         if name.startswith("_"):
             continue
         value = getattr(settings_instance, name)
+        print("  /// @brief " + value.__doc__.strip())
         print_class_attribute(nettest_mod, name, value)
     print("};")
     print("")
 
+    print("/// @brief A network test.")
     print("class Nettest {")
     print(" public:")
     nettest_instance = getattr(nettest_mod, "Nettest")()
     for event in nettest_instance.events:
+        print("/// @brief Callback called by run when " + event.__class__.__name__ + " occurs.")
         print("  virtual void on_" + event.key.replace(".", "_") + "(const " +
               event.__class__.__name__ + " &) {")
         print("    // TODO: override")
         print("  }")
         print("")
-    print("  Nettest() noexcept {}")
-    print("")
+    print("  /// @brief Create a nettest using the specified settings.")
     print("  explicit Nettest(Settings s) noexcept {")
     print("    std::swap(s, settings_);")
     print("  }")
     print("")
-    print("  void run() const;")
+    print("  /// @brief Runs the nettest until completion.")
+    print("  void run();")
     print("")
+    print("  /// @brief Releases allocated resources.")
     print("  virtual ~Nettest() noexcept;")
     print("")
     print(" private:")
@@ -107,8 +119,25 @@ def main():
     print("Nettest::~Nettest() noexcept {}")
     print("")
 
+    print("namespace internal {")
+    print("")
+    print("class TaskDeleter {")
+    print("  public:")
+    print("    void operator()(mk_task_t *task) noexcept { mk_task_destroy(task); }")
+    print("};")
+    print("using UniqueTask = std::unique_ptr<mk_task_t, TaskDeleter>;")
+    print("")
+    print("class EventDeleter {")
+    print("  public:")
+    print("    void operator()(mk_event_t *event) noexcept { mk_event_destroy(event); }")
+    print("};")
+    print("using UniqueEvent = std::unique_ptr<mk_event_t, EventDeleter>;")
+    print("")
+    print("}  // namespace internal")
+    print("")
 
-    print("void Nettest::run() const {")
+
+    print("void Nettest::run() {")
     print("  nlohmann::json cxx_settings;")
 
     print("  {")
@@ -131,14 +160,27 @@ def main():
         value = getattr(options_instance, name)
         if isinstance(value, getattr(nettest_mod, "BooleanType")):
             print("    cxx_settings[\"options\"][\"" + options_instance.name_to_mkname(name)
-                  + "\"] = (settings_." + name + ") ? 1 : 0;")
+                  + "\"] = (settings_.options." + name + ") ? 1 : 0;")
+        elif name == "name_to_mkname":
+            pass
         else:
             print("    cxx_settings[\"options\"][\"" + options_instance.name_to_mkname(name)
-                  + "\"] = settings_." + name + ";")
+                  + "\"] = settings_.options." + name + ";")
     print("  }")
-    print("  auto nettest = mk::nettest::make_unique(cxx_settings.dump().c_str());")
-    print("  for (const char *str; (str = mk::nettest::next(nettest) != nullptr;) {")
-    print("    auto ev = nlohmann::json(str);")
+    print("  internal::UniqueTask task{mk_task_start(cxx_settings.dump().c_str())};")
+    print("  while (task) {")
+    print("    nlohmann::json ev;")
+    print("    {")
+    print("      internal::UniqueEvent event{mk_task_wait_for_next_event(task.get())};")
+    print("      if (!event) {")
+    print("        break;")
+    print("      }")
+    print("      auto str = mk_event_serialize(event.get());")
+    print("      if (!str) {")
+    print("        break;")
+    print("      }")
+    print("      ev = nlohmann::json::parse(str);")
+    print("    }")
     for event in nettest_instance.events:
         print("    if (ev.at(\"key\") == " + json.dumps(event.key) + ") {")
         print("      " + event.__class__.__name__ + " event;")
@@ -146,7 +188,7 @@ def main():
             if name.startswith("_") or name == "key":
                 continue
             value = getattr(event, name)
-            print("      event." + name + " = event.at(\"value\").at(\"" + name + "\");")
+            print("      event." + name + " = ev.at(\"value\").at(\"" + name + "\");")
         print("      on_" + event.key.replace(".", "_") + "(event);")
         print("      continue;")
         print("    }")
