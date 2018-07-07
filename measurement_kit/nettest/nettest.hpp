@@ -30,7 +30,7 @@
 #include <utility>
 #include <vector>
 
-#include <measurement_kit/ffi.h>
+#include <measurement_kit/ffi/ffi.h>
 #include <nlohmann/json.hpp>
 
 /// Namespace containing MK code.
@@ -38,6 +38,26 @@ namespace mk {
 
 /// Namespace containing the nettest API.
 namespace nettest {
+
+/// Contains the available log_levels.
+namespace log_level {
+
+/// Only emit error messages.
+constexpr const char *err = "ERR";
+
+/// Also emit warning messages.
+constexpr const char *warning = "WARNING";
+
+/// Also emit informational messages.
+constexpr const char *info = "INFO";
+
+/// Also emit debug messages.
+constexpr const char *debug = "DEBUG";
+
+/// Emit all log messages.
+constexpr const char *debug2 = "DEBUG2";
+
+}  // namespace log_level
 
 /// Contains all the events emitted by nettests.
 namespace event {
@@ -47,7 +67,7 @@ class FailureAsnLookup {
  public:
   /// The key that uniquely identifies an event. You can pass use this key
   /// with Settings to disable this specific event.
-  constexpr const char *event_key = "failure.asn_lookup";
+  static constexpr const char *event_key = "failure.asn_lookup";
 
   /// The specific error that occurred.
   std::string failure = "";
@@ -60,7 +80,7 @@ class StatusUpdatePerformance {
  public:
   /// The key that uniquely identifies an event. You can pass use this key
   /// with Settings to disable this specific event.
-  constexpr const char *event_key = "status.update_performance";
+  static constexpr const char *event_key = "status.update_performance";
 
   /// The direction of the performance measurement. Either 'download', for
   /// download measurements, or 'upload' for upload measurements.
@@ -78,8 +98,6 @@ class StatusUpdatePerformance {
 
 }  // namespace event
 
-/// Scalar options controlling the behavior of a nettest. If none of
-/// these options are specified, the default values are used.
 class Options {
  public:
   /// Base URL of the OONI bouncer. This base URL is used to construct the full
@@ -192,8 +210,7 @@ class Options {
   std::string software_version = "";
 };
 
-/// Settings specifying what test to run, with what input, etc.
-class Settings {
+class Settings : public Options {
  public:
   /// Optional annotations (i.e. key, value string pairs) that will be included
   /// into the JSON report sent to the OONI collector.
@@ -207,88 +224,81 @@ class Settings {
 
   /// Options controlling the behavior of a nettest.
   Options options = {};
+
+  /// Releases allocated resources.
+  virtual ~Settings() noexcept;
+
+ protected:
+  friend class Runner;
+  virtual void serialize_into(nlohmann::json &doc) const;
 };
 
-/// Contains the name of implemented nettests.
-namespace nettest_name {
-
-/// Neubot's DASH test. For more info see
+/// Settings for Neubot's DASH test. For more info see
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-021-dash.md.
-constexpr const char *dash = "Dash";
+using DashSettings = Settings;
 
-/// OONI's captive portal test. For more info see
+/// Settings for OONI's captive portal test. For more info see
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-010-captive-portal.md.
-constexpr const char *captive_portal = "CaptivePortal";
+using CaptivePortalSettings = Settings;
 
-/// OONI's DNS injection test. For more info see
+/// Settings for OONI's DNS injection test. For more info see
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-012-dns-injection.md.
-constexpr const char *dns_injection = "DnsInjection";
+using DnsInjectionSettings = Settings;
 
-/// OONI's Facebook Messenger test. For more info see
+/// Settings for OONI's Facebook Messenger test. For more info see
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-019-facebook-messenger.md.
-constexpr const char *facebook_messenger = "FacebookMessenger";
+using FacebookMessengerSettings = Settings;
 
-/// OONI's HTTP header field manipulation test. For more info see
+/// Settings for OONI's HTTP header field manipulation test. For more info see
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-006-header-field-manipulation.md.
-constexpr const char *http_header_field_manipulation =
-    "HttpHeaderFieldManipulation";
+using HttpHeaderFieldManipulationSettings = Settings;
 
-/// OONI's HTTP invalid request line test. For more info see
+/// Settings for OONI's HTTP invalid request line test. For more info see
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-007-http-invalid-request-line.md.
-constexpr const char *http_invalid_request_line = "HttpInvalidRequestLine";
+using HttpInvalidRequestLineSettings = Settings;
 
-/// OONI's meek fronted requests test. For more info see
+/// Settings for OONI's meek fronted requests test. For more info see
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-014-meek-fronted-requests.md.
-constexpr const char *meek_fronted_requests = "MeekFrontedRequests";
+using MeekFrontedRequestsSettings = Settings;
 
-/// the multi NDT network performance test. For more info see
+/// Settings for the multi NDT network performance test. For more info see
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-022-ndt.md.
-constexpr const char *multi_ndt = "MultiNdt";
+using MultiNdtSettings = Settings;
 
-/// the NDT network performance test. For more info see
+/// Settings for the NDT network performance test. For more info see
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-022-ndt.md.
-constexpr const char *ndt = "Ndt";
+using NdtSettings = Settings;
 
-/// OONI's TCP connect test. For more info see
+/// Settings for OONI's TCP connect test. For more info see
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-008-tcp-connect.md.
-constexpr const char *tcp_connect = "TcpConnect";
+using TcpConnectSettings = Settings;
 
-/// OONI's Telegram test. For more info see
+/// Settings for OONI's Telegram test. For more info see
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-020-telegram.md.
-constexpr const char *telegram = "Telegram";
+using TelegramSettings = Settings;
 
-/// OONI's Web Connectivity test. For more info see
+/// Settings for OONI's Web Connectivity test. For more info see
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-017-web-connectivity.md.
-constexpr const char *web_connectivity = "WebConnectivity";
+using WebConnectivitySettings = Settings;
 
-/// OONI's WhatsApp test. For more info see
+/// Settings for OONI's WhatsApp test. For more info see
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-018-whatsapp.md.
-constexpr const char *whatsapp = "Whatsapp";
+class WhatsappSettings : public Settings {
+ public:
+  using Settings::Settings;
 
-}  // namespace nettest_name
+  /// Whether to check all WhatsApp endpoints.
+  double all_endpoints = false;
 
-/// Contains the available log_levels.
-namespace log_level {
+  /// Release the allocated resources.
+  ~WhatsappSettings() noexcept override;
 
-/// Only emit error messages.
-constexpr const char *err = "ERR";
+ protected:
+  void serialize_into(nlohmann::json &doc) const override;
+};
 
-/// Also emit warning messages.
-constexpr const char *warning = "WARNING";
-
-/// Also emit informational messages.
-constexpr const char *info = "INFO";
-
-/// Also emit debug messages.
-constexpr const char *debug = "DEBUG";
-
-/// Emit all log messages.
-constexpr const char *debug2 = "DEBUG2";
-
-}  // namespace log_level
-
-/// A network test.
-class Nettest {
+/// Runs network tests and routes their events.
+class Runner {
  public:
   /// Called when the FailureAsnLookup event occurs.
   virtual void on_failure_asn_lookup(const event::FailureAsnLookup &) {
@@ -301,17 +311,14 @@ class Nettest {
     // TODO: override this callback if you're interested
   }
 
-  /// Create a nettest using the specified settings.
-  explicit Nettest(Settings s) noexcept { std::swap(s, settings_); }
+  /// Default constructor.
+  Runner() noexcept {}
 
   /// Runs the nettest until completion.
-  void run();
+  void run(const Settings &settings);
 
   /// Releases allocated resources.
-  virtual ~Nettest() noexcept;
-
- private:
-  Settings settings_;
+  virtual ~Runner() noexcept;
 };
 
 /*-
@@ -342,49 +349,61 @@ class EventDeleter {
 };
 using UniqueEvent = std::unique_ptr<mk_event_t, EventDeleter>;
 
-Nettest::~Nettest() noexcept {}
+Settings::~Settings() noexcept {}
 
-void Nettest::run() {
+void Settings::serialize_into(nlohmann::json &doc) const {
+  doc["annotations"] = annotations;
+  doc["disabled_events"] = disabled_events;
+  doc["name"] = name;
+  doc["options"] = options;
+  {
+    nlohmann::json so;
+    so["bouncer_base_url"] = bouncer_base_url;
+    so["collector_base_url"] = collector_base_url;
+    so["dns/nameserver"] = dns_nameserver;
+    so["dns/engine"] = dns_engine;
+    so["geoip_asn_path"] = geoip_asn_path;
+    so["geoip_country_path"] = geoip_country_path;
+    so["ignore_bouncer_error"] = (int64_t)ignore_bouncer_error;
+    so["ignore_open_report_error"] = (int64_t)ignore_open_report_error;
+    so["max_runtime"] = max_runtime;
+    so["net/ca_bundle_path"] = net_ca_bundle_path;
+    so["net/timeout"] = net_timeout;
+    so["no_bouncer"] = (int64_t)no_bouncer;
+    so["no_collector"] = (int64_t)no_collector;
+    so["no_asn_lookup"] = (int64_t)no_asn_lookup;
+    so["no_cc_lookup"] = (int64_t)no_cc_lookup;
+    so["no_ip_lookup"] = (int64_t)no_ip_lookup;
+    so["no_file_report"] = (int64_t)no_file_report;
+    so["no_resolver_lookup"] = (int64_t)no_resolver_lookup;
+    so["probe_asn"] = probe_asn;
+    so["probe_cc"] = probe_cc;
+    so["probe_ip"] = probe_ip;
+    so["randomize_input"] = (int64_t)randomize_input;
+    so["save_real_probe_asn"] = (int64_t)save_real_probe_asn;
+    so["save_real_probe_cc"] = (int64_t)save_real_probe_cc;
+    so["save_real_probe_ip"] = (int64_t)save_real_probe_ip;
+    so["save_real_resolver_ip"] = (int64_t)save_real_resolver_ip;
+    so["software_name"] = software_name;
+    so["software_version"] = software_version;
+    doc["options"] = so;
+  }
+}
+
+Runner::~Runner() noexcept {}
+
+WhatsappSettings::~WhatsappSettings() noexcept {}
+
+void WhatsappSettings::serialize_into(nlohmann::json &doc) const {
+  Settings::serialize_into(doc);
+  doc["options"]["all_endpoints"] = (int64_t)all_endpoints;
+}
+
+void Runner::run(const Settings &settings) {
   UniqueTask task;
   {
     nlohmann::json s;
-    s["annotations"] = settings_.annotations;
-    s["disabled_events"] = settings_.disabled_events;
-    s["name"] = settings_.name;
-    s["options"] = settings_.options;
-    {
-      nlohmann::json so;
-      Options &opts = settings_.options;
-      so["bouncer_base_url"] = opts.bouncer_base_url;
-      so["collector_base_url"] = opts.collector_base_url;
-      so["dns/nameserver"] = opts.dns_nameserver;
-      so["dns/engine"] = opts.dns_engine;
-      so["geoip_asn_path"] = opts.geoip_asn_path;
-      so["geoip_country_path"] = opts.geoip_country_path;
-      so["ignore_bouncer_error"] = (int64_t)opts.ignore_bouncer_error;
-      so["ignore_open_report_error"] = (int64_t)opts.ignore_open_report_error;
-      so["max_runtime"] = opts.max_runtime;
-      so["net/ca_bundle_path"] = opts.net_ca_bundle_path;
-      so["net/timeout"] = opts.net_timeout;
-      so["no_bouncer"] = (int64_t)opts.no_bouncer;
-      so["no_collector"] = (int64_t)opts.no_collector;
-      so["no_asn_lookup"] = (int64_t)opts.no_asn_lookup;
-      so["no_cc_lookup"] = (int64_t)opts.no_cc_lookup;
-      so["no_ip_lookup"] = (int64_t)opts.no_ip_lookup;
-      so["no_file_report"] = (int64_t)opts.no_file_report;
-      so["no_resolver_lookup"] = (int64_t)opts.no_resolver_lookup;
-      so["probe_asn"] = opts.probe_asn;
-      so["probe_cc"] = opts.probe_cc;
-      so["probe_ip"] = opts.probe_ip;
-      so["randomize_input"] = (int64_t)opts.randomize_input;
-      so["save_real_probe_asn"] = (int64_t)opts.save_real_probe_asn;
-      so["save_real_probe_cc"] = (int64_t)opts.save_real_probe_cc;
-      so["save_real_probe_ip"] = (int64_t)opts.save_real_probe_ip;
-      so["save_real_resolver_ip"] = (int64_t)opts.save_real_resolver_ip;
-      so["software_name"] = opts.software_name;
-      so["software_version"] = opts.software_version;
-      s["options"] = so;
-    }
+    settings.serialize_into(s);
     task.reset(mk_task_start(s.dump().c_str()));
     if (!task) {
       throw std::runtime_error("mk_task_start() failed");

@@ -180,10 +180,11 @@ class Event(object):
         self.attributes = list(attributes)
 
 class Nettest(object):
-    def __init__(self, docs, key, reference_url):
+    def __init__(self, docs, key, reference_url, options=None):
         self.docs = Documentation(docs)
         self.key = Key(key)
         self.reference_url = reference_url
+        self.options = options
 
 class LogLevel(object):
     def __init__(self, docs, key):
@@ -350,7 +351,11 @@ def main():
                 Nettest("""OONI's Web Connectivity test""", "web_connectivity",
                         "https://github.com/ooni/spec/blob/master/test-specs/ts-017-web-connectivity.md"),
                 Nettest("""OONI's WhatsApp test""", "whatsapp",
-                        "https://github.com/ooni/spec/blob/master/test-specs/ts-018-whatsapp.md")]
+                        "https://github.com/ooni/spec/blob/master/test-specs/ts-018-whatsapp.md",
+                        [Attribute(
+                            """Whether to check all WhatsApp endpoints.""",
+                            Bool(False), "all_endpoints",
+                        )])]
 
     log_levels = [LogLevel("""Only emit error messages""", "err"),
                   LogLevel("""Also emit warning messages""", "warning"),

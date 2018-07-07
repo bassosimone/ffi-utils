@@ -30,7 +30,7 @@
 #include <vector>
 #include <utility>
 
-#include <measurement_kit/ffi.h>
+#include <measurement_kit/ffi/ffi.h>
 #include <nlohmann/json.hpp>
 
 /// Namespace containing MK code.
@@ -38,6 +38,14 @@ namespace mk {
 
 /// Namespace containing the nettest API.
 namespace nettest {
+
+/// Contains the available log_levels.
+namespace log_level {
+{% for log_level in log_levels %}
+/// {{ log_level.docs }}.
+constexpr const char *{{ log_level.key.to_snake_case() }} = "{{ log_level.key.to_snake_case_upper() }}";
+{% endfor %}
+}  // namespace log_level
 
 /// Contains all the events emitted by nettests.
 namespace event {
@@ -48,7 +56,7 @@ class {{ event.key.to_pascal_case() }} {
  public:
   /// The key that uniquely identifies an event. You can pass use this key
   /// with Settings to disable this specific event.
-  constexpr const char *event_key = "{{ event.key }}";
+  static constexpr const char *event_key = "{{ event.key }}";
 
   {% for attribute in event.attributes %}
     /// {{ attribute.docs }}
@@ -59,8 +67,6 @@ class {{ event.key.to_pascal_case() }} {
 
 }  // namespace event
 
-/// Scalar options controlling the behavior of a nettest. If none of
-/// these options are specified, the default values are used.
 class Options {
  public:
   {% for attribute in options %}
@@ -69,33 +75,43 @@ class Options {
   {% endfor %}
 };
 
-/// Settings specifying what test to run, with what input, etc.
-class Settings {
+class Settings : public Options {
  public:
   {% for attribute in settings %}
     /// {{ attribute.docs }}
     {{ attribute.base_type.decl("cxx") }} {{ attribute.key.to_snake_case() }} = {{ attribute.base_type.default_value("cxx") }};
   {% endfor %}
+
+  /// Releases allocated resources.
+  virtual ~Settings() noexcept;
+
+ protected:
+  friend class Runner;
+  virtual void serialize_into(nlohmann::json &doc) const;
 };
 
-/// Contains the name of implemented nettests.
-namespace nettest_name {
 {% for nettest in nettests %}
-/// {{ nettest.docs }}. For more info see {{ nettest.reference_url }}.
-constexpr const char *{{ nettest.key.to_snake_case() }} = "{{ nettest.key.to_pascal_case() }}";
-{% endfor %}
-}  // namespace nettest_name
+  /// Settings for {{ nettest.docs }}. For more info see {{ nettest.reference_url }}.
+  {% if nettest.options is not none %}class {{ nettest.key.to_pascal_case() }}Settings : public Settings {
+     public:
+      using Settings::Settings;
 
-/// Contains the available log_levels.
-namespace log_level {
-{% for log_level in log_levels %}
-/// {{ log_level.docs }}.
-constexpr const char *{{ log_level.key.to_snake_case() }} = "{{ log_level.key.to_snake_case_upper() }}";
-{% endfor %}
-}  // namespace log_level
+      {% for option in nettest.options %}
+        /// {{ option.docs }}
+        {{ option.base_type.decl("cxx") }} {{ option.key.to_snake_case() }} = {{ option.base_type.default_value("cxx") }};
+      {% endfor %}
 
-/// A network test.
-class Nettest {
+      /// Release the allocated resources.
+      ~{{ nettest.key.to_pascal_case() }}Settings() noexcept override;
+
+     protected:
+       void serialize_into(nlohmann::json &doc) const override;
+    };
+  {% else %} using {{ nettest.key.to_pascal_case() }}Settings = Settings; {% endif %}
+{% endfor %}
+
+/// Runs network tests and routes their events.
+class Runner {
  public:
   {% for event in events %}
     /// Called when the {{ event.key.to_pascal_case() }} event occurs.
@@ -104,17 +120,14 @@ class Nettest {
     }
   {% endfor %}
 
-  /// Create a nettest using the specified settings.
-  explicit Nettest(Settings s) noexcept { std::swap(s, settings_); }
+  /// Default constructor.
+  Runner() noexcept {}
 
   /// Runs the nettest until completion.
-  void run();
+  void run(const Settings &settings);
 
   /// Releases allocated resources.
-  virtual ~Nettest() noexcept;
-
- private:
-  Settings settings_;
+  virtual ~Runner() noexcept;
 };
 
 /*-
@@ -145,19 +158,35 @@ class EventDeleter {
 };
 using UniqueEvent = std::unique_ptr<mk_event_t, EventDeleter>;
 
-Nettest::~Nettest() noexcept {}
+Settings::~Settings() noexcept {}
 
-void Nettest::run() {
+void Settings::serialize_into(nlohmann::json &doc) const {
+  {% for attribute in settings if attribute.key != "options" %} doc["{{ attribute.key }}"] = {{ attribute.base_type.to_json_cast("cxx") }} {{ attribute.key.to_snake_case() }}; {% endfor %}
+  {
+    nlohmann::json so;
+    {% for attribute in options %} so["{{ attribute.key }}"] = {{ attribute.base_type.to_json_cast("cxx") }} {{ attribute.key.to_snake_case() }}; {% endfor %}
+    doc["options"] = so;
+  }
+}
+
+Runner::~Runner() noexcept {}
+
+{% for nettest in nettests %}
+  {% if nettest.options is not none %}
+    {{ nettest.key.to_pascal_case() }}Settings::~{{ nettest.key.to_pascal_case() }}Settings() noexcept {}
+
+    void {{ nettest.key.to_pascal_case() }}Settings::serialize_into(nlohmann::json &doc) const {
+      Settings::serialize_into(doc);
+      {% for option in nettest.options %} doc["options"]["{{ option.key }}"] = {{ option.base_type.to_json_cast("cxx") }} {{ option.key.to_snake_case() }}; {% endfor %}
+    }
+  {% endif %}
+{% endfor %}
+
+void Runner::run(const Settings &settings) {
   UniqueTask task;
   {
     nlohmann::json s;
-    {% for attribute in settings if attribute.key != "options" %} s["{{ attribute.key }}"] = {{ attribute.base_type.to_json_cast("cxx") }} settings_.{{ attribute.key.to_snake_case() }}; {% endfor %}
-    {
-      nlohmann::json so;
-      Options &opts = settings_.options;
-      {% for attribute in options %} so["{{ attribute.key }}"] = {{ attribute.base_type.to_json_cast("cxx") }} opts.{{ attribute.key.to_snake_case() }}; {% endfor %}
-      s["options"] = so;
-    }
+    settings.serialize_into(s);
     task.reset(mk_task_start(s.dump().c_str()));
     if (!task) {
       throw std::runtime_error("mk_task_start() failed");
