@@ -1,3 +1,4 @@
 *.pyc
 /.gradle
 /build
+/venv

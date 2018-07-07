@@ -95,6 +95,48 @@ class String(Type):
             "cxx": json.dumps(self._value)
         }[language]
 
+class MapStringString(Type):
+    def __init__(self):
+        super().__init__()
+
+    def decl(self, language):
+        return {
+            "cxx": "std::map<std::string, std::string>",
+        }[language]
+
+    def default_value(self, language):
+        return {
+            "cxx": "{}",
+        }[language]
+
+class VectorString(Type):
+    def __init__(self):
+        super().__init__()
+
+    def decl(self, language):
+        return {
+            "cxx": "std::vector<std::string>",
+        }[language]
+
+    def default_value(self, language):
+        return {
+            "cxx": "{}",
+        }[language]
+
+class Options(Type):
+    def __init__(self):
+        super().__init__()
+
+    def decl(self, language):
+        return {
+            "cxx": "Options",
+        }[language]
+
+    def default_value(self, language):
+        return {
+            "cxx": "{}",
+        }[language]
+
 class Attribute(object):
     def __init__(self, docs, base_type, key):
         self.docs = Documentation(docs)
@@ -158,9 +200,21 @@ def main():
                             this option has passed.""",
                          Double(-1.0), "max_runtime")]
 
+    settings = [Attribute("""Optional annotations (i.e. key, value string pairs)
+                             that will be included into the JSON report sent to
+                             the OONI collector.""",
+                          MapStringString(), "annotations"),
+                Attribute("""List of events that will not be emitted.""",
+                          VectorString(), "disabled_events"),
+                Attribute("""Name of the test.""",
+                          String(), "name"),
+                Attribute("""Options controlling the behavior of a nettest.""",
+                          Options(), "options")]
+
     for template_name in sys.argv[1:]:
         template = jinja2.Template(open(template_name, "r").read())
-        render = template.render(events=events, options=options)
+        render = template.render(events=events, options=options,
+                                 settings=settings)
         print(render)
 
 if __name__ == "__main__":
