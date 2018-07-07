@@ -228,15 +228,17 @@ are available:
 
 The available log levels are:
 
-- `"ERR"`: an error message
 
-- `"WARNING"`: a warning message
+- `"ERR"`: Only emit error messages
 
-- `"INFO"`: an informational message
+- `"WARNING"`: Also emit warning messages
 
-- `"DEBUG"`: a debugging message
+- `"INFO"`: Also emit informational messages
 
-- `"DEBUG2"`: a really specific debugging message
+- `"DEBUG"`: Also emit debug messages
+
+- `"DEBUG2"`: Emit all log messages
+
 
 When you specify a log level in the settings, only messages with a log level
 equal or greater than the specified one are emitted. For example, if you
