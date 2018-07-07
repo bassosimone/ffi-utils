@@ -19,6 +19,9 @@ class Key(object):
     def to_snake_case(self):
         return self.name.replace(".", "_").replace("/", "_")
 
+    def to_snake_case_upper(self):
+        return self.to_snake_case().upper()
+
     def to_pascal_case(self):
         name = self.to_snake_case()
         name = name.split("_")
@@ -174,6 +177,11 @@ class Nettest(object):
         self.key = Key(key)
         self.reference_url = reference_url
 
+class LogLevel(object):
+    def __init__(self, docs, key):
+        self.docs = Documentation(docs)
+        self.key = Key(key)
+
 def main():
     """ Main function """
 
@@ -241,10 +249,17 @@ def main():
                 Nettest("""OONI captive portal test""", "captive_portal",
                         "https://github.com/ooni/spec/blob/master/test-specs/ts-010-captive-portal.md")]
 
+    log_levels = [LogLevel("""Only emit error messages""", "err"),
+                  LogLevel("""Also emit warning messages""", "warning"),
+                  LogLevel("""Also emit informational messages""", "info"),
+                  LogLevel("""Also emit debug messages""", "debug"),
+                  LogLevel("""Emit all log messages""", "debug2")]
+
     for template_name in sys.argv[1:]:
         template = jinja2.Template(open(template_name, "r").read())
         render = template.render(events=events, options=options,
-                                 settings=settings, nettests=nettests)
+                                 settings=settings, nettests=nettests,
+                                 log_levels=log_levels)
         print(render)
 
 if __name__ == "__main__":

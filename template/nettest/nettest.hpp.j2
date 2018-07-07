@@ -46,6 +46,10 @@ namespace event {
 /// {{ event.docs }}
 class {{ event.key.to_pascal_case() }} {
  public:
+  /// The key that uniquely identifies an event. You can pass use this key
+  /// with Settings to disable this specific event.
+  constexpr const char *event_key = "{{ event.key }}";
+
   {% for attribute in event.attributes %}
     /// {{ attribute.docs }}
     {{ attribute.base_type.decl("cxx") }} {{ attribute.key.to_snake_case() }} = {{ attribute.base_type.default_value("cxx") }};
@@ -80,7 +84,15 @@ namespace nettest_name {
 /// {{ nettest.docs }}. For more info see {{ nettest.reference_url }}.
 constexpr const char *{{ nettest.key.to_snake_case() }} = "{{ nettest.key.to_pascal_case() }}";
 {% endfor %}
-}
+}  // namespace nettest_name
+
+/// Contains the available log_levels.
+namespace log_level {
+{% for log_level in log_levels %}
+/// {{ log_level.docs }}.
+constexpr const char *{{ log_level.key.to_snake_case() }} = "{{ log_level.key.to_snake_case_upper() }}";
+{% endfor %}
+}  // namespace log_level
 
 /// A network test.
 class Nettest {

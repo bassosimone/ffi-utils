@@ -45,6 +45,10 @@ namespace event {
 /// We could not lookup the ASN from the probe IP.
 class FailureAsnLookup {
  public:
+  /// The key that uniquely identifies an event. You can pass use this key
+  /// with Settings to disable this specific event.
+  constexpr const char *event_key = "failure.asn_lookup";
+
   /// The specific error that occurred.
   std::string failure = "";
 };
@@ -54,6 +58,10 @@ class FailureAsnLookup {
 /// measure the network performance.
 class StatusUpdatePerformance {
  public:
+  /// The key that uniquely identifies an event. You can pass use this key
+  /// with Settings to disable this specific event.
+  constexpr const char *event_key = "status.update_performance";
+
   /// The direction of the performance measurement. Either 'download', for
   /// download measurements, or 'upload' for upload measurements.
   std::string direction = "";
@@ -125,6 +133,26 @@ constexpr const char *dash = "Dash";
 constexpr const char *captive_portal = "CaptivePortal";
 
 }  // namespace nettest_name
+
+/// Contains the available log_levels.
+namespace log_level {
+
+/// Only emit error messages.
+constexpr const char *err = "ERR";
+
+/// Also emit warning messages.
+constexpr const char *warning = "WARNING";
+
+/// Also emit informational messages.
+constexpr const char *info = "INFO";
+
+/// Also emit debug messages.
+constexpr const char *debug = "DEBUG";
+
+/// Emit all log messages.
+constexpr const char *debug2 = "DEBUG2";
+
+}  // namespace log_level
 
 /// A network test.
 class Nettest {
