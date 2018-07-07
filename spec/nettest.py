@@ -13,8 +13,11 @@ class Key(object):
     def __init__(self, name):
         self.name = name
 
+    def __str__(self):
+        return self.name
+
     def to_snake_case(self):
-        return self.name.replace(".", "_")
+        return self.name.replace(".", "_").replace("/", "_")
 
     def to_pascal_case(self):
         name = self.to_snake_case()
@@ -35,6 +38,12 @@ class Type(object):
     def default_value(self, language):
         raise NotImplementedError
 
+    def to_json_cast(self, language):
+        return ""
+
+    def from_json_cast(self, language):
+        return ""
+
 class Bool(Type):
     def __init__(self, value=False):
         super().__init__()
@@ -48,6 +57,16 @@ class Bool(Type):
     def default_value(self, language):
         return {
             "cxx": json.dumps(self._value),
+        }[language]
+
+    def to_json_cast(self, language):
+        return {
+            "cxx": "(int64_t)",
+        }[language]
+
+    def from_json_cast(self, language):
+        return {
+            "cxx": "(bool)",
         }[language]
 
 class Double(Type):
@@ -186,7 +205,7 @@ def main():
                             resolving domain names to IP addresses. Otherwise
                             MK will use the system resolver (i.e. it will
                             call `getaddrinfo()`).""",
-                         String(), "dns_name_server"),
+                         String(), "dns/nameserver"),
                Attribute("""Whether to ignore bouncer errors. If this option
                             is true, then MK will not stop after failing to
                             contact the OONI bouncer. Without the information
