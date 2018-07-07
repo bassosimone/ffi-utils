@@ -55,11 +55,13 @@ class Bool(Type):
     def decl(self, language):
         return {
             "cxx": "double",
+            "docs": "int",
         }[language]
 
     def default_value(self, language):
         return {
             "cxx": json.dumps(self._value),
+            "docs": json.dumps(int(self._value)),
         }[language]
 
     def to_json_cast(self, language):
@@ -80,11 +82,13 @@ class Double(Type):
     def decl(self, language):
         return {
             "cxx": "double",
+            "docs": "float",
         }[language]
 
     def default_value(self, language):
         return {
             "cxx": self._value,
+            "docs": self._value,
         }[language]
 
 class Int64(Type):
@@ -95,11 +99,13 @@ class Int64(Type):
     def decl(self, language):
         return {
             "cxx": "int64_t",
+            "docs": "int",
         }[language]
 
     def default_value(self, language):
         return {
-            "cxx": self._value
+            "cxx": self._value,
+            "docs": self._value,
         }[language]
 
 class String(Type):
@@ -110,11 +116,13 @@ class String(Type):
     def decl(self, language):
         return {
             "cxx": "std::string",
+            "docs": "string",
         }[language]
 
     def default_value(self, language):
         return {
-            "cxx": json.dumps(self._value)
+            "cxx": json.dumps(self._value),
+            "docs": json.dumps(self._value),
         }[language]
 
 class MapStringString(Type):
@@ -214,12 +222,29 @@ def main():
                             the OONI bouncer and get test specific info like
                             test helpers and test collectors.""",
                          String("https://bouncer.ooni.io"), "bouncer_base_url"),
+               Attribute("""Base URL of the OONI collector. This base URL is
+                            used to construct the full URL required to contact
+                            manage the report submission with the collector. By
+                            default this option is not set because we use the
+                            bouncer to retrieve the collector base URL.""",
+                         String(""), "collector_base_url"),
                Attribute("""DNS resolver IP address. By setting this option
                             you will force MK to use that DNS resolver for
-                            resolving domain names to IP addresses. Otherwise
-                            MK will use the system resolver (i.e. it will
-                            call `getaddrinfo()`).""",
+                            resolving domain names to IP addresses. For this
+                            setting to work you should use a DNS engine
+                            different from the "system" engine.""",
                          String(), "dns/nameserver"),
+               Attribute("""What DNS engine to use. The "system" engine implies
+                            that `getaddrinfo()` is used. If you set this
+                            setting to "libevent" and you also configure the
+                            "dns/nameserver" option, MK will use libevent
+                            and the specified nameserver to resolve domain
+                            names.""",
+                         String("system"), "dns/engine"),
+               Attribute("""Path to the GeoIP ASN database file.""",
+                         String(), "geoip_asn_path"),
+               Attribute("""Path to the GeoIP country database file.""",
+                         String(), "geoip_country_path"),
                Attribute("""Whether to ignore bouncer errors. If this option
                             is true, then MK will not stop after failing to
                             contact the OONI bouncer. Without the information
@@ -227,11 +252,65 @@ def main():
                             work, while others (e.g. OONI tests) will most
                             likely fail.""",
                          Bool(True), "ignore_bouncer_error"),
+               Attribute("""Whether to ignore errors opening the report with
+                            the OONI collector.""",
+                         Bool(True), "ignore_open_report_error"),
                Attribute("""Max run time for nettests taking input. When you
                             are running a nettest taking input, the test will
                             stop after the number of seconds specified by
                             this option has passed.""",
-                         Double(-1.0), "max_runtime")]
+                         Double(-1.0), "max_runtime"),
+               Attribute("""Path to the CA used to validate SSL certificates. This
+                            is not necessary where we use LibreSSL, because in
+                            such cases we include a CA bundle directly inside of
+                            the MK binary. This happens for Android, iOS, and
+                            Windows systems.""",
+                         String(), "net/ca_bundle_path"),
+               Attribute("""Number of seconds after which I/O will timeout""",
+                         Double(10.0), "net/timeout"),
+               Attribute("""Whether to avoid using a bouncer""", Bool(False),
+                         "no_bouncer"),
+               Attribute("""Whether to avoid using a collector""", Bool(False),
+                         "no_collector"),
+               Attribute("""Whether to avoid the the probe ASN lookup.""",
+                         Bool(False), "no_asn_lookup"),
+               Attribute("""Whether to avoid the probe CC lookup.""",
+                         Bool(False), "no_cc_lookup"),
+               Attribute("""Whether to avoid looking up the probe IP. Not knowing
+                            the probe IP prevents us from looking up the ASN
+                            and the CC and also prevents us from attempting to
+                            scrub the IP address from measurements results.""",
+                         Bool(False), "no_ip_lookup"),
+               Attribute("""Whether to avoid writing a report file to disk.""",
+                         Bool(False), "no_file_report"),
+               Attribute("""Whether to avoid looking up the resolver IP address.""",
+                         Bool(False), "no_resolver_lookup"),
+               Attribute("""The ASN in which we are. If you set this, we will
+                            of course skip the probe ASN lookup.""",
+                         String(), "probe_asn"),
+               Attribute("""The country code in which we are. If you set this, we
+                            will of course skip the probe CC lookup.""",
+                         String(), "probe_cc"),
+               Attribute("""The probe IP. If you set this, we will of course
+                            skip the probe IP lookup""",
+                         String(), "probe_ip"),
+               Attribute("""Whether to randomize the provided input.""",
+                         Bool(True), "randomize_input"),
+               Attribute("""Whether to save the probe ASN in the report.""",
+                         Bool(True), "save_real_probe_asn"),
+               Attribute("""Whether to save the probe country code in
+                            the report.""",
+                         Bool(True), "save_real_probe_cc"),
+               Attribute("""Whether to save the probe IP in the report.""",
+                         Bool(False), "save_real_probe_ip"),
+               Attribute("""Whether to save the probe resolver IP in the report.""",
+                         Bool(True), "save_real_resolver_ip"),
+               Attribute("""Name of the application. If this is not set, the
+                            string "measurement_kit" will be used.""",
+                         String(), "software_name"),
+               Attribute("""Version of the application. If this is not set,
+                            the current MK version will be used.""",
+                         String(), "software_version")]
 
     settings = [Attribute("""Optional annotations (i.e. key, value string pairs)
                              that will be included into the JSON report sent to

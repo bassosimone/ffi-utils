@@ -87,10 +87,29 @@ class Options {
   /// test helpers and test collectors.
   std::string bouncer_base_url = "https://bouncer.ooni.io";
 
+  /// Base URL of the OONI collector. This base URL is used to construct the
+  /// full URL required to contact manage the report submission with the
+  /// collector. By default this option is not set because we use the bouncer to
+  /// retrieve the collector base URL.
+  std::string collector_base_url = "";
+
   /// DNS resolver IP address. By setting this option you will force MK to use
-  /// that DNS resolver for resolving domain names to IP addresses. Otherwise MK
-  /// will use the system resolver (i.e. it will call `getaddrinfo()`).
+  /// that DNS resolver for resolving domain names to IP addresses. For this
+  /// setting to work you should use a DNS engine different from the "system"
+  /// engine.
   std::string dns_nameserver = "";
+
+  /// What DNS engine to use. The "system" engine implies that `getaddrinfo()`
+  /// is used. If you set this setting to "libevent" and you also configure the
+  /// "dns/nameserver" option, MK will use libevent and the specified nameserver
+  /// to resolve domain names.
+  std::string dns_engine = "system";
+
+  /// Path to the GeoIP ASN database file.
+  std::string geoip_asn_path = "";
+
+  /// Path to the GeoIP country database file.
+  std::string geoip_country_path = "";
 
   /// Whether to ignore bouncer errors. If this option is true, then MK will not
   /// stop after failing to contact the OONI bouncer. Without the information
@@ -98,10 +117,79 @@ class Options {
   /// OONI tests) will most likely fail.
   double ignore_bouncer_error = true;
 
+  /// Whether to ignore errors opening the report with the OONI collector.
+  double ignore_open_report_error = true;
+
   /// Max run time for nettests taking input. When you are running a nettest
   /// taking input, the test will stop after the number of seconds specified by
   /// this option has passed.
   double max_runtime = -1.0;
+
+  /// Path to the CA used to validate SSL certificates. This is not necessary
+  /// where we use LibreSSL, because in such cases we include a CA bundle
+  /// directly inside of the MK binary. This happens for Android, iOS, and
+  /// Windows systems.
+  std::string net_ca_bundle_path = "";
+
+  /// Number of seconds after which I/O will timeout
+  double net_timeout = 10.0;
+
+  /// Whether to avoid using a bouncer
+  double no_bouncer = false;
+
+  /// Whether to avoid using a collector
+  double no_collector = false;
+
+  /// Whether to avoid the the probe ASN lookup.
+  double no_asn_lookup = false;
+
+  /// Whether to avoid the probe CC lookup.
+  double no_cc_lookup = false;
+
+  /// Whether to avoid looking up the probe IP. Not knowing the probe IP
+  /// prevents us from looking up the ASN and the CC and also prevents us from
+  /// attempting to scrub the IP address from measurements results.
+  double no_ip_lookup = false;
+
+  /// Whether to avoid writing a report file to disk.
+  double no_file_report = false;
+
+  /// Whether to avoid looking up the resolver IP address.
+  double no_resolver_lookup = false;
+
+  /// The ASN in which we are. If you set this, we will of course skip the probe
+  /// ASN lookup.
+  std::string probe_asn = "";
+
+  /// The country code in which we are. If you set this, we will of course skip
+  /// the probe CC lookup.
+  std::string probe_cc = "";
+
+  /// The probe IP. If you set this, we will of course skip the probe IP lookup
+  std::string probe_ip = "";
+
+  /// Whether to randomize the provided input.
+  double randomize_input = true;
+
+  /// Whether to save the probe ASN in the report.
+  double save_real_probe_asn = true;
+
+  /// Whether to save the probe country code in the report.
+  double save_real_probe_cc = true;
+
+  /// Whether to save the probe IP in the report.
+  double save_real_probe_ip = false;
+
+  /// Whether to save the probe resolver IP in the report.
+  double save_real_resolver_ip = true;
+
+  /// Name of the application. If this is not set, the string "measurement_kit"
+  /// will be used.
+  std::string software_name = "";
+
+  /// Version of the application. If this is not set, the current MK version
+  /// will be used.
+  std::string software_version = "";
 };
 
 /// Settings specifying what test to run, with what input, etc.
@@ -268,9 +356,33 @@ void Nettest::run() {
       nlohmann::json so;
       Options &opts = settings_.options;
       so["bouncer_base_url"] = opts.bouncer_base_url;
+      so["collector_base_url"] = opts.collector_base_url;
       so["dns/nameserver"] = opts.dns_nameserver;
+      so["dns/engine"] = opts.dns_engine;
+      so["geoip_asn_path"] = opts.geoip_asn_path;
+      so["geoip_country_path"] = opts.geoip_country_path;
       so["ignore_bouncer_error"] = (int64_t)opts.ignore_bouncer_error;
+      so["ignore_open_report_error"] = (int64_t)opts.ignore_open_report_error;
       so["max_runtime"] = opts.max_runtime;
+      so["net/ca_bundle_path"] = opts.net_ca_bundle_path;
+      so["net/timeout"] = opts.net_timeout;
+      so["no_bouncer"] = (int64_t)opts.no_bouncer;
+      so["no_collector"] = (int64_t)opts.no_collector;
+      so["no_asn_lookup"] = (int64_t)opts.no_asn_lookup;
+      so["no_cc_lookup"] = (int64_t)opts.no_cc_lookup;
+      so["no_ip_lookup"] = (int64_t)opts.no_ip_lookup;
+      so["no_file_report"] = (int64_t)opts.no_file_report;
+      so["no_resolver_lookup"] = (int64_t)opts.no_resolver_lookup;
+      so["probe_asn"] = opts.probe_asn;
+      so["probe_cc"] = opts.probe_cc;
+      so["probe_ip"] = opts.probe_ip;
+      so["randomize_input"] = (int64_t)opts.randomize_input;
+      so["save_real_probe_asn"] = (int64_t)opts.save_real_probe_asn;
+      so["save_real_probe_cc"] = (int64_t)opts.save_real_probe_cc;
+      so["save_real_probe_ip"] = (int64_t)opts.save_real_probe_ip;
+      so["save_real_resolver_ip"] = (int64_t)opts.save_real_resolver_ip;
+      so["software_name"] = opts.software_name;
+      so["software_version"] = opts.software_version;
       s["options"] = so;
     }
     task.reset(mk_task_start(s.dump().c_str()));

@@ -252,105 +252,63 @@ that `0` means false and non-`0` means true.
 
 These are the available options:
 
-- `"bouncer_base_url"`: (string) base URL of OONI bouncer, by default set to
-  the empty string. If empty, the OONI bouncer will be used;
 
-- `"collector_base_url"`: (string) base URL of OONI collector, by default set
-  to the empty string. If empty, the OONI collector will be used;
+- `"bouncer_base_url"`: (string) Base URL of the OONI bouncer. This base URL is used to construct the full URL required to contact the OONI bouncer and get test specific info like test helpers and test collectors.
 
-- `"dns/nameserver"`: (string) nameserver to be used with non-`system` DNS
-  engines. Can or cannot include an optional port number. By default, set
-  to the empty string;
+- `"collector_base_url"`: (string) Base URL of the OONI collector. This base URL is used to construct the full URL required to contact manage the report submission with the collector. By default this option is not set because we use the bouncer to retrieve the collector base URL.
 
-- `"dns/engine"`: (string) what DNS engine to use. By default, set to
-  `"system"`, meaning that `getaddrinfo()` will be used to resolve domain
-  names. Can also be set to `"libevent"`, to use libevent's DNS engine.
-  In such case, you must provide a `"dns/nameserver"` as well;
+- `"dns/nameserver"`: (string) DNS resolver IP address. By setting this option you will force MK to use that DNS resolver for resolving domain names to IP addresses. For this setting to work you should use a DNS engine different from the "system" engine.
 
-- `"geoip_asn_path"`: (string) path to the GeoIP ASN database file. By
-  default not set;
+- `"dns/engine"`: (string) What DNS engine to use. The "system" engine implies that `getaddrinfo()` is used. If you set this setting to "libevent" and you also configure the "dns/nameserver" option, MK will use libevent and the specified nameserver to resolve domain names.
 
-- `"geoip_country_path"`: (string) path to the GeoIP Country database
-  file. By default not set;
+- `"geoip_asn_path"`: (string) Path to the GeoIP ASN database file.
 
-- `"ignore_bouncer_error"`: (int) whether to ignore an error in contacting
-  the OONI bouncer. By default set to `1` so that bouncer errors will
-  be ignored;
+- `"geoip_country_path"`: (string) Path to the GeoIP country database file.
 
-- `"ignore_open_report_error"`: (int) whether to ignore an error when opening
-  the report with the OONI collector. By default set to `1` so that errors
-  will be ignored;
+- `"ignore_bouncer_error"`: (int) Whether to ignore bouncer errors. If this option is true, then MK will not stop after failing to contact the OONI bouncer. Without the information provided by the bouncer, some tests MAY still work, while others (e.g. OONI tests) will most likely fail.
 
-- `"max_runtime"`: (float) number of seconds after which the test will
-  be stopped. Works _only_ for tests taking input. By default set to `-1.0`
-  so that there is no maximum runtime for tests with input;
+- `"ignore_open_report_error"`: (int) Whether to ignore errors opening the report with the OONI collector.
 
-- `"net/ca_bundle_path"`: (string) path to the CA bundle path to be used
-  to validate SSL certificates. Not necessary on platforms where we use
-  LibreSSL, because in such case we include a default CA bundle directly
-  inside of Measurement Kit (Android, iOS, Windows). If you compile a
-  Measurement Kit for yourself, then YMMV;
+- `"max_runtime"`: (float) Max run time for nettests taking input. When you are running a nettest taking input, the test will stop after the number of seconds specified by this option has passed.
 
-- `"net/timeout"`: (float) number of seconds after which network I/O
-  operations will timeout. By default set to `10.0` seconds;
+- `"net/ca_bundle_path"`: (string) Path to the CA used to validate SSL certificates. This is not necessary where we use LibreSSL, because in such cases we include a CA bundle directly inside of the MK binary. This happens for Android, iOS, and Windows systems.
 
-- `"no_bouncer"`: (int) whether to use a bouncer. By default set to
-  `0`, meaning that a bouncer will be used;
+- `"net/timeout"`: (float) Number of seconds after which I/O will timeout
 
-- `"no_collector"`: (int) whether to use a collector. By default set to
-  `0`, meaning that a collector will be used;
+- `"no_bouncer"`: (int) Whether to avoid using a bouncer
 
-- `"no_asn_lookup"`: (int) whether to lookup the Autonomous System Number
-  in which we're running. Requires the `"geoip_asn_path"` to be set. By
-  default set to `1`, meaning that we'll attempt ASN lookup;
+- `"no_collector"`: (int) Whether to avoid using a collector
 
-- `"no_cc_lookup"`: (int) whether to lookup the code of the country (CC) in
-  which we are. Requires the `"geoip_country_path"` to be set. By default,
-  set to `1`, meaning that we'll attempt CC lookup;
+- `"no_asn_lookup"`: (int) Whether to avoid the the probe ASN lookup.
 
-- `"no_ip_lookup"`: (int) whether to lookup our IP address. By default set
-  to `1`, meaning that we'll try. Seting this to `0` prevents us from
-  looking up also the ASN and the CC and will also prevent us from attempting
-  to scrub the user IP address from the results of many OONI tests;
+- `"no_cc_lookup"`: (int) Whether to avoid the probe CC lookup.
 
-- `"no_file_report"`: (int) whether to write a report (i.e. measurement
-  result) file on disk. By default set to `0`, meaning that we'll try;
+- `"no_ip_lookup"`: (int) Whether to avoid looking up the probe IP. Not knowing the probe IP prevents us from looking up the ASN and the CC and also prevents us from attempting to scrub the IP address from measurements results.
 
-- `"no_resolver_lookup"`: (int) whether to lookup the IP address of the
-  resolver used. By default set to `0`, meaning that we'll try;
+- `"no_file_report"`: (int) Whether to avoid writing a report file to disk.
 
-- `"probe_asn"`: (string) ASN in which we are. Set this if you already
-  looked up for the ASN. Setting this to a non-empty string will disable
-  the ASN lookup. By default it's an empty string;
+- `"no_resolver_lookup"`: (int) Whether to avoid looking up the resolver IP address.
 
-- `"probe_cc"`: (string) Country code. Set this is you already looked up
-  the country code. Setting this to a non-empty string will disable CC
-  lookup. By default it's an empty string;
+- `"probe_asn"`: (string) The ASN in which we are. If you set this, we will of course skip the probe ASN lookup.
 
-- `"probe_ip"`: (string) Probe IP. Set this if you already know our
-  IP. Setting this to a non-empty string will disable the probe IP
-  lookup. By default it's an empty string;
+- `"probe_cc"`: (string) The country code in which we are. If you set this, we will of course skip the probe CC lookup.
 
-- `"randomize_input"`: (int) whether to randomize input. By default set to
-  `1`, meaning that we'll randomize input;
+- `"probe_ip"`: (string) The probe IP. If you set this, we will of course skip the probe IP lookup
 
-- `"save_real_probe_asn"`: (int) whether to save the ASN. By default set
-  to `1`, meaning that we will save it;
+- `"randomize_input"`: (int) Whether to randomize the provided input.
 
-- `"save_real_probe_cc"`: (int) whether to save the CC. By default set to `1`,
-  meaning that we will save it;
+- `"save_real_probe_asn"`: (int) Whether to save the probe ASN in the report.
 
-- `"save_real_probe_ip"`: (int) whether to save our IP. By default set to `0`,
-  meaning that we will not save it;
+- `"save_real_probe_cc"`: (int) Whether to save the probe country code in the report.
 
-- `"save_real_resolver_ip"`: (int) whether to save the resolver IP. By default
-  set to `1`, meaning that we'll save it;
+- `"save_real_probe_ip"`: (int) Whether to save the probe IP in the report.
 
-- `"software_name"`: (string) name of the app. By default set to
-  `"measurement_kit"`;
+- `"save_real_resolver_ip"`: (int) Whether to save the probe resolver IP in the report.
 
-- `"software_version"`: (string) version of the app. By default set to the
-  current version of Measurement Kit.
+- `"software_name"`: (string) Name of the application. If this is not set, the string "measurement_kit" will be used.
+
+- `"software_version"`: (string) Version of the application. If this is not set, the current MK version will be used.
+
 
 ## Events
 
