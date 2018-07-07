@@ -168,6 +168,12 @@ class Event(object):
         self.key = Key(key)
         self.attributes = list(attributes)
 
+class Nettest(object):
+    def __init__(self, docs, key, reference_url):
+        self.docs = Documentation(docs)
+        self.key = Key(key)
+        self.reference_url = reference_url
+
 def main():
     """ Main function """
 
@@ -230,10 +236,15 @@ def main():
                 Attribute("""Options controlling the behavior of a nettest.""",
                           Options(), "options")]
 
+    nettests = [Nettest("""Neubot DASH test""", "dash",
+                        "https://github.com/ooni/spec/blob/master/test-specs/ts-021-dash.md"),
+                Nettest("""OONI captive portal test""", "captive_portal",
+                        "https://github.com/ooni/spec/blob/master/test-specs/ts-010-captive-portal.md")]
+
     for template_name in sys.argv[1:]:
         template = jinja2.Template(open(template_name, "r").read())
         render = template.render(events=events, options=options,
-                                 settings=settings)
+                                 settings=settings, nettests=nettests)
         print(render)
 
 if __name__ == "__main__":

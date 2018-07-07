@@ -27,6 +27,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <measurement_kit/ffi.h>
@@ -111,6 +112,19 @@ class Settings {
   /// Options controlling the behavior of a nettest.
   Options options = {};
 };
+
+/// Contains the name of implemented nettests.
+namespace nettest_name {
+
+/// Neubot DASH test. For more info see
+/// https://github.com/ooni/spec/blob/master/test-specs/ts-021-dash.md.
+constexpr const char *dash = "Dash";
+
+/// OONI captive portal test. For more info see
+/// https://github.com/ooni/spec/blob/master/test-specs/ts-010-captive-portal.md.
+constexpr const char *captive_portal = "CaptivePortal";
+
+}  // namespace nettest_name
 
 /// A network test.
 class Nettest {

@@ -28,6 +28,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <utility>
 
 #include <measurement_kit/ffi.h>
 #include <nlohmann/json.hpp>
@@ -72,6 +73,14 @@ class Settings {
     {{ attribute.base_type.decl("cxx") }} {{ attribute.key.to_snake_case() }} = {{ attribute.base_type.default_value("cxx") }};
   {% endfor %}
 };
+
+/// Contains the name of implemented nettests.
+namespace nettest_name {
+{% for nettest in nettests %}
+/// {{ nettest.docs }}. For more info see {{ nettest.reference_url }}.
+constexpr const char *{{ nettest.key.to_snake_case() }} = "{{ nettest.key.to_pascal_case() }}";
+{% endfor %}
+}
 
 /// A network test.
 class Nettest {
