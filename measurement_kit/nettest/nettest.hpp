@@ -124,13 +124,58 @@ class Settings {
 /// Contains the name of implemented nettests.
 namespace nettest_name {
 
-/// Neubot DASH test. For more info see
+/// Neubot's DASH test. For more info see
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-021-dash.md.
 constexpr const char *dash = "Dash";
 
-/// OONI captive portal test. For more info see
+/// OONI's captive portal test. For more info see
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-010-captive-portal.md.
 constexpr const char *captive_portal = "CaptivePortal";
+
+/// OONI's DNS injection test. For more info see
+/// https://github.com/ooni/spec/blob/master/test-specs/ts-012-dns-injection.md.
+constexpr const char *dns_injection = "DnsInjection";
+
+/// OONI's Facebook Messenger test. For more info see
+/// https://github.com/ooni/spec/blob/master/test-specs/ts-019-facebook-messenger.md.
+constexpr const char *facebook_messenger = "FacebookMessenger";
+
+/// OONI's HTTP header field manipulation test. For more info see
+/// https://github.com/ooni/spec/blob/master/test-specs/ts-006-header-field-manipulation.md.
+constexpr const char *http_header_field_manipulation =
+    "HttpHeaderFieldManipulation";
+
+/// OONI's HTTP invalid request line test. For more info see
+/// https://github.com/ooni/spec/blob/master/test-specs/ts-007-http-invalid-request-line.md.
+constexpr const char *http_invalid_request_line = "HttpInvalidRequestLine";
+
+/// OONI's meek fronted requests test. For more info see
+/// https://github.com/ooni/spec/blob/master/test-specs/ts-014-meek-fronted-requests.md.
+constexpr const char *meek_fronted_requests = "MeekFrontedRequests";
+
+/// the multi NDT network performance test. For more info see
+/// https://github.com/ooni/spec/blob/master/test-specs/ts-022-ndt.md.
+constexpr const char *multi_ndt = "MultiNdt";
+
+/// the NDT network performance test. For more info see
+/// https://github.com/ooni/spec/blob/master/test-specs/ts-022-ndt.md.
+constexpr const char *ndt = "Ndt";
+
+/// OONI's TCP connect test. For more info see
+/// https://github.com/ooni/spec/blob/master/test-specs/ts-008-tcp-connect.md.
+constexpr const char *tcp_connect = "TcpConnect";
+
+/// OONI's Telegram test. For more info see
+/// https://github.com/ooni/spec/blob/master/test-specs/ts-020-telegram.md.
+constexpr const char *telegram = "Telegram";
+
+/// OONI's Web Connectivity test. For more info see
+/// https://github.com/ooni/spec/blob/master/test-specs/ts-017-web-connectivity.md.
+constexpr const char *web_connectivity = "WebConnectivity";
+
+/// OONI's WhatsApp test. For more info see
+/// https://github.com/ooni/spec/blob/master/test-specs/ts-018-whatsapp.md.
+constexpr const char *whatsapp = "Whatsapp";
 
 }  // namespace nettest_name
 

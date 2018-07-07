@@ -75,8 +75,9 @@ process events in the `run()` and `process_event()` functions.
 
 The following tasks are defined (case matters):
 
+
 - `"Dash"`: [Neubot's DASH test](
-https://github.com/ooni/spec/blob/master/test-specs/ts-021-dash.md).
+  https://github.com/ooni/spec/blob/master/test-specs/ts-021-dash.md).
 
 - `"CaptivePortal"`: [OONI's captive portal test](
   https://github.com/ooni/spec/blob/master/test-specs/ts-010-captive-portal.md).
@@ -103,7 +104,7 @@ https://github.com/ooni/spec/blob/master/test-specs/ts-021-dash.md).
   https://github.com/ooni/spec/blob/master/test-specs/ts-022-ndt.md).
 
 - `"TcpConnect"`: [OONI's TCP connect test](
-   https://github.com/ooni/spec/blob/master/test-specs/ts-008-tcp-connect.md).
+  https://github.com/ooni/spec/blob/master/test-specs/ts-008-tcp-connect.md).
 
 - `"Telegram"`: [OONI's Telegram test](
   https://github.com/ooni/spec/blob/master/test-specs/ts-020-telegram.md).
@@ -113,6 +114,7 @@ https://github.com/ooni/spec/blob/master/test-specs/ts-021-dash.md).
 
 - `"Whatsapp"`: [OONI's WhatsApp test](
   https://github.com/ooni/spec/blob/master/test-specs/ts-018-whatsapp.md).
+
 
 By following the links provided above, you can read detailed documentation on
 the purpose of each task. The documentation also describes the JSON schema used

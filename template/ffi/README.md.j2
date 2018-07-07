@@ -75,44 +75,10 @@ process events in the `run()` and `process_event()` functions.
 
 The following tasks are defined (case matters):
 
-- `"Dash"`: [Neubot's DASH test](
-https://github.com/ooni/spec/blob/master/test-specs/ts-021-dash.md).
-
-- `"CaptivePortal"`: [OONI's captive portal test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-010-captive-portal.md).
-
-- `"DnsInjection"`: [OONI's DNS injection test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-012-dns-injection.md).
-
-- `"FacebookMessenger"`: [OONI's Facebook Messenger test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-019-facebook-messenger.md).
-
-- `"HttpHeaderFieldManipulation"`: [OONI's HTTP header field manipulation test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-006-header-field-manipulation.md).
-
-- `"HttpInvalidRequestLine"`: [OONI's HTTP invalid request line test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-007-http-invalid-request-line.md).
-
-- `"MeekFrontedRequests"`: [OONI's meek fronted requests test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-014-meek-fronted-requests.md).
-
-- `"MultiNdt"`: [the multi NDT network performance test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-022-ndt.md).
-
-- `"Ndt"`: [the NDT network performance test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-022-ndt.md).
-
-- `"TcpConnect"`: [OONI's TCP connect test](
-   https://github.com/ooni/spec/blob/master/test-specs/ts-008-tcp-connect.md).
-
-- `"Telegram"`: [OONI's Telegram test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-020-telegram.md).
-
-- `"WebConnectivity"`: [OONI's Web Connectivity test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-017-web-connectivity.md).
-
-- `"Whatsapp"`: [OONI's WhatsApp test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-018-whatsapp.md).
+{% for nettest in nettests %}
+- `"{{ nettest.key.to_pascal_case() }}"`: [{{ nettest.docs }}](
+  {{ nettest.reference_url }}).
+{% endfor %}
 
 By following the links provided above, you can read detailed documentation on
 the purpose of each task. The documentation also describes the JSON schema used
