@@ -20,12 +20,13 @@ we have implemented for several languages. Specifically:
 
 Measurement Kit is a network measurement engine. By default, as mentioned,
 it exposes a FFI friendly C like API. To use this API, include
-`<measurement_kit/ffi.h>`. See also the API documentation available
+`<measurement_kit/ffi/ffi.h>`. See also the API documentation available
 at [codedocs.xyz/measurement-kit/measurement-kit](
 https://codedocs.xyz/measurement-kit/measurement-kit).
 
-The FFI API allows you to run _tasks_. In most cases tasks are network
-measurement tests, like [OONI's Web Connectivity](
+The FFI API allows you to run network tests (nettests). In the context of this
+API, network tests are called _tasks_ (but the name is probably poised to
+change before v1.0.0). Example tasks are [OONI's Web Connectivity](
 https://github.com/ooni/spec/blob/master/test-specs/ts-017-web-connectivity.md
 ) or the [Network Diagnostic Test](
 https://github.com/ooni/spec/blob/master/test-specs/ts-022-ndt.md).
@@ -35,7 +36,7 @@ _settings_ as a serialized JSON string.  All settings are optional,
 except for the `name` of the task.  Ideally, you should have high
 level code where the settings are a class that gets serialized to
 a JSON string. This is, for example, what we do in the higher-level
-[C++14 API](cxx14.hpp).
+APIs mentioned above.
 
 Once started, a task will emit _events_. There are several kind of
 events, the most common of which is `"log"` that identifies a log
@@ -48,8 +49,8 @@ The task runs in a separate thread and posts events on a queue. You extract
 events from such queue using `mk_task_wait_for_next_event`. This is a _blocking_
 function that returns when a new event is posted into the queue. To
 process an event, use `mk_event_serialize` to obtain its JSON serialization,
-then parse the JSON into some high level data structure, and process it. See,
-again, the [C++14 API](cxx14.hpp) events processing code to have an idea of
+then parse the JSON into some high level data structure, and process it. See
+the [C++14](../nettest/nettest.hpp) events processing code to have an idea of
 how this could be implemented. (Or, if we have already written an API that
 does that works for your use case, perhaps just use such API.)
 
@@ -66,20 +67,16 @@ respectively, `mk_event_destroy` and `mk_task_destroy`.
 
 You can find working examples of usage of the FFI API inside the
 [example/ffi](../../example/ffi) directory. Another usage example of
-the FFI API is [cxx14.hpp](cxx14.hpp). In such file, we wrap the FFI API
-into a more-user-friendly C++14 interface, by mapping each event to
-a class. Specifically, it may be of interest to read how we
-process events in the `run()` and `process_event()` functions.
+the FFI API is [nettest.hpp](../nettest/nettest.hpp), where we wrap the
+FFI API into a more-user-friendly C++11 interface.
 
 ## Tasks
 
 The following tasks are defined (case matters):
-
 {% for nettest in nettests %}
-- `"{{ nettest.key.to_pascal_case() }}"`: [{{ nettest.docs }}](
-  {{ nettest.reference_url }}).
+- `"{{ nettest.key.to_pascal_case() }}"`: [{{ nettest.docs | string | wordwrap }}](
+  {{ nettest.reference_url }})
 {% endfor %}
-
 By following the links provided above, you can read detailed documentation on
 the purpose of each task. The documentation also describes the JSON schema used
 by each task to represent its results. As mentioned below, tasks results are
@@ -91,103 +88,71 @@ The task settings is a JSON like:
 
 ```JSON
 {
-  "annotations": {
-    "an_annotation": "with its value",
-    "another_annotation": "with its specific value"
-  },
-  "disabled_events": [
-    "status.queued",
-    "status.started"
-  ],
-  "inputs": [
-    "www.google.com",
-    "www.x.org"
-  ],
-  "input_filepaths": [
-    "/path/to/file",
-    "/path/to/another/file"
-  ],
-  "log_filepath": "logfile.txt",
-  "log_level": "INFO",
-  "name": "WebConnectivity",
-  "options": {
-    "bouncer_base_url": "",
-    "collector_base_url": "",
-    "dns/nameserver": "",
-    "dns/engine": "system",
-    "geoip_asn_path": "",
-    "geoip_country_path": "",
-    "ignore_bouncer_error": 1,
-    "ignore_open_report_error": 1,
-    "max_runtime": -1.0,
-    "net/ca_bundle_path": "",
-    "net/timeout": 10.0,
-    "no_bouncer": 0,
-    "no_collector": 0,
-    "no_asn_lookup": 0,
-    "no_cc_lookup": 0,
-    "no_ip_lookup": 0,
-    "no_file_report": 0,
-    "no_resolver_lookup": 0,
-    "probe_asn": "",
-    "probe_cc": "",
-    "probe_ip": "",
-    "randomize_input": 1,
-    "save_real_probe_asn": 1,
-    "save_real_probe_cc": 1,
-    "save_real_probe_ip": 0,
-    "save_real_resolver_ip": 1,
-    "software_name": "measurement_kit",
-    "software_version": "<current-mk-version>"
-  },
-  "output_filepath": "results.njson"
-}
+{% for setting in settings %}  "{{ setting.key }}": {{ setting.base_type.example(setting.key | string) }}{{ ",\n" if not loop.end }}{% endfor %}}
 ```
 
-The only mandatory key is `name`, which identifies the task. All the other
-keys are optional. Above we have shown the most commonly used `options`, that
-are described in greater detail below. The value we included for options
-is their default value (_however_, the value of non-`options` settings _is not_
-the default value, rather is a meaningful example). The following keys
-are available:
+The only mandatory key is `name`, which identifies the task. The possible
+task names have already been described above.
 
+All the other keys are optional. We have omitted the context of the `options`
+field, which is described in great detail below. The following keys are
+available:
 {% for setting in settings %}
-- `"{{ setting.key }}"`: ({{ setting.base_type.decl("docs") }}) {{ setting.docs }}
+- `"{{ setting.key }}"`: ({{ setting.base_type.decl("docs") }})
+{{ setting.docs | string | wordwrap }}
 {% endfor %}
+In the following sections, we will describe in greater detail the available
+log levels, options, and events.
 
 ## Log levels
 
 The available log levels are:
-
 {% for log_level in log_levels %}
-- `"{{ log_level.key.to_snake_case_upper() }}"`: {{ log_level.docs }}
+- `"{{ log_level.key.to_snake_case_upper() }}"`: {{ log_level.docs }}.
 {% endfor %}
-
 When you specify a log level in the settings, only messages with a log level
 equal or greater than the specified one are emitted. For example, if you
 specify `"INFO"`, you will only see `"ERR"`, `"WARNING"`, and `"INFO"` logs.
 
 ## Options
 
-Options can be `string`, `float`, or `int`. There is not boolean type, and
-we use `int`s with boolean semantics in some cases, with the usual convention
-that `0` means false and non-`0` means true.
+Options are actually settings. They are distinct in this specification for
+implementation reasons. However, higher level APIs SHOULD present options and
+settings as a single class containing all the values that can be set.
 
-These are the available options:
+Options can be `string`, `float`, or `int`. There is no boolean type: we use
+`int`s with boolean semantics in some cases, with the usual convention that `0`
+means false and non-`0` (typically `1`) means true.
 
+These are the available options that affect all nettests:
 {% for option in options %}
-- `"{{ option.key }}"`: ({{ option.base_type.decl("docs") }}) {{ option.docs }}
+- `"{{ option.key }}"`: ({{ option.base_type.decl("docs") }})
+{{ option.docs | string | wordwrap }}
 {% endfor %}
+The following is an example JSON where all the common options that affect
+all nettests have been listed along with their default value:
+
+```JSON
+{
+{% for option in options %}  "{{ option.key }}": {{ option.base_type.default_value("docs") }}{{ ",\n" if not loop.end }}{% endfor %}}
+```
+
+We will now proceed to describe the options specific to each test.
+{% for nettest in nettests if nettest.options is not none %}
+### {{ nettest.key.to_pascal_case() }} options
+{% for option in nettest.options %}
+- `"{{ option.key }}"`: ({{ option.base_type.decl("docs") }})
+{{ option.docs | string | wordwrap }} Default value: {{ option.base_type.default_value("docs") }}.{% endfor %}{% endfor %}
 
 ## Events
 
 An event is a JSON object like:
 
 ```JSON
-  {
-    "key": "<key>",
-    "value": {}
-  }
+{
+  "key": "<key>",
+  "value": {}
+}
 ```
 
 Where `"value"` is a JSON object with an event-specific structure, and `"key"`
@@ -197,22 +162,20 @@ an arbitrary number of times during the lifecycle of a task. Unless otherwise
 specified, all the keys introduced below where added in MK v0.9.0.
 
 The following events are defined:
-
 {%for event in events %}
 - `"{{ event.key }}"`: (object) [documentation](#{{ event.key|replace(".", "") }})
 {% endfor %}
-
 Below we provide a detailed description of each event.
-
 {%for event in events %}
 ### {{ event.key }}
 
-{{ event.docs }}
+{{ event.docs | string | wordwrap }}
 
 {% if event.attributes|length > 0 %}This event includes the following attributes:
 {% for attribute in event.attributes %}
-1. `"{{ attribute.key }}"`: ({{ attribute.base_type.decl("docs") }}) {{ attribute.docs }}{% endfor %}{% endif %}
-
+1. `"{{ attribute.key }}"`: ({{ attribute.base_type.decl("docs") }})
+{{ attribute.docs | string | wordwrap }}
+{% endfor %}{% endif %}
 The JSON returned by this event is like:
 
 ```JSON

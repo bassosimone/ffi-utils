@@ -47,6 +47,9 @@ class Type(object):
     def from_json_cast(self, language):
         return ""
 
+    def example(self, context):
+        raise NotImplementedError
+
 class Bool(Type):
     def __init__(self, value=False):
         super().__init__()
@@ -74,6 +77,9 @@ class Bool(Type):
             "cxx": "(bool)",
         }[language]
 
+    def example(self, context):
+        return "false"
+
 class Double(Type):
     def __init__(self, value=0.0):
         super().__init__()
@@ -90,6 +96,9 @@ class Double(Type):
             "cxx": self._value,
             "docs": self._value,
         }[language]
+
+    def example(self, context):
+        return "0.0"
 
 class Int64(Type):
     def __init__(self, value=0):
@@ -108,6 +117,9 @@ class Int64(Type):
             "docs": self._value,
         }[language]
 
+    def example(self, context):
+        return "0"
+
 class String(Type):
     def __init__(self, value=""):
         super().__init__()
@@ -125,6 +137,13 @@ class String(Type):
             "docs": json.dumps(self._value),
         }[language]
 
+    def example(self, context):
+        return json.dumps({
+            "log_filepath": "logfile.txt",
+            "log_level": "INFO",
+            "output_filepath": "results.njson",
+        }.get(context, ""))
+
 class MapStringString(Type):
     def __init__(self):
         super().__init__()
@@ -140,6 +159,14 @@ class MapStringString(Type):
             "cxx": "{}",
             "docs": "{}",
         }[language]
+
+    def example(self, context):
+        return json.dumps({
+            "annotations": {
+                "campaign": "example",
+                "city": "Rome",
+            }
+        }.get(context, dict()))
 
 class VectorString(Type):
     def __init__(self):
@@ -157,6 +184,13 @@ class VectorString(Type):
             "docs": "[]",
         }[language]
 
+    def example(self, context):
+        return json.dumps({
+            "disabled_events": ["log", "measurement"],
+            "inputs": ["www.google.com", "www.kernel.org"],
+            "input_filepaths": ["./list-1.txt", "./list-7.txt", "./list-4.txt"],
+        }.get(context, list()))
+
 class Options(Type):
     def __init__(self):
         super().__init__()
@@ -171,12 +205,18 @@ class Options(Type):
             "docs": "{}",
         }[language]
 
+    def example(self, context):
+        return json.dumps({})
+
 class Name(String):
 
     def decl(self, language):
         return {
             "docs": "string; mandatory",
         }[language]
+
+    def example(self, context):
+        return json.dumps("WebConnectivity")
 
 class Attribute(object):
     def __init__(self, docs, base_type, key, low_level=False):

@@ -20,12 +20,13 @@ we have implemented for several languages. Specifically:
 
 Measurement Kit is a network measurement engine. By default, as mentioned,
 it exposes a FFI friendly C like API. To use this API, include
-`<measurement_kit/ffi.h>`. See also the API documentation available
+`<measurement_kit/ffi/ffi.h>`. See also the API documentation available
 at [codedocs.xyz/measurement-kit/measurement-kit](
 https://codedocs.xyz/measurement-kit/measurement-kit).
 
-The FFI API allows you to run _tasks_. In most cases tasks are network
-measurement tests, like [OONI's Web Connectivity](
+The FFI API allows you to run network tests (nettests). In the context of this
+API, network tests are called _tasks_ (but the name is probably poised to
+change before v1.0.0). Example tasks are [OONI's Web Connectivity](
 https://github.com/ooni/spec/blob/master/test-specs/ts-017-web-connectivity.md
 ) or the [Network Diagnostic Test](
 https://github.com/ooni/spec/blob/master/test-specs/ts-022-ndt.md).
@@ -35,7 +36,7 @@ _settings_ as a serialized JSON string.  All settings are optional,
 except for the `name` of the task.  Ideally, you should have high
 level code where the settings are a class that gets serialized to
 a JSON string. This is, for example, what we do in the higher-level
-[C++14 API](cxx14.hpp).
+APIs mentioned above.
 
 Once started, a task will emit _events_. There are several kind of
 events, the most common of which is `"log"` that identifies a log
@@ -48,8 +49,8 @@ The task runs in a separate thread and posts events on a queue. You extract
 events from such queue using `mk_task_wait_for_next_event`. This is a _blocking_
 function that returns when a new event is posted into the queue. To
 process an event, use `mk_event_serialize` to obtain its JSON serialization,
-then parse the JSON into some high level data structure, and process it. See,
-again, the [C++14 API](cxx14.hpp) events processing code to have an idea of
+then parse the JSON into some high level data structure, and process it. See
+the [C++14](../nettest/nettest.hpp) events processing code to have an idea of
 how this could be implemented. (Or, if we have already written an API that
 does that works for your use case, perhaps just use such API.)
 
@@ -66,55 +67,51 @@ respectively, `mk_event_destroy` and `mk_task_destroy`.
 
 You can find working examples of usage of the FFI API inside the
 [example/ffi](../../example/ffi) directory. Another usage example of
-the FFI API is [cxx14.hpp](cxx14.hpp). In such file, we wrap the FFI API
-into a more-user-friendly C++14 interface, by mapping each event to
-a class. Specifically, it may be of interest to read how we
-process events in the `run()` and `process_event()` functions.
+the FFI API is [nettest.hpp](../nettest/nettest.hpp), where we wrap the
+FFI API into a more-user-friendly C++11 interface.
 
 ## Tasks
 
 The following tasks are defined (case matters):
 
-
 - `"CaptivePortal"`: [OONI's captive portal test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-010-captive-portal.md).
+  https://github.com/ooni/spec/blob/master/test-specs/ts-010-captive-portal.md)
 
 - `"Dash"`: [Neubot's DASH test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-021-dash.md).
+  https://github.com/ooni/spec/blob/master/test-specs/ts-021-dash.md)
 
 - `"DnsInjection"`: [OONI's DNS injection test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-012-dns-injection.md).
+  https://github.com/ooni/spec/blob/master/test-specs/ts-012-dns-injection.md)
 
 - `"FacebookMessenger"`: [OONI's Facebook Messenger test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-019-facebook-messenger.md).
+  https://github.com/ooni/spec/blob/master/test-specs/ts-019-facebook-messenger.md)
 
 - `"HttpHeaderFieldManipulation"`: [OONI's HTTP header field manipulation test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-006-header-field-manipulation.md).
+  https://github.com/ooni/spec/blob/master/test-specs/ts-006-header-field-manipulation.md)
 
 - `"HttpInvalidRequestLine"`: [OONI's HTTP invalid request line test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-007-http-invalid-request-line.md).
+  https://github.com/ooni/spec/blob/master/test-specs/ts-007-http-invalid-request-line.md)
 
 - `"MeekFrontedRequests"`: [OONI's meek fronted requests test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-014-meek-fronted-requests.md).
+  https://github.com/ooni/spec/blob/master/test-specs/ts-014-meek-fronted-requests.md)
 
 - `"MultiNdt"`: [the multi NDT network performance test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-022-ndt.md).
+  https://github.com/ooni/spec/blob/master/test-specs/ts-022-ndt.md)
 
 - `"Ndt"`: [the NDT network performance test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-022-ndt.md).
+  https://github.com/ooni/spec/blob/master/test-specs/ts-022-ndt.md)
 
 - `"TcpConnect"`: [OONI's TCP connect test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-008-tcp-connect.md).
+  https://github.com/ooni/spec/blob/master/test-specs/ts-008-tcp-connect.md)
 
 - `"Telegram"`: [OONI's Telegram test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-020-telegram.md).
+  https://github.com/ooni/spec/blob/master/test-specs/ts-020-telegram.md)
 
 - `"WebConnectivity"`: [OONI's Web Connectivity test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-017-web-connectivity.md).
+  https://github.com/ooni/spec/blob/master/test-specs/ts-017-web-connectivity.md)
 
 - `"Whatsapp"`: [OONI's WhatsApp test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-018-whatsapp.md).
-
+  https://github.com/ooni/spec/blob/master/test-specs/ts-018-whatsapp.md)
 
 By following the links provided above, you can read detailed documentation on
 the purpose of each task. The documentation also describes the JSON schema used
@@ -127,101 +124,69 @@ The task settings is a JSON like:
 
 ```JSON
 {
-  "annotations": {
-    "an_annotation": "with its value",
-    "another_annotation": "with its specific value"
-  },
-  "disabled_events": [
-    "status.queued",
-    "status.started"
-  ],
-  "inputs": [
-    "www.google.com",
-    "www.x.org"
-  ],
-  "input_filepaths": [
-    "/path/to/file",
-    "/path/to/another/file"
-  ],
+  "annotations": {"campaign": "example", "city": "Rome"},
+  "disabled_events": ["log", "measurement"],
+  "inputs": ["www.google.com", "www.kernel.org"],
+  "input_filepaths": ["./list-1.txt", "./list-7.txt", "./list-4.txt"],
   "log_filepath": "logfile.txt",
   "log_level": "INFO",
   "name": "WebConnectivity",
-  "options": {
-    "bouncer_base_url": "",
-    "collector_base_url": "",
-    "dns/nameserver": "",
-    "dns/engine": "system",
-    "geoip_asn_path": "",
-    "geoip_country_path": "",
-    "ignore_bouncer_error": 1,
-    "ignore_open_report_error": 1,
-    "max_runtime": -1.0,
-    "net/ca_bundle_path": "",
-    "net/timeout": 10.0,
-    "no_bouncer": 0,
-    "no_collector": 0,
-    "no_asn_lookup": 0,
-    "no_cc_lookup": 0,
-    "no_ip_lookup": 0,
-    "no_file_report": 0,
-    "no_resolver_lookup": 0,
-    "probe_asn": "",
-    "probe_cc": "",
-    "probe_ip": "",
-    "randomize_input": 1,
-    "save_real_probe_asn": 1,
-    "save_real_probe_cc": 1,
-    "save_real_probe_ip": 0,
-    "save_real_resolver_ip": 1,
-    "software_name": "measurement_kit",
-    "software_version": "<current-mk-version>"
-  },
-  "output_filepath": "results.njson"
+  "options": {},
+  "output_filepath": "results.njson",
 }
 ```
 
-The only mandatory key is `name`, which identifies the task. All the other
-keys are optional. Above we have shown the most commonly used `options`, that
-are described in greater detail below. The value we included for options
-is their default value (_however_, the value of non-`options` settings _is not_
-the default value, rather is a meaningful example). The following keys
-are available:
+The only mandatory key is `name`, which identifies the task. The possible
+task names have already been described above.
 
+All the other keys are optional. We have omitted the context of the `options`
+field, which is described in great detail below. The following keys are
+available:
 
-- `"annotations"`: (object) Optional annotations (i.e. key, value string pairs) that will be included into the JSON report sent to the OONI collector.
+- `"annotations"`: (object)
+Optional annotations (i.e. key, value string pairs) that will be included into
+the JSON report sent to the OONI collector.
 
-- `"disabled_events"`: (array) List of events that will not be emitted.
+- `"disabled_events"`: (array)
+List of events that will not be emitted.
 
-- `"inputs"`: (array) List of URLs or domains required by the test.
+- `"inputs"`: (array)
+List of URLs or domains required by the test.
 
-- `"input_filepaths"`: (array) List of files from which to read inputs.
+- `"input_filepaths"`: (array)
+List of files from which to read inputs.
 
-- `"log_filepath"`: (string) File where to write log messages.
+- `"log_filepath"`: (string)
+File where to write log messages.
 
-- `"log_level"`: (string) Type of log messages you are interested into.
+- `"log_level"`: (string)
+Type of log messages you are interested into.
 
-- `"name"`: (string; mandatory) Name of the network test to run.
+- `"name"`: (string; mandatory)
+Name of the network test to run.
 
-- `"options"`: (object) Optional variables influencing the nettest behavior.
+- `"options"`: (object)
+Optional variables influencing the nettest behavior.
 
-- `"output_filepath"`: (string) File where to write the nettest results.
+- `"output_filepath"`: (string)
+File where to write the nettest results.
 
+In the following sections, we will describe in greater detail the available
+log levels, options, and events.
 
 ## Log levels
 
 The available log levels are:
 
+- `"ERR"`: Only emit error messages.
 
-- `"ERR"`: Only emit error messages
+- `"WARNING"`: Also emit warning messages.
 
-- `"WARNING"`: Also emit warning messages
+- `"INFO"`: Also emit informational messages.
 
-- `"INFO"`: Also emit informational messages
+- `"DEBUG"`: Also emit debug messages.
 
-- `"DEBUG"`: Also emit debug messages
-
-- `"DEBUG2"`: Emit all log messages
-
+- `"DEBUG2"`: Emit all log messages.
 
 When you specify a log level in the settings, only messages with a log level
 equal or greater than the specified one are emitted. For example, if you
@@ -229,79 +194,194 @@ specify `"INFO"`, you will only see `"ERR"`, `"WARNING"`, and `"INFO"` logs.
 
 ## Options
 
-Options can be `string`, `float`, or `int`. There is not boolean type, and
-we use `int`s with boolean semantics in some cases, with the usual convention
-that `0` means false and non-`0` means true.
+Options are actually settings. They are distinct in this specification for
+implementation reasons. However, higher level APIs SHOULD present options and
+settings as a single class containing all the values that can be set.
 
-These are the available options:
+Options can be `string`, `float`, or `int`. There is no boolean type: we use
+`int`s with boolean semantics in some cases, with the usual convention that `0`
+means false and non-`0` (typically `1`) means true.
 
+These are the available options that affect all nettests:
 
-- `"bouncer_base_url"`: (string) Base URL of the OONI bouncer. This base URL is used to construct the full URL required to contact the OONI bouncer and get test specific info like test helpers and test collectors.
+- `"bouncer_base_url"`: (string)
+Base URL of the OONI bouncer. This base URL is used to construct the full URL
+required to contact the OONI bouncer and get test specific info like test
+helpers and test collectors.
 
-- `"collector_base_url"`: (string) Base URL of the OONI collector. This base URL is used to construct the full URL required to contact manage the report submission with the collector. By default this option is not set because we use the bouncer to retrieve the collector base URL.
+- `"collector_base_url"`: (string)
+Base URL of the OONI collector. This base URL is used to construct the full URL
+required to contact manage the report submission with the collector. By default
+this option is not set because we use the bouncer to retrieve the collector
+base URL.
 
-- `"dns/nameserver"`: (string) DNS resolver IP address. By setting this option you will force MK to use that DNS resolver for resolving domain names to IP addresses. For this setting to work you should use a DNS engine different from the "system" engine. By default this option is not set, as we use the system engine as our default DNS engine.
+- `"dns/nameserver"`: (string)
+DNS resolver IP address. By setting this option you will force MK to use that
+DNS resolver for resolving domain names to IP addresses. For this setting to
+work you should use a DNS engine different from the "system" engine. By default
+this option is not set, as we use the system engine as our default DNS engine.
 
-- `"dns/engine"`: (string) What DNS engine to use. The "system" engine implies that `getaddrinfo()` is used. If you set this setting to "libevent" and you also configure the "dns/nameserver" option, MK will use libevent and the specified nameserver to resolve domain names.
+- `"dns/engine"`: (string)
+What DNS engine to use. The "system" engine implies that `getaddrinfo()` is
+used. If you set this setting to "libevent" and you also configure the
+"dns/nameserver" option, MK will use libevent and the specified nameserver to
+resolve domain names.
 
-- `"geoip_asn_path"`: (string) Path to the GeoIP ASN (Autonomous System Number) database file. By default this option is empty. If you do not change this option to contain the path to a suitable database file, MK will not be able to map the user's IP address to an ASN.
+- `"geoip_asn_path"`: (string)
+Path to the GeoIP ASN (Autonomous System Number) database file. By default this
+option is empty. If you do not change this option to contain the path to a
+suitable database file, MK will not be able to map the user's IP address to an
+ASN.
 
-- `"geoip_country_path"`: (string) Path to the GeoIP country database file. By default this option is empty. If you do not change it to contain the path to a suitable database file, MK will not be able to map the user's IP to a country code.
+- `"geoip_country_path"`: (string)
+Path to the GeoIP country database file. By default this option is empty. If
+you do not change it to contain the path to a suitable database file, MK will
+not be able to map the user's IP to a country code.
 
-- `"ignore_bouncer_error"`: (int) Whether to ignore bouncer errors. If this option is true, then MK will not stop after failing to contact the OONI bouncer. Without the information provided by the bouncer, OONI tests that require a test helper will certainly fail, while other tests will just fail to submit their results to a collector, unless you manually configure a collector base URL.
+- `"ignore_bouncer_error"`: (int)
+Whether to ignore bouncer errors. If this option is true, then MK will not stop
+after failing to contact the OONI bouncer. Without the information provided by
+the bouncer, OONI tests that require a test helper will certainly fail, while
+other tests will just fail to submit their results to a collector, unless you
+manually configure a collector base URL.
 
-- `"ignore_open_report_error"`: (int) Whether to ignore errors opening the report with the OONI collector.
+- `"ignore_open_report_error"`: (int)
+Whether to ignore errors opening the report with the OONI collector.
 
-- `"max_runtime"`: (float) Max run time for nettests taking input. When you are running a nettest taking input, the test will stop after the number of seconds specified by this option has passed (plus some extra time required to interrupt the testing engine). Setting this option to a negative value lets the test run as long as necessary to exhaust its input list.
+- `"max_runtime"`: (float)
+Max run time for nettests taking input. When you are running a nettest taking
+input, the test will stop after the number of seconds specified by this option
+has passed (plus some extra time required to interrupt the testing engine).
+Setting this option to a negative value lets the test run as long as necessary
+to exhaust its input list.
 
-- `"net/ca_bundle_path"`: (string) Path to the CA used to validate SSL certificates. This is not necessary where we use LibreSSL, because in such cases we include a CA bundle directly inside of the MK binary. This happens for Android, iOS, and Windows systems. If this option is not set and we're not using LibreSSL, then attempting to connect to any website using HTTPS will fail.
+- `"net/ca_bundle_path"`: (string)
+Path to the CA used to validate SSL certificates. This is not necessary where
+we use LibreSSL, because in such cases we include a CA bundle directly inside
+of the MK binary. This happens for Android, iOS, and Windows systems. If this
+option is not set and we're not using LibreSSL, then attempting to connect to
+any website using HTTPS will fail.
 
-- `"net/timeout"`: (float) Number of seconds after which network I/O operations (i.e. connect, recv, send) will timeout and return an error.
+- `"net/timeout"`: (float)
+Number of seconds after which network I/O operations (i.e. connect, recv, send)
+will timeout and return an error.
 
-- `"no_bouncer"`: (int) Whether to avoid using a bouncer. Not using a bouncer means we will not discover the base URL of a suitable collector and of test helpers. OONI tests that require test helpers will fail if you disable the bouncer. Other tests will just not be able to submit results to a collector, unless you manually configure a collector base URL.
+- `"no_bouncer"`: (int)
+Whether to avoid using a bouncer. Not using a bouncer means we will not
+discover the base URL of a suitable collector and of test helpers. OONI tests
+that require test helpers will fail if you disable the bouncer. Other tests
+will just not be able to submit results to a collector, unless you manually
+configure a collector base URL.
 
-- `"no_collector"`: (int) Whether to avoid using a collector. If true, it means that the test results are not submitted to a collector (by default the OONI collector) for archival or publishing purposes. All measurements submitted to the OONI collector are published within a few business days.
+- `"no_collector"`: (int)
+Whether to avoid using a collector. If true, it means that the test results are
+not submitted to a collector (by default the OONI collector) for archival or
+publishing purposes. All measurements submitted to the OONI collector are
+published within a few business days.
 
-- `"no_asn_lookup"`: (int) Whether to avoid the the user's ASN (Autonomous System Number) lookup.
+- `"no_asn_lookup"`: (int)
+Whether to avoid the the user's ASN (Autonomous System Number) lookup.
 
-- `"no_cc_lookup"`: (int) Whether to avoid the user's country code lookup.
+- `"no_cc_lookup"`: (int)
+Whether to avoid the user's country code lookup.
 
-- `"no_ip_lookup"`: (int) Whether to avoid looking up the user's IP. Not knowing it prevents us from looking up the ASN (Autonomous System Number) and the country code. Most importantly, this also prevents us from attempting to scrub the IP address from measurements results, which may be a concern for censorship tests.
+- `"no_ip_lookup"`: (int)
+Whether to avoid looking up the user's IP. Not knowing it prevents us from
+looking up the ASN (Autonomous System Number) and the country code. Most
+importantly, this also prevents us from attempting to scrub the IP address from
+measurements results, which may be a concern for censorship tests.
 
-- `"no_file_report"`: (int) Whether to avoid writing a report file to disk.
+- `"no_file_report"`: (int)
+Whether to avoid writing a report file to disk.
 
-- `"no_resolver_lookup"`: (int) Whether to avoid looking up the resolver IP address.
+- `"no_resolver_lookup"`: (int)
+Whether to avoid looking up the resolver IP address.
 
-- `"probe_asn"`: (string) The ASN (Autonomous System Number) in which we are. If you set this, we will of course skip the user's ASN lookup.
+- `"probe_asn"`: (string)
+The ASN (Autonomous System Number) in which we are. If you set this, we will of
+course skip the user's ASN lookup.
 
-- `"probe_cc"`: (string) The country code in which we are. If you set this, we will of course skip the user's country code lookup.
+- `"probe_cc"`: (string)
+The country code in which we are. If you set this, we will of course skip the
+user's country code lookup.
 
-- `"probe_ip"`: (string) The user's IP. If you set this, we will of course skip the user's IP lookup.
+- `"probe_ip"`: (string)
+The user's IP. If you set this, we will of course skip the user's IP lookup.
 
-- `"randomize_input"`: (int) Whether to randomize the provided input.
+- `"randomize_input"`: (int)
+Whether to randomize the provided input.
 
-- `"save_real_probe_asn"`: (int) Whether to save the user's ASN (Autonomous System Number) in the report.
+- `"save_real_probe_asn"`: (int)
+Whether to save the user's ASN (Autonomous System Number) in the report.
 
-- `"save_real_probe_cc"`: (int) Whether to save the user's country code in the report.
+- `"save_real_probe_cc"`: (int)
+Whether to save the user's country code in the report.
 
-- `"save_real_probe_ip"`: (int) Whether to save the user's IP in the report.
+- `"save_real_probe_ip"`: (int)
+Whether to save the user's IP in the report.
 
-- `"save_real_resolver_ip"`: (int) Whether to save the user's resolver IP in the report.
+- `"save_real_resolver_ip"`: (int)
+Whether to save the user's resolver IP in the report.
 
-- `"software_name"`: (string) Name of the application.
+- `"software_name"`: (string)
+Name of the application.
 
-- `"software_version"`: (string) Version of the application. By default this is an empty string. If you do not set this variable, the current MK version will be used.
+- `"software_version"`: (string)
+Version of the application. By default this is an empty string. If you do not
+set this variable, the current MK version will be used.
 
+The following is an example JSON where all the common options that affect
+all nettests have been listed along with their default value:
+
+```JSON
+{
+  "bouncer_base_url": "https://bouncer.ooni.io",
+  "collector_base_url": "",
+  "dns/nameserver": "",
+  "dns/engine": "system",
+  "geoip_asn_path": "",
+  "geoip_country_path": "",
+  "ignore_bouncer_error": 1,
+  "ignore_open_report_error": 1,
+  "max_runtime": -1.0,
+  "net/ca_bundle_path": "",
+  "net/timeout": 10.0,
+  "no_bouncer": 0,
+  "no_collector": 0,
+  "no_asn_lookup": 0,
+  "no_cc_lookup": 0,
+  "no_ip_lookup": 0,
+  "no_file_report": 0,
+  "no_resolver_lookup": 0,
+  "probe_asn": "",
+  "probe_cc": "",
+  "probe_ip": "",
+  "randomize_input": 1,
+  "save_real_probe_asn": 1,
+  "save_real_probe_cc": 1,
+  "save_real_probe_ip": 0,
+  "save_real_resolver_ip": 1,
+  "software_name": "measurement_kit",
+  "software_version": "",
+}
+```
+
+We will now proceed to describe the options specific to each test.
+
+### Whatsapp options
+
+- `"all_endpoints"`: (int)
+Whether to check all WhatsApp endpoints. Default value: 0.
 
 ## Events
 
 An event is a JSON object like:
 
 ```JSON
-  {
-    "key": "<key>",
-    "value": {}
-  }
+{
+  "key": "<key>",
+  "value": {}
+}
 ```
 
 Where `"value"` is a JSON object with an event-specific structure, and `"key"`
@@ -311,7 +391,6 @@ an arbitrary number of times during the lifecycle of a task. Unless otherwise
 specified, all the keys introduced below where added in MK v0.9.0.
 
 The following events are defined:
-
 
 - `"failure.asn_lookup"`: (object) [documentation](#failureasn_lookup)
 
@@ -363,9 +442,7 @@ The following events are defined:
 
 - `"task_terminated"`: (object) [documentation](#task_terminated)
 
-
 Below we provide a detailed description of each event.
-
 
 ### failure.asn_lookup
 
@@ -373,7 +450,8 @@ We could not lookup the ASN (Autonomous System Number) from the user's IP.
 
 This event includes the following attributes:
 
-1. `"failure"`: (string) The specific error that occurred.
+1. `"failure"`: (string)
+The specific error that occurred.
 
 The JSON returned by this event is like:
 
@@ -392,7 +470,8 @@ We could not lookup the country code from the user's IP.
 
 This event includes the following attributes:
 
-1. `"failure"`: (string) The specific error that occurred.
+1. `"failure"`: (string)
+The specific error that occurred.
 
 The JSON returned by this event is like:
 
@@ -411,7 +490,8 @@ We could not lookup the user IP address.
 
 This event includes the following attributes:
 
-1. `"failure"`: (string) The specific error that occurred.
+1. `"failure"`: (string)
+The specific error that occurred.
 
 The JSON returned by this event is like:
 
@@ -430,7 +510,8 @@ There was a failure running the measurement.
 
 This event includes the following attributes:
 
-1. `"failure"`: (string) The specific error that occurred.
+1. `"failure"`: (string)
+The specific error that occurred.
 
 The JSON returned by this event is like:
 
@@ -445,13 +526,19 @@ The JSON returned by this event is like:
 
 ### failure.measurement_submission
 
-There was a failure in submitting the measurement result to the configured collector.
+There was a failure in submitting the measurement result to the configured
+collector.
 
 This event includes the following attributes:
 
-1. `"failure"`: (string) The specific error that occurred.
-1. `"idx"`: (int) Index of the measurement that failed
-1. `"json_str"`: (string) Measurement that we could not submit as a serialized JSON.
+1. `"failure"`: (string)
+The specific error that occurred.
+
+1. `"idx"`: (int)
+Index of the measurement that failed
+
+1. `"json_str"`: (string)
+Measurement that we could not submit as a serialized JSON.
 
 The JSON returned by this event is like:
 
@@ -468,11 +555,13 @@ The JSON returned by this event is like:
 
 ### failure.report_create
 
-There was a failure in getting an ID for submitting results from the configured collector.
+There was a failure in getting an ID for submitting results from the configured
+collector.
 
 This event includes the following attributes:
 
-1. `"failure"`: (string) The specific error that occurred.
+1. `"failure"`: (string)
+The specific error that occurred.
 
 The JSON returned by this event is like:
 
@@ -487,11 +576,13 @@ The JSON returned by this event is like:
 
 ### failure.report_close
 
-There was a failure in telling the configured collector that all the measurements related to a specific ID have now been performed.
+There was a failure in telling the configured collector that all the
+measurements related to a specific ID have now been performed.
 
 This event includes the following attributes:
 
-1. `"failure"`: (string) The specific error that occurred.
+1. `"failure"`: (string)
+The specific error that occurred.
 
 The JSON returned by this event is like:
 
@@ -510,7 +601,8 @@ There was a failure attempting to lookup the user DNS resolver IP address.
 
 This event includes the following attributes:
 
-1. `"failure"`: (string) The specific error that occurred.
+1. `"failure"`: (string)
+The specific error that occurred.
 
 The JSON returned by this event is like:
 
@@ -525,11 +617,13 @@ The JSON returned by this event is like:
 
 ### failure.startup
 
-There was a failure in starting the nettest, most likely because you passed incorrect options. See the logs for more information of what went wrong.
+There was a failure in starting the nettest, most likely because you passed
+incorrect options. See the logs for more information of what went wrong.
 
 This event includes the following attributes:
 
-1. `"failure"`: (string) The specific error that occurred.
+1. `"failure"`: (string)
+The specific error that occurred.
 
 The JSON returned by this event is like:
 
@@ -548,8 +642,11 @@ A log line that was emitted.
 
 This event includes the following attributes:
 
-1. `"log_level"`: (string) The log level as a string (e.g. "INFO").
-1. `"message"`: (string) The log message.
+1. `"log_level"`: (string)
+The log level as a string (e.g. "INFO").
+
+1. `"message"`: (string)
+The log message.
 
 The JSON returned by this event is like:
 
@@ -569,8 +666,11 @@ The result of a measurement.
 
 This event includes the following attributes:
 
-1. `"idx"`: (int) Index of the current measurement
-1. `"json_str"`: (string) The measurement result as a serialized JSON.
+1. `"idx"`: (int)
+Index of the current measurement
+
+1. `"json_str"`: (string)
+The measurement result as a serialized JSON.
 
 The JSON returned by this event is like:
 
@@ -586,13 +686,22 @@ The JSON returned by this event is like:
 
 ### status.end
 
-Event emitted once at the end of the nettest. This event is always emitted, regardless of whether the nettest naturally reaches its end or is interrupted. As such, you can rely on this event as a "once" suitable for releasing all the extra resources you may have allocated as part of the nettest lifecyle.
+Event emitted once at the end of the nettest. This event is always emitted,
+regardless of whether the nettest naturally reaches its end or is interrupted.
+As such, you can rely on this event as a "once" suitable for releasing all the
+extra resources you may have allocated as part of the nettest lifecyle.
 
 This event includes the following attributes:
 
-1. `"downloaded_kb"`: (float) The number of KB downloaded during the test.
-1. `"uploaded_kb"`: (float) The number of KB uploaded during the test.
-1. `"failure"`: (string) The error that occurred. If no error occurred, then this variable will hold an empty string.
+1. `"downloaded_kb"`: (float)
+The number of KB downloaded during the test.
+
+1. `"uploaded_kb"`: (float)
+The number of KB uploaded during the test.
+
+1. `"failure"`: (string)
+The error that occurred. If no error occurred, then this variable will hold an
+empty string.
 
 The JSON returned by this event is like:
 
@@ -609,14 +718,22 @@ The JSON returned by this event is like:
 
 ### status.geoip_lookup
 
-Event emitted once, when we discover the geolocation of the user based on their IP address.
+Event emitted once, when we discover the geolocation of the user based on their
+IP address.
 
 This event includes the following attributes:
 
-1. `"probe_ip"`: (string) The user IP address
-1. `"probe_asn"`: (string) The user ASN (Autonomous System Number)
-1. `"probe_cc"`: (string) The user country code (CC).
-1. `"probe_network_name"`: (string) The descriptive name associated to the ASN
+1. `"probe_ip"`: (string)
+The user IP address
+
+1. `"probe_asn"`: (string)
+The user ASN (Autonomous System Number)
+
+1. `"probe_cc"`: (string)
+The user country code (CC).
+
+1. `"probe_network_name"`: (string)
+The descriptive name associated to the ASN
 
 The JSON returned by this event is like:
 
@@ -638,8 +755,11 @@ Emitted during the task lifecycle to indicate progress.
 
 This event includes the following attributes:
 
-1. `"percentage"`: (float) Percentage of completion of the task.
-1. `"message"`: (string) Optional message indicating what step is now complete.
+1. `"percentage"`: (float)
+Percentage of completion of the task.
+
+1. `"message"`: (string)
+Optional message indicating what step is now complete.
 
 The JSON returned by this event is like:
 
@@ -655,8 +775,9 @@ The JSON returned by this event is like:
 
 ### status.queued
 
-Emitted once to indicate that the tast has been submitted for running. Unless you run multiple test at the same time (which is discouraged), this event also implies that the test will be started immediately.
-
+Emitted once to indicate that the tast has been submitted for running. Unless
+you run multiple test at the same time (which is discouraged), this event also
+implies that the test will be started immediately.
 
 
 The JSON returned by this event is like:
@@ -671,12 +792,18 @@ The JSON returned by this event is like:
 
 ### status.measurement_start
 
-Emitted when we start a new measurement within a nettest. For nettests that do not require input, there is just a single measurement within a nettest. Otherwise, there is a measurement for each input provided to the nettest.
+Emitted when we start a new measurement within a nettest. For nettests that do
+not require input, there is just a single measurement within a nettest.
+Otherwise, there is a measurement for each input provided to the nettest.
 
 This event includes the following attributes:
 
-1. `"idx"`: (int) Index of the current measurement.
-1. `"input"`: (string) Input of the current measurement. For nettests that do not take input, this will be the empty string.
+1. `"idx"`: (int)
+Index of the current measurement.
+
+1. `"input"`: (string)
+Input of the current measurement. For nettests that do not take input, this
+will be the empty string.
 
 The JSON returned by this event is like:
 
@@ -692,11 +819,13 @@ The JSON returned by this event is like:
 
 ### status.measurement_submission
 
-Emitted when the result of a measurement has been successfully submitted to the configured collector.
+Emitted when the result of a measurement has been successfully submitted to the
+configured collector.
 
 This event includes the following attributes:
 
-1. `"idx"`: (int) Index of the current measurement.
+1. `"idx"`: (int)
+Index of the current measurement.
 
 The JSON returned by this event is like:
 
@@ -711,11 +840,13 @@ The JSON returned by this event is like:
 
 ### status.measurement_done
 
-Emitted when a measurement is done. This is emitted regardless of whether there were any failures during the measurement.
+Emitted when a measurement is done. This is emitted regardless of whether there
+were any failures during the measurement.
 
 This event includes the following attributes:
 
-1. `"idx"`: (int) Index of the current measurement.
+1. `"idx"`: (int)
+Index of the current measurement.
 
 The JSON returned by this event is like:
 
@@ -730,11 +861,13 @@ The JSON returned by this event is like:
 
 ### status.report_close
 
-Emitted when we have notified the collector that we are done with running measurements with a specific report ID.
+Emitted when we have notified the collector that we are done with running
+measurements with a specific report ID.
 
 This event includes the following attributes:
 
-1. `"report_id"`: (string) Unique identifier of the nettest with the collector.
+1. `"report_id"`: (string)
+Unique identifier of the nettest with the collector.
 
 The JSON returned by this event is like:
 
@@ -749,11 +882,14 @@ The JSON returned by this event is like:
 
 ### status.report_create
 
-Emitted when we have notified the collector the intention to start submitting measurements. As part of this API call, we receive back a "report ID" to be used to submit subsequent measurements that we perform.
+Emitted when we have notified the collector the intention to start submitting
+measurements. As part of this API call, we receive back a "report ID" to be
+used to submit subsequent measurements that we perform.
 
 This event includes the following attributes:
 
-1. `"report_id"`: (string) Unique identifier of the nettest with the collector.
+1. `"report_id"`: (string)
+Unique identifier of the nettest with the collector.
 
 The JSON returned by this event is like:
 
@@ -772,7 +908,8 @@ Emitted once when we discover the user DNS resolver IP.
 
 This event includes the following attributes:
 
-1. `"ip_address"`: (string) IP address of the user resolver.
+1. `"ip_address"`: (string)
+IP address of the user resolver.
 
 The JSON returned by this event is like:
 
@@ -790,7 +927,6 @@ The JSON returned by this event is like:
 Emitted once when the nettest has started running.
 
 
-
 The JSON returned by this event is like:
 
 ```JSON
@@ -803,14 +939,24 @@ The JSON returned by this event is like:
 
 ### status.update_performance
 
-Status update regarding the currently ongoing network performance measurement. This event is, of course, only emitted by network tests that measure the network performance.
+Status update regarding the currently ongoing network performance measurement.
+This event is, of course, only emitted by network tests that measure the
+network performance.
 
 This event includes the following attributes:
 
-1. `"direction"`: (string) The direction of the performance measurement. Either 'download', for download measurements, or 'upload' for upload measurements.
-1. `"elapsed"`: (float) Seconds elapsed since the performance measurement was started.
-1. `"num_streams"`: (int) Number of parallel TCP streams being used.
-1. `"speed_kbps"`: (float) Speed measured in kbit/s.
+1. `"direction"`: (string)
+The direction of the performance measurement. Either 'download', for download
+measurements, or 'upload' for upload measurements.
+
+1. `"elapsed"`: (float)
+Seconds elapsed since the performance measurement was started.
+
+1. `"num_streams"`: (int)
+Number of parallel TCP streams being used.
+
+1. `"speed_kbps"`: (float)
+Speed measured in kbit/s.
 
 The JSON returned by this event is like:
 
@@ -832,8 +978,11 @@ Status update regarding the currently ongoing website censorship measurement.
 
 This event includes the following attributes:
 
-1. `"url"`: (string) URL that we are measuring.
-1. `"status"`: (string) Result of the measurement. Either "accessible" or "blocking".
+1. `"url"`: (string)
+URL that we are measuring.
+
+1. `"status"`: (string)
+Result of the measurement. Either "accessible" or "blocking".
 
 The JSON returned by this event is like:
 
@@ -849,8 +998,8 @@ The JSON returned by this event is like:
 
 ### task_terminated
 
-Emitted when a nettest is done and you attempt using the FFI API to extract more tasks from its queue.
-
+Emitted when a nettest is done and you attempt using the FFI API to extract
+more tasks from its queue.
 
 
 The JSON returned by this event is like:
