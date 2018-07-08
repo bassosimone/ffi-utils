@@ -46,6 +46,11 @@ class NettestHelper : public Task {
 
   // Make sure that settings are okay.
   bool check_settings(const nlohmann::json &settings) override;
+
+  {% for event in events %}
+    // Helper method to emit the {{ event.key }} event
+    void emit_{{ event.key.to_snake_case() }}({% for attribute in event.attributes %}{{ attribute.base_type.decl("cxx") }} {{ attribute.key.to_snake_case() }}{{ "," if not loop.last }} {% endfor %});
+  {% endfor %}
 };
 
 #ifndef MK_FFI_NETTEST_NO_INLINE_IMPL
@@ -176,6 +181,14 @@ bool NettestHelper::check_settings(const nlohmann::json &settings) {
 
   return true;
 }
+
+{% for event in events %}
+void NettestHelper::emit_{{ event.key.to_snake_case() }}({% for attribute in event.attributes %}{{ attribute.base_type.decl("cxx") }} {{ attribute.key.to_snake_case() }}{{ "," if not loop.last }} {% endfor %}) {
+  nlohmann::json doc; {% for attribute in event.attributes %} doc["value"]["{{ attribute.key }}"] = {{ attribute.key.to_snake_case() }};{% endfor %}
+  doc["key"] = "{{ event.key }}";
+  emit(std::move(doc));
+}
+{% endfor %}
 
 #endif  // MK_FFI_NETTEST_NO_INLINE_IMPL
 }  // namespace ffi

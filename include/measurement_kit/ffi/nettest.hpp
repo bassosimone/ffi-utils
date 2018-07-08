@@ -46,6 +46,86 @@ class NettestHelper : public Task {
 
   // Make sure that settings are okay.
   bool check_settings(const nlohmann::json &settings) override;
+
+  // Helper method to emit the failure.asn_lookup event
+  void emit_failure_asn_lookup(std::string failure);
+
+  // Helper method to emit the failure.cc_lookup event
+  void emit_failure_cc_lookup(std::string failure);
+
+  // Helper method to emit the failure.ip_lookup event
+  void emit_failure_ip_lookup(std::string failure);
+
+  // Helper method to emit the failure.measurement event
+  void emit_failure_measurement(std::string failure);
+
+  // Helper method to emit the failure.measurement_submission event
+  void emit_failure_measurement_submission(std::string failure, int64_t idx,
+                                           std::string json_str);
+
+  // Helper method to emit the failure.report_create event
+  void emit_failure_report_create(std::string failure);
+
+  // Helper method to emit the failure.report_close event
+  void emit_failure_report_close(std::string failure);
+
+  // Helper method to emit the failure.resolver_lookup event
+  void emit_failure_resolver_lookup(std::string failure);
+
+  // Helper method to emit the failure.startup event
+  void emit_failure_startup(std::string failure);
+
+  // Helper method to emit the log event
+  void emit_log(std::string log_level, std::string message);
+
+  // Helper method to emit the measurement event
+  void emit_measurement(int64_t idx, std::string json_str);
+
+  // Helper method to emit the status.end event
+  void emit_status_end(double downloaded_kb, double uploaded_kb,
+                       std::string failure);
+
+  // Helper method to emit the status.geoip_lookup event
+  void emit_status_geoip_lookup(std::string probe_ip, std::string probe_asn,
+                                std::string probe_cc,
+                                std::string probe_network_name);
+
+  // Helper method to emit the status.progress event
+  void emit_status_progress(double percentage, std::string message);
+
+  // Helper method to emit the status.queued event
+  void emit_status_queued();
+
+  // Helper method to emit the status.measurement_start event
+  void emit_status_measurement_start(int64_t idx, std::string input);
+
+  // Helper method to emit the status.measurement_submission event
+  void emit_status_measurement_submission(int64_t idx);
+
+  // Helper method to emit the status.measurement_done event
+  void emit_status_measurement_done(int64_t idx);
+
+  // Helper method to emit the status.report_close event
+  void emit_status_report_close(std::string report_id);
+
+  // Helper method to emit the status.report_create event
+  void emit_status_report_create(std::string report_id);
+
+  // Helper method to emit the status.resolver_lookup event
+  void emit_status_resolver_lookup(std::string ip_address);
+
+  // Helper method to emit the status.started event
+  void emit_status_started();
+
+  // Helper method to emit the status.update_performance event
+  void emit_status_update_performance(std::string direction, double elapsed,
+                                      int64_t num_streams, double speed_kbps);
+
+  // Helper method to emit the status.update.websites event
+  void emit_status_update_websites(std::string url, std::string status);
+
+  // Helper method to emit the task_terminated event
+  void emit_task_terminated();
 };
 
 #ifndef MK_FFI_NETTEST_NO_INLINE_IMPL
@@ -537,6 +617,205 @@ bool NettestHelper::check_settings(const nlohmann::json &settings) {
   }
 
   return true;
+}
+
+void NettestHelper::emit_failure_asn_lookup(std::string failure) {
+  nlohmann::json doc;
+  doc["value"]["failure"] = failure;
+  doc["key"] = "failure.asn_lookup";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_failure_cc_lookup(std::string failure) {
+  nlohmann::json doc;
+  doc["value"]["failure"] = failure;
+  doc["key"] = "failure.cc_lookup";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_failure_ip_lookup(std::string failure) {
+  nlohmann::json doc;
+  doc["value"]["failure"] = failure;
+  doc["key"] = "failure.ip_lookup";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_failure_measurement(std::string failure) {
+  nlohmann::json doc;
+  doc["value"]["failure"] = failure;
+  doc["key"] = "failure.measurement";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_failure_measurement_submission(std::string failure,
+                                                        int64_t idx,
+                                                        std::string json_str) {
+  nlohmann::json doc;
+  doc["value"]["failure"] = failure;
+  doc["value"]["idx"] = idx;
+  doc["value"]["json_str"] = json_str;
+  doc["key"] = "failure.measurement_submission";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_failure_report_create(std::string failure) {
+  nlohmann::json doc;
+  doc["value"]["failure"] = failure;
+  doc["key"] = "failure.report_create";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_failure_report_close(std::string failure) {
+  nlohmann::json doc;
+  doc["value"]["failure"] = failure;
+  doc["key"] = "failure.report_close";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_failure_resolver_lookup(std::string failure) {
+  nlohmann::json doc;
+  doc["value"]["failure"] = failure;
+  doc["key"] = "failure.resolver_lookup";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_failure_startup(std::string failure) {
+  nlohmann::json doc;
+  doc["value"]["failure"] = failure;
+  doc["key"] = "failure.startup";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_log(std::string log_level, std::string message) {
+  nlohmann::json doc;
+  doc["value"]["log_level"] = log_level;
+  doc["value"]["message"] = message;
+  doc["key"] = "log";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_measurement(int64_t idx, std::string json_str) {
+  nlohmann::json doc;
+  doc["value"]["idx"] = idx;
+  doc["value"]["json_str"] = json_str;
+  doc["key"] = "measurement";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_status_end(double downloaded_kb, double uploaded_kb,
+                                    std::string failure) {
+  nlohmann::json doc;
+  doc["value"]["downloaded_kb"] = downloaded_kb;
+  doc["value"]["uploaded_kb"] = uploaded_kb;
+  doc["value"]["failure"] = failure;
+  doc["key"] = "status.end";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_status_geoip_lookup(std::string probe_ip,
+                                             std::string probe_asn,
+                                             std::string probe_cc,
+                                             std::string probe_network_name) {
+  nlohmann::json doc;
+  doc["value"]["probe_ip"] = probe_ip;
+  doc["value"]["probe_asn"] = probe_asn;
+  doc["value"]["probe_cc"] = probe_cc;
+  doc["value"]["probe_network_name"] = probe_network_name;
+  doc["key"] = "status.geoip_lookup";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_status_progress(double percentage,
+                                         std::string message) {
+  nlohmann::json doc;
+  doc["value"]["percentage"] = percentage;
+  doc["value"]["message"] = message;
+  doc["key"] = "status.progress";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_status_queued() {
+  nlohmann::json doc;
+  doc["key"] = "status.queued";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_status_measurement_start(int64_t idx,
+                                                  std::string input) {
+  nlohmann::json doc;
+  doc["value"]["idx"] = idx;
+  doc["value"]["input"] = input;
+  doc["key"] = "status.measurement_start";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_status_measurement_submission(int64_t idx) {
+  nlohmann::json doc;
+  doc["value"]["idx"] = idx;
+  doc["key"] = "status.measurement_submission";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_status_measurement_done(int64_t idx) {
+  nlohmann::json doc;
+  doc["value"]["idx"] = idx;
+  doc["key"] = "status.measurement_done";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_status_report_close(std::string report_id) {
+  nlohmann::json doc;
+  doc["value"]["report_id"] = report_id;
+  doc["key"] = "status.report_close";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_status_report_create(std::string report_id) {
+  nlohmann::json doc;
+  doc["value"]["report_id"] = report_id;
+  doc["key"] = "status.report_create";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_status_resolver_lookup(std::string ip_address) {
+  nlohmann::json doc;
+  doc["value"]["ip_address"] = ip_address;
+  doc["key"] = "status.resolver_lookup";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_status_started() {
+  nlohmann::json doc;
+  doc["key"] = "status.started";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_status_update_performance(std::string direction,
+                                                   double elapsed,
+                                                   int64_t num_streams,
+                                                   double speed_kbps) {
+  nlohmann::json doc;
+  doc["value"]["direction"] = direction;
+  doc["value"]["elapsed"] = elapsed;
+  doc["value"]["num_streams"] = num_streams;
+  doc["value"]["speed_kbps"] = speed_kbps;
+  doc["key"] = "status.update_performance";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_status_update_websites(std::string url,
+                                                std::string status) {
+  nlohmann::json doc;
+  doc["value"]["url"] = url;
+  doc["value"]["status"] = status;
+  doc["key"] = "status.update.websites";
+  emit(std::move(doc));
+}
+
+void NettestHelper::emit_task_terminated() {
+  nlohmann::json doc;
+  doc["key"] = "task_terminated";
+  emit(std::move(doc));
 }
 
 #endif  // MK_FFI_NETTEST_NO_INLINE_IMPL
