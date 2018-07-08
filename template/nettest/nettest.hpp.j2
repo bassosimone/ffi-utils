@@ -77,6 +77,7 @@
 
 #include <iostream>
 #include <map>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <utility>
@@ -274,7 +275,11 @@ void Runner::run(const settings::Settings &settings) {
       on_{{ event.key.to_snake_case() }}(event);
       continue;
     }{% endfor %}
-    std::clog << "unhandled event: " << ev.at("key");
+    {
+      std::stringstream reason;
+      reason << "unhandled FFI event: " << ev.at("key");
+      throw std::runtime_error(reason.str().c_str());
+    }
   }
 }
 #endif  // MK_NETTEST_NO_INLINE_IMPL

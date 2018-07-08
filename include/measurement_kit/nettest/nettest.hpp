@@ -71,16 +71,13 @@
 ///   // TODO: handle
 /// }
 /// ```
-///
-/// @addtogroup nettest Nettest API
-/// @brief C++11 API for running network tests.
-/// @{
 
 #include <assert.h>
 #include <stdint.h>
 
 #include <iostream>
 #include <map>
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -1316,12 +1313,15 @@ void Runner::run(const settings::Settings &settings) {
       on_task_terminated(event);
       continue;
     }
-    std::clog << "unhandled event: " << ev.at("key");
+    {
+      std::stringstream reason;
+      reason << "unhandled FFI event: " << ev.at("key");
+      throw std::runtime_error(reason.str().c_str());
+    }
   }
 }
 #endif  // MK_NETTEST_NO_INLINE_IMPL
 
 }  // namespace nettest
 }  // namespace mk
-/// @}
 #endif  // MEASUREMENT_KIT_NETTEST_NETTEST_HPP
