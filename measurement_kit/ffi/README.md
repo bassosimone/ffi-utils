@@ -310,8 +310,66 @@ is a string. Below we describe all the possible event keys, along with the
 an arbitrary number of times during the lifecycle of a task. Unless otherwise
 specified, all the keys introduced below where added in MK v0.9.0.
 
+The following events are defined:
 
-- `"failure.asn_lookup"`: (object) We could not lookup the ASN (Autonomous System Number) from the user's IP.
+
+- `"failure.asn_lookup"`: (object)
+
+- `"failure.cc_lookup"`: (object)
+
+- `"failure.ip_lookup"`: (object)
+
+- `"failure.measurement"`: (object)
+
+- `"failure.measurement_submission"`: (object)
+
+- `"failure.report_create"`: (object)
+
+- `"failure.report_close"`: (object)
+
+- `"failure.resolver_lookup"`: (object)
+
+- `"failure.startup"`: (object)
+
+- `"log"`: (object)
+
+- `"measurement"`: (object)
+
+- `"status.end"`: (object)
+
+- `"status.geoip_lookup"`: (object)
+
+- `"status.progress"`: (object)
+
+- `"status.queued"`: (object)
+
+- `"status.measurement_start"`: (object)
+
+- `"status.measurement_submission"`: (object)
+
+- `"status.measurement_done"`: (object)
+
+- `"status.report_close"`: (object)
+
+- `"status.report_create"`: (object)
+
+- `"status.resolver_lookup"`: (object)
+
+- `"status.started"`: (object)
+
+- `"status.update_performance"`: (object)
+
+- `"status.update.websites"`: (object)
+
+- `"task_terminated"`: (object)
+
+
+Below we provide a detailed description of each event.
+
+
+### failure.asn_lookup
+
+We could not lookup the ASN (Autonomous System Number) from the user's IP.
 
 This event includes the following attributes:
 
@@ -328,7 +386,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"failure.cc_lookup"`: (object) We could not lookup the country code from the user's IP.
+### failure.cc_lookup
+
+We could not lookup the country code from the user's IP.
 
 This event includes the following attributes:
 
@@ -345,7 +405,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"failure.ip_lookup"`: (object) We could not lookup the user IP address.
+### failure.ip_lookup
+
+We could not lookup the user IP address.
 
 This event includes the following attributes:
 
@@ -362,7 +424,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"failure.measurement"`: (object) There was a failure running the measurement.
+### failure.measurement
+
+There was a failure running the measurement.
 
 This event includes the following attributes:
 
@@ -379,7 +443,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"failure.measurement_submission"`: (object) There was a failure in submitting the measurement result to the configured collector.
+### failure.measurement_submission
+
+There was a failure in submitting the measurement result to the configured collector.
 
 This event includes the following attributes:
 
@@ -400,7 +466,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"failure.report_create"`: (object) There was a failure in getting an ID for submitting results from the configured collector.
+### failure.report_create
+
+There was a failure in getting an ID for submitting results from the configured collector.
 
 This event includes the following attributes:
 
@@ -417,7 +485,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"failure.report_close"`: (object) There was a failure in telling the configured collector that all the measurements related to a specific ID have now been performed.
+### failure.report_close
+
+There was a failure in telling the configured collector that all the measurements related to a specific ID have now been performed.
 
 This event includes the following attributes:
 
@@ -434,7 +504,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"failure.resolver_lookup"`: (object) There was a failure attempting to lookup the user DNS resolver IP address.
+### failure.resolver_lookup
+
+There was a failure attempting to lookup the user DNS resolver IP address.
 
 This event includes the following attributes:
 
@@ -451,7 +523,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"failure.startup"`: (object) There was a failure in starting the nettest, most likely because you passed incorrect options. See the logs for more information of what went wrong.
+### failure.startup
+
+There was a failure in starting the nettest, most likely because you passed incorrect options. See the logs for more information of what went wrong.
 
 This event includes the following attributes:
 
@@ -468,7 +542,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"log"`: (object) A log line that was emitted.
+### log
+
+A log line that was emitted.
 
 This event includes the following attributes:
 
@@ -487,7 +563,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"measurement"`: (object) The result of a measurement.
+### measurement
+
+The result of a measurement.
 
 This event includes the following attributes:
 
@@ -506,7 +584,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"status.end"`: (object) Event emitted once at the end of the nettest. This event is always emitted, regardless of whether the nettest naturally reaches its end or is interrupted. As such, you can rely on this event as a "once" suitable for releasing all the extra resources you may have allocated as part of the nettest lifecyle.
+### status.end
+
+Event emitted once at the end of the nettest. This event is always emitted, regardless of whether the nettest naturally reaches its end or is interrupted. As such, you can rely on this event as a "once" suitable for releasing all the extra resources you may have allocated as part of the nettest lifecyle.
 
 This event includes the following attributes:
 
@@ -527,7 +607,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"status.geoip_lookup"`: (object) Event emitted once, when we discover the geolocation of the user based on their IP address.
+### status.geoip_lookup
+
+Event emitted once, when we discover the geolocation of the user based on their IP address.
 
 This event includes the following attributes:
 
@@ -550,7 +632,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"status.progress"`: (object) Emitted during the task lifecycle to indicate progress.
+### status.progress
+
+Emitted during the task lifecycle to indicate progress.
 
 This event includes the following attributes:
 
@@ -569,7 +653,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"status.queued"`: (object) Emitted once to indicate that the tast has been submitted for running. Unless you run multiple test at the same time (which is discouraged), this event also implies that the test will be started immediately.
+### status.queued
+
+Emitted once to indicate that the tast has been submitted for running. Unless you run multiple test at the same time (which is discouraged), this event also implies that the test will be started immediately.
 
 
 
@@ -584,7 +670,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"status.measurement_start"`: (object) Emitted when we start a new measurement within a nettest. For nettests that do not require input, there is just a single measurement within a nettest. Otherwise, there is a measurement for each input provided to the nettest.
+### status.measurement_start
+
+Emitted when we start a new measurement within a nettest. For nettests that do not require input, there is just a single measurement within a nettest. Otherwise, there is a measurement for each input provided to the nettest.
 
 This event includes the following attributes:
 
@@ -603,7 +691,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"status.measurement_submission"`: (object) Emitted when the result of a measurement has been successfully submitted to the configured collector.
+### status.measurement_submission
+
+Emitted when the result of a measurement has been successfully submitted to the configured collector.
 
 This event includes the following attributes:
 
@@ -620,7 +710,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"status.measurement_done"`: (object) Emitted when a measurement is done. This is emitted regardless of whether there were any failures during the measurement.
+### status.measurement_done
+
+Emitted when a measurement is done. This is emitted regardless of whether there were any failures during the measurement.
 
 This event includes the following attributes:
 
@@ -637,7 +729,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"status.report_close"`: (object) Emitted when we have notified the collector that we are done with running measurements with a specific report ID.
+### status.report_close
+
+Emitted when we have notified the collector that we are done with running measurements with a specific report ID.
 
 This event includes the following attributes:
 
@@ -654,7 +748,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"status.report_create"`: (object) Emitted when we have notified the collector the intention to start submitting measurements. As part of this API call, we receive back a "report ID" to be used to submit subsequent measurements that we perform.
+### status.report_create
+
+Emitted when we have notified the collector the intention to start submitting measurements. As part of this API call, we receive back a "report ID" to be used to submit subsequent measurements that we perform.
 
 This event includes the following attributes:
 
@@ -671,7 +767,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"status.resolver_lookup"`: (object) Emitted once when we discover the user DNS resolver IP.
+### status.resolver_lookup
+
+Emitted once when we discover the user DNS resolver IP.
 
 This event includes the following attributes:
 
@@ -688,7 +786,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"status.started"`: (object) Emitted once when the nettest has started running.
+### status.started
+
+Emitted once when the nettest has started running.
 
 
 
@@ -703,7 +803,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"status.update_performance"`: (object) Status update regarding the currently ongoing network performance measurement. This event is, of course, only emitted by network tests that measure the network performance.
+### status.update_performance
+
+Status update regarding the currently ongoing network performance measurement. This event is, of course, only emitted by network tests that measure the network performance.
 
 This event includes the following attributes:
 
@@ -726,7 +828,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"status.update.websites"`: (object) Status update regarding the currently ongoing website censorship measurement.
+### status.update.websites
+
+Status update regarding the currently ongoing website censorship measurement.
 
 This event includes the following attributes:
 
@@ -745,7 +849,9 @@ The JSON returned by this event is like:
 }
 ```
 
-- `"task_terminated"`: (object) Emitted when a nettest is done and you attempt using the FFI API to extract more tasks from its queue.
+### task_terminated
+
+Emitted when a nettest is done and you attempt using the FFI API to extract more tasks from its queue.
 
 
 

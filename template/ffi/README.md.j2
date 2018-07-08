@@ -196,8 +196,18 @@ is a string. Below we describe all the possible event keys, along with the
 an arbitrary number of times during the lifecycle of a task. Unless otherwise
 specified, all the keys introduced below where added in MK v0.9.0.
 
+The following events are defined:
+
 {%for event in events %}
-- `"{{ event.key }}"`: (object) {{ event.docs }}
+- `"{{ event.key }}"`: (object)
+{% endfor %}
+
+Below we provide a detailed description of each event.
+
+{%for event in events %}
+### {{ event.key }}
+
+{{ event.docs }}
 
 {% if event.attributes|length > 0 %}This event includes the following attributes:
 {% for attribute in event.attributes %}
