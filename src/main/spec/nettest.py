@@ -59,6 +59,7 @@ class Bool(Type):
         return {
             "cxx": "bool",
             "docs": "int",
+            "json": "number_integer",
         }[language]
 
     def default_value(self, language):
@@ -89,6 +90,7 @@ class Double(Type):
         return {
             "cxx": "double",
             "docs": "float",
+            "json": "number_float",
         }[language]
 
     def default_value(self, language):
@@ -109,6 +111,7 @@ class Int64(Type):
         return {
             "cxx": "int64_t",
             "docs": "int",
+            "json": "number_integer",
         }[language]
 
     def default_value(self, language):
@@ -129,6 +132,7 @@ class String(Type):
         return {
             "cxx": "std::string",
             "docs": "string",
+            "json": "string",
         }[language]
 
     def default_value(self, language):
@@ -152,6 +156,7 @@ class MapStringString(Type):
         return {
             "cxx": "std::map<std::string, std::string>",
             "docs": "object",
+            "json": "object",
         }[language]
 
     def default_value(self, language):
@@ -176,6 +181,7 @@ class VectorString(Type):
         return {
             "cxx": "std::vector<std::string>",
             "docs": "array",
+            "json": "array",
         }[language]
 
     def default_value(self, language):
@@ -198,6 +204,7 @@ class Options(Type):
     def decl(self, language):
         return {
             "docs": "object",
+            "json": "object",
         }[language]
 
     def default_value(self, language):
@@ -213,6 +220,7 @@ class Name(String):
     def decl(self, language):
         return {
             "docs": "string; mandatory",
+            "json": "string",
         }[language]
 
     def example(self, context):

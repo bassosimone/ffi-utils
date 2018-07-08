@@ -22,6 +22,9 @@
 
 #include <measurement_kit/ffi/task.hpp>
 
+#include <assert.h>
+#include <stdint.h>
+
 namespace mk {
 namespace ffi {
 
@@ -50,9 +53,128 @@ class NettestHelper : public Task {
 NettestHelper::~NettestHelper() noexcept {}
 
 nlohmann::json NettestHelper::possibly_validate_event(nlohmann::json &&ev) {
+#ifndef NDEBUG
+  {
+    bool known_event_key = false;
+    do {
+      {% for event in events %}
+        if (ev.at("key") == "{{ event.key }}") {
+          known_event_key = true;{% for attribute in event.attributes %}{{ attribute.base_type.decl("cxx") }} {{ attribute.key.to_snake_case() }} = ev.at("value").at("{{ attribute.key }}"); (void){{ attribute.key.to_snake_case() }};{% endfor %}
+	  break;
+        }
+      {% endfor %}
+    } while (0);
+    assert(known_event_key);
+  }
+  if (ev.at("key") == "log") {
+    bool known_log_level = false;
+    do {
+      {% for log_level in log_levels %}if (ev.at("key").at("log_level") == "{{ log_level.key.to_snake_case_upper() }}") {
+          known_log_level = true;
+	  break;
+        }
+      {% endfor %}
+    } while (0);
+    assert(known_log_level);
+  }
+#endif
+  return std::move(ev);
 }
 
 bool NettestHelper::check_settings(const nlohmann::json &settings) {
+  if (!settings.is_object()) {
+    return false;
+  }
+
+  // Settings checks
+  // ---------------
+
+  // Make sure that all fields in settings have the correct type.
+  {% for setting in settings %}if (settings.count("{{ setting.key }}") > 0 && !settings.at("{{ setting.key }}").is_{{ setting.base_type.decl("json") }}()) {
+      return false;
+    }
+  {% endfor %}
+
+  // Make sure all annotations are actually strings.
+  if (settings.count("annotations") > 0) {
+    auto &annotations = settings.at("annotations");
+#if NLOHMANN_JSON_VERSION_MAJOR >= 3
+    for (auto &it : annotations.items()) {
+#else
+    for (auto it : nlohmann::json::iterator_wrapper(annotations)) {
+#endif
+      auto &value = it.value();
+      if (!value.is_string()) {
+        return false;
+      }
+    }
+  }
+
+  // Make sure all disabled_events are strings and known events.
+  if (settings.count("disabled_events") > 0) {
+    auto &disabled_events = settings.at("disabled_events");
+    for (auto &elem : disabled_events) {
+      if (!elem.is_string()) {
+        return false;
+      }
+      if ({% for event in events %} elem != "{{ event.key }}" {{ "&&" if not loop.last }} {% endfor %}) {
+        return false;
+      }
+    }
+  }
+
+  // Make sure all inputs are strings.
+  if (settings.count("inputs") > 0) {
+    auto &inputs = settings.at("inputs");
+    for (auto &elem : inputs) {
+      if (!elem.is_string()) {
+        return false;
+      }
+    }
+  }
+
+  // Make sure all input_filepaths are strings.
+  if (settings.count("input_filepaths") > 0) {
+    auto &input_filepaths = settings.at("input_filepaths");
+    for (auto &elem : input_filepaths) {
+      if (!elem.is_string()) {
+        return false;
+      }
+    }
+  }
+
+  // Make sure that log_level is a known value.
+  if (settings.count("log_level") > 0) {
+    auto &log_level = settings.at("log_level");
+    if ({% for log_level in log_levels %} log_level != "{{ log_level.key.to_snake_case_upper() }}" {{ "&&" if not loop.last }} {% endfor %}) {
+      return false;
+    }
+  }
+
+  // Make sure that name is present and is a known value.
+  if (settings.count("name") <= 0) {
+    return false;
+  }
+  {
+    auto &name = settings.at("name");
+    if ({% for nettest in nettests %} name != "{{ nettest.key.to_pascal_case() }}" {{ "&&" if not loop.last }} {% endfor %}) {
+      return false;
+    }
+  }
+
+  // Options checks
+  // --------------
+
+  // Make sure that all fields in settings.options have the correct type.
+  if (settings.count("options") > 0) {
+    auto &options = settings.at("options");
+    {% for option in options %}if (options.count("{{ option.key }}") > 0 && !options.at("{{ option.key }}").is_{{ option.base_type.decl("json") }}()) {
+        return false;
+      }
+    {% endfor %}
+  }
+
+  return true;
 }
 
 #endif  // MK_FFI_NETTEST_NO_INLINE_IMPL

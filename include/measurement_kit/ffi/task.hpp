@@ -81,7 +81,7 @@ class Task {
   virtual nlohmann::json possibly_validate_event(nlohmann::json &&ev);
 
   // Make sure that settings are okay.
-  virtual bool check_settings(const nlohmann::json &&settings);
+  virtual bool check_settings(const nlohmann::json &settings);
 
  private:
   // Condition variable used to know when we have pending events.
@@ -147,7 +147,9 @@ Task::Task(nlohmann::json &&settings) {
       emit(std::move(event));
     }
     semaphore.acquire();  // prevent concurrent tasks
-    check_settings_and_run(std::move(settings));
+    if (check_settings(settings)) {
+      run(std::move(settings));
+    }
     running_ = false;
     cond_.notify_all();   // tell the readers we're done
     semaphore.release();  // allow another task to run
