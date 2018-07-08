@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
 
-python spec/nettest.py src/template/nettest/nettest.hpp.j2 |clang-format -     \
-    > include/measurement_kit/nettest/nettest.hpp
+python spec/nettest.py src/main/template/nettest/nettest.hpp.j2 \
+    | clang-format - > include/measurement_kit/nettest/nettest.hpp
 
-python spec/nettest.py src/template/ffi/README.md.j2                           \
+python spec/nettest.py src/main/template/ffi/README.md.j2 \
     > include/measurement_kit/ffi/README.md
