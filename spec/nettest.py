@@ -132,11 +132,13 @@ class MapStringString(Type):
     def decl(self, language):
         return {
             "cxx": "std::map<std::string, std::string>",
+            "docs": "object",
         }[language]
 
     def default_value(self, language):
         return {
             "cxx": "{}",
+            "docs": "{}",
         }[language]
 
 class VectorString(Type):
@@ -146,18 +148,42 @@ class VectorString(Type):
     def decl(self, language):
         return {
             "cxx": "std::vector<std::string>",
+            "docs": "array",
         }[language]
 
     def default_value(self, language):
         return {
             "cxx": "{}",
+            "docs": "[]",
+        }[language]
+
+class Options(Type):
+    def __init__(self):
+        super().__init__()
+
+    def decl(self, language):
+        return {
+            "docs": "object",
+        }[language]
+
+    def default_value(self, language):
+        return {
+            "docs": "{}",
+        }[language]
+
+class Name(String):
+
+    def decl(self, language):
+        return {
+            "docs": "string; mandatory",
         }[language]
 
 class Attribute(object):
-    def __init__(self, docs, base_type, key):
+    def __init__(self, docs, base_type, key, low_level=False):
         self.docs = Documentation(docs)
         self.base_type = base_type
         self.key = Key(key)
+        self.low_level = low_level
 
 class Event(object):
     def __init__(self, docs, key, *attributes):
@@ -516,6 +542,10 @@ def main():
                           String(), "log_filepath"),
                 Attribute("""Type of log messages you are interested into.""",
                           String("ERR"), "log_level"),
+                Attribute("""Name of the network test to run.""",
+                          Name(), "name", low_level=True),
+                Attribute("""Optional variables influencing the nettest behavior.""",
+                          Options(), "options", low_level=True),
                 Attribute("""File where to write the nettest results.""",
                           String(), "output_filepath")]
 

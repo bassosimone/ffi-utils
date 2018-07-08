@@ -129,7 +129,7 @@ namespace settings {
 /// Generic settings of a network test.
 class Settings {
  public:
-  {% for attribute in settings %}
+  {% for attribute in settings if not attribute.low_level %}
     /// {{ attribute.docs }}
     {{ attribute.base_type.decl("cxx") }} {{ attribute.key.to_snake_case() }} = {{ attribute.base_type.default_value("cxx") }};
   {% endfor %}
@@ -224,7 +224,7 @@ Settings::~Settings() noexcept {}
 
 void Settings::serialize_into(nlohmann::json *doc) const {
   assert(doc != nullptr);
-  {% for attribute in settings if attribute.key != "options" %} (*doc)["{{ attribute.key }}"] = {{ attribute.base_type.to_json_cast("cxx") }} {{ attribute.key.to_snake_case() }}; {% endfor %}
+  {% for attribute in settings if not attribute.low_level %} (*doc)["{{ attribute.key }}"] = {{ attribute.base_type.to_json_cast("cxx") }} {{ attribute.key.to_snake_case() }}; {% endfor %}
   {
     nlohmann::json so;
     {% for attribute in options %} so["{{ attribute.key }}"] = {{ attribute.base_type.to_json_cast("cxx") }} {{ attribute.key.to_snake_case() }}; {% endfor %}

@@ -187,6 +187,26 @@ is their default value (_however_, the value of non-`options` settings _is not_
 the default value, rather is a meaningful example). The following keys
 are available:
 
+
+- `"annotations"`: (object) Optional annotations (i.e. key, value string pairs) that will be included into the JSON report sent to the OONI collector.
+
+- `"disabled_events"`: (array) List of events that will not be emitted.
+
+- `"inputs"`: (array) List of URLs or domains required by the test.
+
+- `"input_filepaths"`: (array) List of files from which to read inputs.
+
+- `"log_filepath"`: (string) File where to write log messages.
+
+- `"log_level"`: (string) Type of log messages you are interested into.
+
+- `"name"`: (string; mandatory) Name of the network test to run.
+
+- `"options"`: (object) Optional variables influencing the nettest behavior.
+
+- `"output_filepath"`: (string) File where to write the nettest results.
+
+
 - `"annotations"`: (object; optional) JSON object containing key, value string
   mappings that are copied verbatim in the measurement result file;
 
