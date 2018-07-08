@@ -196,6 +196,25 @@ is a string. Below we describe all the possible event keys, along with the
 an arbitrary number of times during the lifecycle of a task. Unless otherwise
 specified, all the keys introduced below where added in MK v0.9.0.
 
+{%for event in events %}
+- `"{{ event.key }}"`: (object) {{ event.docs }}
+
+{% if event.attributes|length > 0 %}This event includes the following attributes:
+{% for attribute in event.attributes %}
+  - {{ attribute.key }}: ({{ attribute.base_type.decl("docs") }}) {{ attribute.docs }}{% endfor %}{% endif %}
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "{{ event.key }}",
+  "value": {
+    {% for attribute in event.attributes %} "{{ attribute.key }}": {{ attribute.base_type.default_value("docs") }}{{ ",\n    " if not loop.last }}{% endfor %}
+  }
+}
+```
+{% endfor %}
+
 - `"failure.asn_lookup"`: (object) There was a failure attempting to lookup the
   user autonomous system number. The JSON returned by this event is like:
 

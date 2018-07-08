@@ -207,43 +207,6 @@ are available:
 - `"output_filepath"`: (string) File where to write the nettest results.
 
 
-- `"annotations"`: (object; optional) JSON object containing key, value string
-  mappings that are copied verbatim in the measurement result file;
-
-- `"disabled_events"`: (array; optional) strings array containing the names of
-  the events that you are not interested into. All the available event
-  names are described below. By default all events are enabled;
-
-- `"inputs"`: (array; optional) array of strings to be passed to the task as
-  input. If the task does not take any input, this is ignored. If the task
-  requires input and you provide neither `"inputs"` nor `"input_filepaths"`,
-  the task will fail;
-
-- `"input_filepaths"`: (array; optional) array of files containing input
-  strings, one per line, to be passed to the task. These files are read and
-  their content is merged with the one of the `inputs` key.
-
-- `"log_filepath"`: (string; optional) name of the file where to
-  write logs. By default logs are written on `stderr`;
-
-- `"log_level"`: (string; optional) how much information you want to see
-  written in the log file and emitted by log-related events.
-
-- `"name"`: (string; mandatory) name of the task to run. The available
-  task names have been described above;
-
-- `"options"`: (object; optional) options modifying the task behavior, as
-  an object mapping string keys to string, int or float values. As mentioned,
-  the above example shows the default value of options. Also, there are no
-  boolean options, but we use `int` with boolean semantics, i.e., we use
-  `0` to indicate `false`, and nonzero to indicate `true`;
-
-- `"output_filepath"`: (string; optional) file where you want MK to
-  write measurement results, as a sequence of lines, each line being
-  the result of a measurement serialized as JSON. If you do not specify
-  an output file, Measurement Kit will write the test results in a
-  file in the current working directory.
-
 ## Log levels
 
 The available log levels are:
@@ -346,6 +309,457 @@ is a string. Below we describe all the possible event keys, along with the
 "value" JSON structure. Unless otherwise specified, an event key can be emitted
 an arbitrary number of times during the lifecycle of a task. Unless otherwise
 specified, all the keys introduced below where added in MK v0.9.0.
+
+
+- `"failure.asn_lookup"`: (object) We could not lookup the ASN (Autonomous System Number) from the user's IP.
+
+This event includes the following attributes:
+
+  - failure: (string) The specific error that occurred.
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "failure.asn_lookup",
+  "value": {
+     "failure": ""
+  }
+}
+```
+
+- `"failure.cc_lookup"`: (object) We could not lookup the country code from the user's IP.
+
+This event includes the following attributes:
+
+  - failure: (string) The specific error that occurred.
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "failure.cc_lookup",
+  "value": {
+     "failure": ""
+  }
+}
+```
+
+- `"failure.ip_lookup"`: (object) We could not lookup the user IP address.
+
+This event includes the following attributes:
+
+  - failure: (string) The specific error that occurred.
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "failure.ip_lookup",
+  "value": {
+     "failure": ""
+  }
+}
+```
+
+- `"failure.measurement"`: (object) There was a failure running the measurement.
+
+This event includes the following attributes:
+
+  - failure: (string) The specific error that occurred.
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "failure.measurement",
+  "value": {
+     "failure": ""
+  }
+}
+```
+
+- `"failure.measurement_submission"`: (object) There was a failure in submitting the measurement result to the configured collector.
+
+This event includes the following attributes:
+
+  - failure: (string) The specific error that occurred.
+  - idx: (int) Index of the measurement that failed
+  - json_str: (string) Measurement that we could not submit as a serialized JSON.
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "failure.measurement_submission",
+  "value": {
+     "failure": "",
+     "idx": 0,
+     "json_str": ""
+  }
+}
+```
+
+- `"failure.report_create"`: (object) There was a failure in getting an ID for submitting results from the configured collector.
+
+This event includes the following attributes:
+
+  - failure: (string) The specific error that occurred.
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "failure.report_create",
+  "value": {
+     "failure": ""
+  }
+}
+```
+
+- `"failure.report_close"`: (object) There was a failure in telling the configured collector that all the measurements related to a specific ID have now been performed.
+
+This event includes the following attributes:
+
+  - failure: (string) The specific error that occurred.
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "failure.report_close",
+  "value": {
+     "failure": ""
+  }
+}
+```
+
+- `"failure.resolver_lookup"`: (object) There was a failure attempting to lookup the user DNS resolver IP address.
+
+This event includes the following attributes:
+
+  - failure: (string) The specific error that occurred.
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "failure.resolver_lookup",
+  "value": {
+     "failure": ""
+  }
+}
+```
+
+- `"failure.startup"`: (object) There was a failure in starting the nettest, most likely because you passed incorrect options. See the logs for more information of what went wrong.
+
+This event includes the following attributes:
+
+  - failure: (string) The specific error that occurred.
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "failure.startup",
+  "value": {
+     "failure": ""
+  }
+}
+```
+
+- `"log"`: (object) A log line that was emitted.
+
+This event includes the following attributes:
+
+  - log_level: (string) The log level as a string (e.g. "INFO").
+  - message: (string) The log message.
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "log",
+  "value": {
+     "log_level": "",
+     "message": ""
+  }
+}
+```
+
+- `"measurement"`: (object) The result of a measurement.
+
+This event includes the following attributes:
+
+  - idx: (int) Index of the current measurement
+  - json_str: (string) The measurement result as a serialized JSON.
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "measurement",
+  "value": {
+     "idx": 0,
+     "json_str": ""
+  }
+}
+```
+
+- `"status.end"`: (object) Event emitted once at the end of the nettest. This event is always emitted, regardless of whether the nettest naturally reaches its end or is interrupted. As such, you can rely on this event as a "once" suitable for releasing all the extra resources you may have allocated as part of the nettest lifecyle.
+
+This event includes the following attributes:
+
+  - downloaded_kb: (float) The number of KB downloaded during the test.
+  - uploaded_kb: (float) The number of KB uploaded during the test.
+  - failure: (string) The error that occurred. If no error occurred, then this variable will hold an empty string.
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "status.end",
+  "value": {
+     "downloaded_kb": 0.0,
+     "uploaded_kb": 0.0,
+     "failure": ""
+  }
+}
+```
+
+- `"status.geoip_lookup"`: (object) Event emitted once, when we discover the geolocation of the user based on their IP address.
+
+This event includes the following attributes:
+
+  - probe_ip: (string) The user IP address
+  - probe_asn: (string) The user ASN (Autonomous System Number)
+  - probe_cc: (string) The user country code (CC).
+  - probe_network_name: (string) The descriptive name associated to the ASN
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "status.geoip_lookup",
+  "value": {
+     "probe_ip": "",
+     "probe_asn": "",
+     "probe_cc": "",
+     "probe_network_name": ""
+  }
+}
+```
+
+- `"status.progress"`: (object) Emitted during the task lifecycle to indicate progress.
+
+This event includes the following attributes:
+
+  - percentage: (float) Percentage of completion of the task.
+  - message: (string) Optional message indicating what step is now complete.
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "status.progress",
+  "value": {
+     "percentage": 0.0,
+     "message": ""
+  }
+}
+```
+
+- `"status.queued"`: (object) Emitted once to indicate that the tast has been submitted for running. Unless you run multiple test at the same time (which is discouraged), this event also implies that the test will be started immediately.
+
+
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "status.queued",
+  "value": {
+    
+  }
+}
+```
+
+- `"status.measurement_start"`: (object) Emitted when we start a new measurement within a nettest. For nettests that do not require input, there is just a single measurement within a nettest. Otherwise, there is a measurement for each input provided to the nettest.
+
+This event includes the following attributes:
+
+  - idx: (int) Index of the current measurement.
+  - input: (string) Input of the current measurement. For nettests that do not take input, this will be the empty string.
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "status.measurement_start",
+  "value": {
+     "idx": 0,
+     "input": ""
+  }
+}
+```
+
+- `"status.measurement_submission"`: (object) Emitted when the result of a measurement has been successfully submitted to the configured collector.
+
+This event includes the following attributes:
+
+  - idx: (int) Index of the current measurement.
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "status.measurement_submission",
+  "value": {
+     "idx": 0
+  }
+}
+```
+
+- `"status.measurement_done"`: (object) Emitted when a measurement is done. This is emitted regardless of whether there were any failures during the measurement.
+
+This event includes the following attributes:
+
+  - idx: (int) Index of the current measurement.
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "status.measurement_done",
+  "value": {
+     "idx": 0
+  }
+}
+```
+
+- `"status.report_close"`: (object) Emitted when we have notified the collector that we are done with running measurements with a specific report ID.
+
+This event includes the following attributes:
+
+  - report_id: (string) Unique identifier of the nettest with the collector.
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "status.report_close",
+  "value": {
+     "report_id": ""
+  }
+}
+```
+
+- `"status.report_create"`: (object) Emitted when we have notified the collector the intention to start submitting measurements. As part of this API call, we receive back a "report ID" to be used to submit subsequent measurements that we perform.
+
+This event includes the following attributes:
+
+  - report_id: (string) Unique identifier of the nettest with the collector.
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "status.report_create",
+  "value": {
+     "report_id": ""
+  }
+}
+```
+
+- `"status.resolver_lookup"`: (object) Emitted once when we discover the user DNS resolver IP.
+
+This event includes the following attributes:
+
+  - ip_address: (string) IP address of the user resolver.
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "status.resolver_lookup",
+  "value": {
+     "ip_address": ""
+  }
+}
+```
+
+- `"status.started"`: (object) Emitted once when the nettest has started running.
+
+
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "status.started",
+  "value": {
+    
+  }
+}
+```
+
+- `"status.update_performance"`: (object) Status update regarding the currently ongoing network performance measurement. This event is, of course, only emitted by network tests that measure the network performance.
+
+This event includes the following attributes:
+
+  - direction: (string) The direction of the performance measurement. Either 'download', for download measurements, or 'upload' for upload measurements.
+  - elapsed: (float) Seconds elapsed since the performance measurement was started.
+  - num_streams: (int) Number of parallel TCP streams being used.
+  - speed_kbps: (float) Speed measured in kbit/s.
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "status.update_performance",
+  "value": {
+     "direction": "",
+     "elapsed": 0.0,
+     "num_streams": 0,
+     "speed_kbps": 0.0
+  }
+}
+```
+
+- `"status.update.websites"`: (object) Status update regarding the currently ongoing website censorship measurement.
+
+This event includes the following attributes:
+
+  - url: (string) URL that we are measuring.
+  - status: (string) Result of the measurement. Either "accessible" or "blocking".
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "status.update.websites",
+  "value": {
+     "url": "",
+     "status": ""
+  }
+}
+```
+
+- `"task_terminated"`: (object) Emitted when a nettest is done and you attempt using the FFI API to extract more tasks from its queue.
+
+
+
+The JSON returned by this event is like:
+
+```JSON
+{
+  "key": "task_terminated",
+  "value": {
+    
+  }
+}
+```
+
 
 - `"failure.asn_lookup"`: (object) There was a failure attempting to lookup the
   user autonomous system number. The JSON returned by this event is like:
