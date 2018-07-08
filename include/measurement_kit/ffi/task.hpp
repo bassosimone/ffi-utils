@@ -77,6 +77,13 @@ class Task {
   // that the current nettest can run (i.e. no other running nettests).
   virtual void run(nlohmann::json &&settings);
 
+  // Method that in debug mode aborts if passed an invalid event.
+  virtual nlohmann::json possibly_validate_event(nlohmann::json &&ev);
+
+  // Make sure that settings are okay.
+  virtual bool check_settings(const nlohmann::json &&settings);
+
+ private:
   // Condition variable used to know when we have pending events.
   std::condition_variable cond_;
 
@@ -94,13 +101,6 @@ class Task {
 
   // The background thread where the nettest will run.
   std::thread thread_;
-
- private:
-  // Method that in debug mode aborts if passed an invalid event.
-  nlohmann::json possibly_validate_event(nlohmann::json &&ev);
-
-  // Make sure that settings are okay and then invoke the run() method.
-  void check_settings_and_run(nlohmann::json &&settings);
 
   // Abstraction that behaves like a semaphore. We use it to make sure that
   // tests do not run concurrently. Since a semaphore does not provide any
@@ -217,8 +217,8 @@ nlohmann::json Task::possibly_validate_event(nlohmann::json &&ev) {
   return std::move(ev);
 }
 
-void Task::check_settings_and_run(nlohmann::json &&settings) {
-  run(std::move(settings));
+bool Task::check_settings(const nlohmann::json &) {
+  return true;
 }
 
 Task::Semaphore::Semaphore() noexcept {}
