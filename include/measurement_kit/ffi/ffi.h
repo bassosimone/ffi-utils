@@ -5,7 +5,7 @@
 #define MEASUREMENT_KIT_FFI_H
 
 /**
-    @file measurement_kit/ffi.h
+    @file measurement_kit/ffi/ffi.h
 
     @brief Measurement Kit Foreign-Function-Interface (FFI) API.
 

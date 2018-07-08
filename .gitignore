@@ -1,4 +1,6 @@
 *.pyc
 /.gradle
 /build
+/html
+/latex
 /venv

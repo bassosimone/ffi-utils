@@ -71,6 +71,10 @@
 ///   // TODO: handle
 /// }
 /// ```
+///
+/// @addtogroup nettest Nettest API
+/// @brief C++11 API for running network tests.
+/// @{
 
 #include <assert.h>
 #include <stdint.h>
@@ -1319,4 +1323,5 @@ void Runner::run(const settings::Settings &settings) {
 
 }  // namespace nettest
 }  // namespace mk
+/// @}
 #endif  // MEASUREMENT_KIT_NETTEST_NETTEST_HPP
