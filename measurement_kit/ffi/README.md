@@ -315,7 +315,7 @@ specified, all the keys introduced below where added in MK v0.9.0.
 
 This event includes the following attributes:
 
-  - failure: (string) The specific error that occurred.
+1. failure: (string) The specific error that occurred.
 
 The JSON returned by this event is like:
 
@@ -332,7 +332,7 @@ The JSON returned by this event is like:
 
 This event includes the following attributes:
 
-  - failure: (string) The specific error that occurred.
+1. failure: (string) The specific error that occurred.
 
 The JSON returned by this event is like:
 
@@ -349,7 +349,7 @@ The JSON returned by this event is like:
 
 This event includes the following attributes:
 
-  - failure: (string) The specific error that occurred.
+1. failure: (string) The specific error that occurred.
 
 The JSON returned by this event is like:
 
@@ -366,7 +366,7 @@ The JSON returned by this event is like:
 
 This event includes the following attributes:
 
-  - failure: (string) The specific error that occurred.
+1. failure: (string) The specific error that occurred.
 
 The JSON returned by this event is like:
 
@@ -383,9 +383,9 @@ The JSON returned by this event is like:
 
 This event includes the following attributes:
 
-  - failure: (string) The specific error that occurred.
-  - idx: (int) Index of the measurement that failed
-  - json_str: (string) Measurement that we could not submit as a serialized JSON.
+1. failure: (string) The specific error that occurred.
+1. idx: (int) Index of the measurement that failed
+1. json_str: (string) Measurement that we could not submit as a serialized JSON.
 
 The JSON returned by this event is like:
 
@@ -404,7 +404,7 @@ The JSON returned by this event is like:
 
 This event includes the following attributes:
 
-  - failure: (string) The specific error that occurred.
+1. failure: (string) The specific error that occurred.
 
 The JSON returned by this event is like:
 
@@ -421,7 +421,7 @@ The JSON returned by this event is like:
 
 This event includes the following attributes:
 
-  - failure: (string) The specific error that occurred.
+1. failure: (string) The specific error that occurred.
 
 The JSON returned by this event is like:
 
@@ -438,7 +438,7 @@ The JSON returned by this event is like:
 
 This event includes the following attributes:
 
-  - failure: (string) The specific error that occurred.
+1. failure: (string) The specific error that occurred.
 
 The JSON returned by this event is like:
 
@@ -455,7 +455,7 @@ The JSON returned by this event is like:
 
 This event includes the following attributes:
 
-  - failure: (string) The specific error that occurred.
+1. failure: (string) The specific error that occurred.
 
 The JSON returned by this event is like:
 
@@ -472,8 +472,8 @@ The JSON returned by this event is like:
 
 This event includes the following attributes:
 
-  - log_level: (string) The log level as a string (e.g. "INFO").
-  - message: (string) The log message.
+1. log_level: (string) The log level as a string (e.g. "INFO").
+1. message: (string) The log message.
 
 The JSON returned by this event is like:
 
@@ -491,8 +491,8 @@ The JSON returned by this event is like:
 
 This event includes the following attributes:
 
-  - idx: (int) Index of the current measurement
-  - json_str: (string) The measurement result as a serialized JSON.
+1. idx: (int) Index of the current measurement
+1. json_str: (string) The measurement result as a serialized JSON.
 
 The JSON returned by this event is like:
 
@@ -510,9 +510,9 @@ The JSON returned by this event is like:
 
 This event includes the following attributes:
 
-  - downloaded_kb: (float) The number of KB downloaded during the test.
-  - uploaded_kb: (float) The number of KB uploaded during the test.
-  - failure: (string) The error that occurred. If no error occurred, then this variable will hold an empty string.
+1. downloaded_kb: (float) The number of KB downloaded during the test.
+1. uploaded_kb: (float) The number of KB uploaded during the test.
+1. failure: (string) The error that occurred. If no error occurred, then this variable will hold an empty string.
 
 The JSON returned by this event is like:
 
@@ -531,10 +531,10 @@ The JSON returned by this event is like:
 
 This event includes the following attributes:
 
-  - probe_ip: (string) The user IP address
-  - probe_asn: (string) The user ASN (Autonomous System Number)
-  - probe_cc: (string) The user country code (CC).
-  - probe_network_name: (string) The descriptive name associated to the ASN
+1. probe_ip: (string) The user IP address
+1. probe_asn: (string) The user ASN (Autonomous System Number)
+1. probe_cc: (string) The user country code (CC).
+1. probe_network_name: (string) The descriptive name associated to the ASN
 
 The JSON returned by this event is like:
 
@@ -554,8 +554,8 @@ The JSON returned by this event is like:
 
 This event includes the following attributes:
 
-  - percentage: (float) Percentage of completion of the task.
-  - message: (string) Optional message indicating what step is now complete.
+1. percentage: (float) Percentage of completion of the task.
+1. message: (string) Optional message indicating what step is now complete.
 
 The JSON returned by this event is like:
 
@@ -588,8 +588,8 @@ The JSON returned by this event is like:
 
 This event includes the following attributes:
 
-  - idx: (int) Index of the current measurement.
-  - input: (string) Input of the current measurement. For nettests that do not take input, this will be the empty string.
+1. idx: (int) Index of the current measurement.
+1. input: (string) Input of the current measurement. For nettests that do not take input, this will be the empty string.
 
 The JSON returned by this event is like:
 
@@ -607,7 +607,7 @@ The JSON returned by this event is like:
 
 This event includes the following attributes:
 
-  - idx: (int) Index of the current measurement.
+1. idx: (int) Index of the current measurement.
 
 The JSON returned by this event is like:
 
@@ -624,7 +624,7 @@ The JSON returned by this event is like:
 
 This event includes the following attributes:
 
-  - idx: (int) Index of the current measurement.
+1. idx: (int) Index of the current measurement.
 
 The JSON returned by this event is like:
 
@@ -641,7 +641,7 @@ The JSON returned by this event is like:
 
 This event includes the following attributes:
 
-  - report_id: (string) Unique identifier of the nettest with the collector.
+1. report_id: (string) Unique identifier of the nettest with the collector.
 
 The JSON returned by this event is like:
 
@@ -658,7 +658,7 @@ The JSON returned by this event is like:
 
 This event includes the following attributes:
 
-  - report_id: (string) Unique identifier of the nettest with the collector.
+1. report_id: (string) Unique identifier of the nettest with the collector.
 
 The JSON returned by this event is like:
 
@@ -675,7 +675,7 @@ The JSON returned by this event is like:
 
 This event includes the following attributes:
 
-  - ip_address: (string) IP address of the user resolver.
+1. ip_address: (string) IP address of the user resolver.
 
 The JSON returned by this event is like:
 
@@ -707,10 +707,10 @@ The JSON returned by this event is like:
 
 This event includes the following attributes:
 
-  - direction: (string) The direction of the performance measurement. Either 'download', for download measurements, or 'upload' for upload measurements.
-  - elapsed: (float) Seconds elapsed since the performance measurement was started.
-  - num_streams: (int) Number of parallel TCP streams being used.
-  - speed_kbps: (float) Speed measured in kbit/s.
+1. direction: (string) The direction of the performance measurement. Either 'download', for download measurements, or 'upload' for upload measurements.
+1. elapsed: (float) Seconds elapsed since the performance measurement was started.
+1. num_streams: (int) Number of parallel TCP streams being used.
+1. speed_kbps: (float) Speed measured in kbit/s.
 
 The JSON returned by this event is like:
 
@@ -730,8 +730,8 @@ The JSON returned by this event is like:
 
 This event includes the following attributes:
 
-  - url: (string) URL that we are measuring.
-  - status: (string) Result of the measurement. Either "accessible" or "blocking".
+1. url: (string) URL that we are measuring.
+1. status: (string) Result of the measurement. Either "accessible" or "blocking".
 
 The JSON returned by this event is like:
 

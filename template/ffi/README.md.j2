@@ -201,7 +201,7 @@ specified, all the keys introduced below where added in MK v0.9.0.
 
 {% if event.attributes|length > 0 %}This event includes the following attributes:
 {% for attribute in event.attributes %}
-  - {{ attribute.key }}: ({{ attribute.base_type.decl("docs") }}) {{ attribute.docs }}{% endfor %}{% endif %}
+1. {{ attribute.key }}: ({{ attribute.base_type.decl("docs") }}) {{ attribute.docs }}{% endfor %}{% endif %}
 
 The JSON returned by this event is like:
 
