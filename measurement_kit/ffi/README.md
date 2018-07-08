@@ -313,55 +313,55 @@ specified, all the keys introduced below where added in MK v0.9.0.
 The following events are defined:
 
 
-- `"failure.asn_lookup"`: (object)
+- `"failure.asn_lookup"`: (object) [documentation](#failureasn_lookup)
 
-- `"failure.cc_lookup"`: (object)
+- `"failure.cc_lookup"`: (object) [documentation](#failurecc_lookup)
 
-- `"failure.ip_lookup"`: (object)
+- `"failure.ip_lookup"`: (object) [documentation](#failureip_lookup)
 
-- `"failure.measurement"`: (object)
+- `"failure.measurement"`: (object) [documentation](#failuremeasurement)
 
-- `"failure.measurement_submission"`: (object)
+- `"failure.measurement_submission"`: (object) [documentation](#failuremeasurement_submission)
 
-- `"failure.report_create"`: (object)
+- `"failure.report_create"`: (object) [documentation](#failurereport_create)
 
-- `"failure.report_close"`: (object)
+- `"failure.report_close"`: (object) [documentation](#failurereport_close)
 
-- `"failure.resolver_lookup"`: (object)
+- `"failure.resolver_lookup"`: (object) [documentation](#failureresolver_lookup)
 
-- `"failure.startup"`: (object)
+- `"failure.startup"`: (object) [documentation](#failurestartup)
 
-- `"log"`: (object)
+- `"log"`: (object) [documentation](#log)
 
-- `"measurement"`: (object)
+- `"measurement"`: (object) [documentation](#measurement)
 
-- `"status.end"`: (object)
+- `"status.end"`: (object) [documentation](#statusend)
 
-- `"status.geoip_lookup"`: (object)
+- `"status.geoip_lookup"`: (object) [documentation](#statusgeoip_lookup)
 
-- `"status.progress"`: (object)
+- `"status.progress"`: (object) [documentation](#statusprogress)
 
-- `"status.queued"`: (object)
+- `"status.queued"`: (object) [documentation](#statusqueued)
 
-- `"status.measurement_start"`: (object)
+- `"status.measurement_start"`: (object) [documentation](#statusmeasurement_start)
 
-- `"status.measurement_submission"`: (object)
+- `"status.measurement_submission"`: (object) [documentation](#statusmeasurement_submission)
 
-- `"status.measurement_done"`: (object)
+- `"status.measurement_done"`: (object) [documentation](#statusmeasurement_done)
 
-- `"status.report_close"`: (object)
+- `"status.report_close"`: (object) [documentation](#statusreport_close)
 
-- `"status.report_create"`: (object)
+- `"status.report_create"`: (object) [documentation](#statusreport_create)
 
-- `"status.resolver_lookup"`: (object)
+- `"status.resolver_lookup"`: (object) [documentation](#statusresolver_lookup)
 
-- `"status.started"`: (object)
+- `"status.started"`: (object) [documentation](#statusstarted)
 
-- `"status.update_performance"`: (object)
+- `"status.update_performance"`: (object) [documentation](#statusupdate_performance)
 
-- `"status.update.websites"`: (object)
+- `"status.update.websites"`: (object) [documentation](#statusupdatewebsites)
 
-- `"task_terminated"`: (object)
+- `"task_terminated"`: (object) [documentation](#task_terminated)
 
 
 Below we provide a detailed description of each event.
@@ -373,15 +373,15 @@ We could not lookup the ASN (Autonomous System Number) from the user's IP.
 
 This event includes the following attributes:
 
-1. failure: (string) The specific error that occurred.
+1. `"failure"`: (string) The specific error that occurred.
 
 The JSON returned by this event is like:
 
 ```JSON
 {
   "key": "failure.asn_lookup",
-  "value": {
-     "failure": ""
+  "value": {  
+    "failure": ""
   }
 }
 ```
@@ -392,15 +392,15 @@ We could not lookup the country code from the user's IP.
 
 This event includes the following attributes:
 
-1. failure: (string) The specific error that occurred.
+1. `"failure"`: (string) The specific error that occurred.
 
 The JSON returned by this event is like:
 
 ```JSON
 {
   "key": "failure.cc_lookup",
-  "value": {
-     "failure": ""
+  "value": {  
+    "failure": ""
   }
 }
 ```
@@ -411,15 +411,15 @@ We could not lookup the user IP address.
 
 This event includes the following attributes:
 
-1. failure: (string) The specific error that occurred.
+1. `"failure"`: (string) The specific error that occurred.
 
 The JSON returned by this event is like:
 
 ```JSON
 {
   "key": "failure.ip_lookup",
-  "value": {
-     "failure": ""
+  "value": {  
+    "failure": ""
   }
 }
 ```
@@ -430,15 +430,15 @@ There was a failure running the measurement.
 
 This event includes the following attributes:
 
-1. failure: (string) The specific error that occurred.
+1. `"failure"`: (string) The specific error that occurred.
 
 The JSON returned by this event is like:
 
 ```JSON
 {
   "key": "failure.measurement",
-  "value": {
-     "failure": ""
+  "value": {  
+    "failure": ""
   }
 }
 ```
@@ -449,19 +449,19 @@ There was a failure in submitting the measurement result to the configured colle
 
 This event includes the following attributes:
 
-1. failure: (string) The specific error that occurred.
-1. idx: (int) Index of the measurement that failed
-1. json_str: (string) Measurement that we could not submit as a serialized JSON.
+1. `"failure"`: (string) The specific error that occurred.
+1. `"idx"`: (int) Index of the measurement that failed
+1. `"json_str"`: (string) Measurement that we could not submit as a serialized JSON.
 
 The JSON returned by this event is like:
 
 ```JSON
 {
   "key": "failure.measurement_submission",
-  "value": {
-     "failure": "",
-     "idx": 0,
-     "json_str": ""
+  "value": {  
+    "failure": "",
+    "idx": 0,
+    "json_str": ""
   }
 }
 ```
@@ -472,15 +472,15 @@ There was a failure in getting an ID for submitting results from the configured 
 
 This event includes the following attributes:
 
-1. failure: (string) The specific error that occurred.
+1. `"failure"`: (string) The specific error that occurred.
 
 The JSON returned by this event is like:
 
 ```JSON
 {
   "key": "failure.report_create",
-  "value": {
-     "failure": ""
+  "value": {  
+    "failure": ""
   }
 }
 ```
@@ -491,15 +491,15 @@ There was a failure in telling the configured collector that all the measurement
 
 This event includes the following attributes:
 
-1. failure: (string) The specific error that occurred.
+1. `"failure"`: (string) The specific error that occurred.
 
 The JSON returned by this event is like:
 
 ```JSON
 {
   "key": "failure.report_close",
-  "value": {
-     "failure": ""
+  "value": {  
+    "failure": ""
   }
 }
 ```
@@ -510,15 +510,15 @@ There was a failure attempting to lookup the user DNS resolver IP address.
 
 This event includes the following attributes:
 
-1. failure: (string) The specific error that occurred.
+1. `"failure"`: (string) The specific error that occurred.
 
 The JSON returned by this event is like:
 
 ```JSON
 {
   "key": "failure.resolver_lookup",
-  "value": {
-     "failure": ""
+  "value": {  
+    "failure": ""
   }
 }
 ```
@@ -529,15 +529,15 @@ There was a failure in starting the nettest, most likely because you passed inco
 
 This event includes the following attributes:
 
-1. failure: (string) The specific error that occurred.
+1. `"failure"`: (string) The specific error that occurred.
 
 The JSON returned by this event is like:
 
 ```JSON
 {
   "key": "failure.startup",
-  "value": {
-     "failure": ""
+  "value": {  
+    "failure": ""
   }
 }
 ```
@@ -548,17 +548,17 @@ A log line that was emitted.
 
 This event includes the following attributes:
 
-1. log_level: (string) The log level as a string (e.g. "INFO").
-1. message: (string) The log message.
+1. `"log_level"`: (string) The log level as a string (e.g. "INFO").
+1. `"message"`: (string) The log message.
 
 The JSON returned by this event is like:
 
 ```JSON
 {
   "key": "log",
-  "value": {
-     "log_level": "",
-     "message": ""
+  "value": {  
+    "log_level": "",
+    "message": ""
   }
 }
 ```
@@ -569,17 +569,17 @@ The result of a measurement.
 
 This event includes the following attributes:
 
-1. idx: (int) Index of the current measurement
-1. json_str: (string) The measurement result as a serialized JSON.
+1. `"idx"`: (int) Index of the current measurement
+1. `"json_str"`: (string) The measurement result as a serialized JSON.
 
 The JSON returned by this event is like:
 
 ```JSON
 {
   "key": "measurement",
-  "value": {
-     "idx": 0,
-     "json_str": ""
+  "value": {  
+    "idx": 0,
+    "json_str": ""
   }
 }
 ```
@@ -590,19 +590,19 @@ Event emitted once at the end of the nettest. This event is always emitted, rega
 
 This event includes the following attributes:
 
-1. downloaded_kb: (float) The number of KB downloaded during the test.
-1. uploaded_kb: (float) The number of KB uploaded during the test.
-1. failure: (string) The error that occurred. If no error occurred, then this variable will hold an empty string.
+1. `"downloaded_kb"`: (float) The number of KB downloaded during the test.
+1. `"uploaded_kb"`: (float) The number of KB uploaded during the test.
+1. `"failure"`: (string) The error that occurred. If no error occurred, then this variable will hold an empty string.
 
 The JSON returned by this event is like:
 
 ```JSON
 {
   "key": "status.end",
-  "value": {
-     "downloaded_kb": 0.0,
-     "uploaded_kb": 0.0,
-     "failure": ""
+  "value": {  
+    "downloaded_kb": 0.0,
+    "uploaded_kb": 0.0,
+    "failure": ""
   }
 }
 ```
@@ -613,21 +613,21 @@ Event emitted once, when we discover the geolocation of the user based on their 
 
 This event includes the following attributes:
 
-1. probe_ip: (string) The user IP address
-1. probe_asn: (string) The user ASN (Autonomous System Number)
-1. probe_cc: (string) The user country code (CC).
-1. probe_network_name: (string) The descriptive name associated to the ASN
+1. `"probe_ip"`: (string) The user IP address
+1. `"probe_asn"`: (string) The user ASN (Autonomous System Number)
+1. `"probe_cc"`: (string) The user country code (CC).
+1. `"probe_network_name"`: (string) The descriptive name associated to the ASN
 
 The JSON returned by this event is like:
 
 ```JSON
 {
   "key": "status.geoip_lookup",
-  "value": {
-     "probe_ip": "",
-     "probe_asn": "",
-     "probe_cc": "",
-     "probe_network_name": ""
+  "value": {  
+    "probe_ip": "",
+    "probe_asn": "",
+    "probe_cc": "",
+    "probe_network_name": ""
   }
 }
 ```
@@ -638,17 +638,17 @@ Emitted during the task lifecycle to indicate progress.
 
 This event includes the following attributes:
 
-1. percentage: (float) Percentage of completion of the task.
-1. message: (string) Optional message indicating what step is now complete.
+1. `"percentage"`: (float) Percentage of completion of the task.
+1. `"message"`: (string) Optional message indicating what step is now complete.
 
 The JSON returned by this event is like:
 
 ```JSON
 {
   "key": "status.progress",
-  "value": {
-     "percentage": 0.0,
-     "message": ""
+  "value": {  
+    "percentage": 0.0,
+    "message": ""
   }
 }
 ```
@@ -664,8 +664,7 @@ The JSON returned by this event is like:
 ```JSON
 {
   "key": "status.queued",
-  "value": {
-    
+  "value": { 
   }
 }
 ```
@@ -676,17 +675,17 @@ Emitted when we start a new measurement within a nettest. For nettests that do n
 
 This event includes the following attributes:
 
-1. idx: (int) Index of the current measurement.
-1. input: (string) Input of the current measurement. For nettests that do not take input, this will be the empty string.
+1. `"idx"`: (int) Index of the current measurement.
+1. `"input"`: (string) Input of the current measurement. For nettests that do not take input, this will be the empty string.
 
 The JSON returned by this event is like:
 
 ```JSON
 {
   "key": "status.measurement_start",
-  "value": {
-     "idx": 0,
-     "input": ""
+  "value": {  
+    "idx": 0,
+    "input": ""
   }
 }
 ```
@@ -697,15 +696,15 @@ Emitted when the result of a measurement has been successfully submitted to the 
 
 This event includes the following attributes:
 
-1. idx: (int) Index of the current measurement.
+1. `"idx"`: (int) Index of the current measurement.
 
 The JSON returned by this event is like:
 
 ```JSON
 {
   "key": "status.measurement_submission",
-  "value": {
-     "idx": 0
+  "value": {  
+    "idx": 0
   }
 }
 ```
@@ -716,15 +715,15 @@ Emitted when a measurement is done. This is emitted regardless of whether there 
 
 This event includes the following attributes:
 
-1. idx: (int) Index of the current measurement.
+1. `"idx"`: (int) Index of the current measurement.
 
 The JSON returned by this event is like:
 
 ```JSON
 {
   "key": "status.measurement_done",
-  "value": {
-     "idx": 0
+  "value": {  
+    "idx": 0
   }
 }
 ```
@@ -735,15 +734,15 @@ Emitted when we have notified the collector that we are done with running measur
 
 This event includes the following attributes:
 
-1. report_id: (string) Unique identifier of the nettest with the collector.
+1. `"report_id"`: (string) Unique identifier of the nettest with the collector.
 
 The JSON returned by this event is like:
 
 ```JSON
 {
   "key": "status.report_close",
-  "value": {
-     "report_id": ""
+  "value": {  
+    "report_id": ""
   }
 }
 ```
@@ -754,15 +753,15 @@ Emitted when we have notified the collector the intention to start submitting me
 
 This event includes the following attributes:
 
-1. report_id: (string) Unique identifier of the nettest with the collector.
+1. `"report_id"`: (string) Unique identifier of the nettest with the collector.
 
 The JSON returned by this event is like:
 
 ```JSON
 {
   "key": "status.report_create",
-  "value": {
-     "report_id": ""
+  "value": {  
+    "report_id": ""
   }
 }
 ```
@@ -773,15 +772,15 @@ Emitted once when we discover the user DNS resolver IP.
 
 This event includes the following attributes:
 
-1. ip_address: (string) IP address of the user resolver.
+1. `"ip_address"`: (string) IP address of the user resolver.
 
 The JSON returned by this event is like:
 
 ```JSON
 {
   "key": "status.resolver_lookup",
-  "value": {
-     "ip_address": ""
+  "value": {  
+    "ip_address": ""
   }
 }
 ```
@@ -797,8 +796,7 @@ The JSON returned by this event is like:
 ```JSON
 {
   "key": "status.started",
-  "value": {
-    
+  "value": { 
   }
 }
 ```
@@ -809,21 +807,21 @@ Status update regarding the currently ongoing network performance measurement. T
 
 This event includes the following attributes:
 
-1. direction: (string) The direction of the performance measurement. Either 'download', for download measurements, or 'upload' for upload measurements.
-1. elapsed: (float) Seconds elapsed since the performance measurement was started.
-1. num_streams: (int) Number of parallel TCP streams being used.
-1. speed_kbps: (float) Speed measured in kbit/s.
+1. `"direction"`: (string) The direction of the performance measurement. Either 'download', for download measurements, or 'upload' for upload measurements.
+1. `"elapsed"`: (float) Seconds elapsed since the performance measurement was started.
+1. `"num_streams"`: (int) Number of parallel TCP streams being used.
+1. `"speed_kbps"`: (float) Speed measured in kbit/s.
 
 The JSON returned by this event is like:
 
 ```JSON
 {
   "key": "status.update_performance",
-  "value": {
-     "direction": "",
-     "elapsed": 0.0,
-     "num_streams": 0,
-     "speed_kbps": 0.0
+  "value": {  
+    "direction": "",
+    "elapsed": 0.0,
+    "num_streams": 0,
+    "speed_kbps": 0.0
   }
 }
 ```
@@ -834,17 +832,17 @@ Status update regarding the currently ongoing website censorship measurement.
 
 This event includes the following attributes:
 
-1. url: (string) URL that we are measuring.
-1. status: (string) Result of the measurement. Either "accessible" or "blocking".
+1. `"url"`: (string) URL that we are measuring.
+1. `"status"`: (string) Result of the measurement. Either "accessible" or "blocking".
 
 The JSON returned by this event is like:
 
 ```JSON
 {
   "key": "status.update.websites",
-  "value": {
-     "url": "",
-     "status": ""
+  "value": {  
+    "url": "",
+    "status": ""
   }
 }
 ```
@@ -860,403 +858,11 @@ The JSON returned by this event is like:
 ```JSON
 {
   "key": "task_terminated",
-  "value": {
-    
+  "value": { 
   }
 }
 ```
 
-
-- `"failure.asn_lookup"`: (object) There was a failure attempting to lookup the
-  user autonomous system number. The JSON returned by this event is like:
-
-```JSON
-{
-  "key": "failure.asn_lookup",
-  "value": {
-    "failure": "<failure_string>"
-  }
-}
-```
-
-Where all the possible values of `<failure_string>` are described below.
-
-- `"failure.cc_lookup"`: (object) There was a failure attempting to lookup the
-  user country code. The JSON returned by this event is like:
-
-```JSON
-{
-  "key": "failure.cc_lookup",
-  "value": {
-    "failure": "<failure_string>"
-  }
-}
-```
-
-Where all the possible values of `<failure_string>` are described below.
-
-- `"failure.ip_lookup"`: (object) There was a failure attempting to lookup the
-  user IP address. The JSON returned by this event is like:
-
-```JSON
-{
-  "key": "failure.ip_lookup",
-  "value": {
-    "failure": "<failure_string>"
-  }
-}
-```
-
-Where all the possible values of `<failure_string>` are described below.
-
-- `"failure.measurement"`: (object) There was a failure running the
-  measurement. The complete JSON returned by this event is like:
-
-```JSON
-{
-  "key": "failure.measurement",
-  "value": {
-    "failure": "<failure_string>"
-  }
-}
-```
-
-Where all the possible values of `<failure_string>` are described below.
-
-- `"failure.measurement_submission"`: (object) There was a failure in
-submitting the measurement result to the configured collector (if any). The
-complete JSON returned by this event is like:
-
-```JSON
-{
-  "key": "failure.measurement_submission",
-  "value": {
-    "idx": 0,
-    "json_str": "<serialized_result>",
-    "failure": "<failure_string>"
-  }
-}
-```
-
-Where `idx` is the index of the current measurement, which is relevant for the
-tests that run over an input list; `json_str` is the measurement that we failed
-to submit, serialized as JSON; `failure` is the error that occurred.
-
-- `"failure.report_create"`: (object) There was a failure in creating the
-measurement result to the configured collector (if any). The complete JSON
-returned by this event is like:
-
-```JSON
-{
-  "key": "failure.report_create",
-  "value": {
-    "failure": "<failure_string>"
-  }
-}
-```
-
-Where `failure` is the error that occurred.
-
-- `"failure.report_close"`: (object) There was a failure in closing the
-measurement result to the configured collector (if any). The complete JSON
-returned by this event is like:
-
-```JSON
-{
-  "key": "failure.report_close",
-  "value": {
-    "failure": "<failure_string>"
-  }
-}
-```
-
-Where `failure` is the error that occurred.
-
-- `"failure.resolver_lookup"`: (object) There was a failure attempting to
-  lookup the user DNS resolver. The JSON returned by this event is like:
-
-```JSON
-{
-  "key": "failure.resolver_lookup",
-  "value": {
-    "failure": "<failure_string>"
-  }
-}
-```
-
-Where all the possible values of `<failure_string>` are described below.
-
-- `"failure.startup"`: (object) There was a failure starting the test, most
-likely because you passed in incorrect options. The complete JSON returned by
-this event is like:
-
-```JSON
-{
-  "key": "failure.startup",
-  "value": {
-    "failure": "<failure_string>"
-  }
-}
-```
-
-Where `<failure_string>` is the error that occurred.
-
-- `"log"`: (object) A log line was emitted. The complete JSON is like:
-
-```JSON
-{
-  "key": "log",
-  "value": {
-    "log_level": "<a_log_level>",
-    "message": "<string>"
-  }
-}
-```
-
-Where `log_level` is one of the log levels described above, and `message`
-is the log message emitted by Measurement Kit.
-
-- `"measurement"`: (object) The result of a measurement. The complete JSON
-is like:
-
-```JSON
-{
-  "key": "measurement",
-  "value": {
-    "idx": 0,
-    "json_str": "<serialized_result>"
-  }
-}
-```
-
-Where `json_str` is the measurement result serialized as JSON. The schema of
-a measurement result depends on the type of task, as described below. And
-where `idx` is the index of the current measurement (relevant only for tasks
-that iterate over an input list).
-
-- `"status.end"`: (object) This event is emitted just once at the end of the
-test. The complete JSON is like:
-
-```JSON
-{
-  "key": "status.end",
-  "value": {
-    "downloaded_kb": 0.0,
-    "uploaded_kb": 0.0,
-    "failure": "<failure_string>"
-  }
-}
-```
-
-Where `downloaded_kb` and `uploaded_kb` are the amount of downloaded and
-uploaded kilo-bytes, and `failure` is the overall failure that occurred during
-the test (or the empty string, if no error occurred). This event is always
-emitted, regardless of whether the task arrives naturally to its end or instead
-is interrupted. As such, you can rely on this event as a "once" event suitable
-for clearing up resources allocated as part of the task lifecycle.
-
-- `"status.geoip_lookup"`: (object) This event is emitted only once at the
-beginning of the task, and provides information about the user's IP address,
-country and autonomous system. In detail, the JSON is like:
-
-```JSON
-{
-  "key": "status.geoip_lookup",
-  "value": {
-    "probe_ip": "<ip_address>",
-    "probe_asn": "<asn>",
-    "probe_cc": "<cc>",
-    "probe_network_name": "<network_name>"
-  }
-}
-```
-
-Where `<ip_address>` is the user's IP address, `asn` is the autonomous
-system number, `cc` is the country code, `network_name` is the commercial
-name associated to the autonomous system number.
-
-- `"status.progress"`: (object) This is emitted during the task lifecycle to
-inform you about the task progress towards completion. In detail, the JSON is
-like:
-
-```JSON
-{
-  "key": "status.progress",
-  "value": {
-    "percentage": 0.0,
-    "message": "<string>"
-  }
-}
-```
-
-Where `percentage` is the percentage of completion of the task, and `message`
-indicates the operation that the task just completed.
-
-- `"status.queued"`: (object) Indicates that the task has been accepted. In
-case there are already running tasks, as mentioned above, they will be
-prevented from running concurrently. The JSON is like:
-
-```JSON
-{
-  "key": "status.queued",
-  "value": {
-  }
-}
-```
-
-Where `value` is empty.
-
-- `"status.measurement_start"`: (object) Indicates that a measurement inside
-a task has started. The JSON is like:
-
-```JSON
-{
-  "key": "status.measurement_start",
-  "value": {
-    "idx": 0,
-    "input": "<input>"
-  }
-}
-```
-
-Where `idx` is the index of the current input and `input` is the current
-input. For tests that take no input, this event MAY be emitted with
-`idx` equal to `0` and `input` equal to the empty string.
-
-- `"status.measurement_submission"`: (object) The specific measurement has
-been uploaded successfully. The JSON is like:
-
-```JSON
-{
-  "key": "status.measurement_submission",
-  "value": {
-    "idx": 0
-  }
-}
-```
-
-Where `idx` is the index of the measurement input.
-
-- `"status.measurement_done"`: (object) Measurement Kit has finished processing
-the specified input. The JSON is like:
-
-```JSON
-{
-  "key": "status.measurement_done",
-  "value": {
-    "idx": 0
-  }
-}
-```
-
-Where `idx` is the index of the measurement input.
-
-- `"status.report_close"`: (object) Measurement Kit has closed a report for the
-current task, and tells you the report-ID. The report-ID is the identifier of
-the measurement result(s), which have been submitted. The JSON is like:
-
-```JSON
-{
-  "key": "status.report_close",
-  "value": {
-    "report_id": "string"
-  }
-}
-```
-
-Where `report_id` is the report identifier.
-
-- `"status.report_create"`: (object) Measurement Kit has created a report for
-the current task, and tells you the report-ID. The report-ID is the identifier
-of the measurement result(s), which will be later submitted. The JSON is like:
-
-```JSON
-{
-  "key": "status.report_create",
-  "value": {
-    "report_id": "string"
-  }
-}
-```
-
-Where `report_id` is the report identifier.
-
-- `"status.resolver_lookup"`: (object) This event is emitted only once at the
-beginning of the task, when the IP address of the resolver is discovered. The
-JSON is like:
-
-```JSON
-{
-  "key": "status.resolver_lookup",
-  "value": {
-    "resolver_ip": "<ip_address>"
-  }
-}
-```
-
-Where `<ip_address>` is the resolver's IP address.
-
-- `"status.started"`: (object) The task has started, and the JSON is like:
-
-```JSON
-{
-  "key": "status.started",
-  "value": {
-  }
-}
-```
-
-Where `value` is empty.
-
-- `"status.update.performance"`: (object) This is an event emitted by tests that
-measure network performance. The JSON is like:
-
-```JSON
-{
-  "key": "status.update.performance",
-  "value": {
-    "direction": "<direction>",
-    "elapsed": 0.0,
-    "num_streams": 0,
-    "speed_kbps": 0.0
-  }
-}
-```
-
-Where `direction` is either "download" or "upload", `elapsed` is the elapsed
-time (in seconds) since the measurement started, `num_streams` is the number of
-streams we are using to measure performance, `speed_kbps` is the speed, in
-kbit/s, measured since the previous performance measurement.
-
-- `"status.update.websites"`: (object) This is an event emitted by tests that
-measure the reachability of websites. The JSON is like:
-
-```JSON
-{
-  "key": "status.update.websites",
-  "value": {
-    "url": "<url>",
-    "status": "<status>"
-  }
-}
-```
-
-Where `url` is the URL we're measuring and `status` is either `accessible`
-or `blocking`.
-
-- `"task_terminated"`: (object) This event is emitted when you attempt to
-extract events from the task queue, but the task is not running anymore (i.e.
-it's the equivalent of `EOF` for the task queue). The related JSON is like:
-
-```JSON
-{
-  "key": "status.terminated",
-  "value": {
-  }
-}
-```
-
-Where `value` is empty.
 
 ## Task pseudocode
 
