@@ -239,6 +239,112 @@ def main():
                     Attribute(
                         "The specific error that occurred.",
                         String(), "failure")),
+              Event("""A log line that was emitted.""",
+                    "log",
+                    Attribute(
+                        """The log level as a string (e.g. "INFO").""",
+                        String(), "log_level"),
+                    Attribute(
+                        """The log message.""",
+                        String(), "message")),
+              Event("""The result of a measurement.""",
+                    "measurement",
+                    Attribute(
+                        """Index of the current measurement""",
+                        Int64(), "idx"),
+                    Attribute(
+                        """The measurement result as a serialized JSON.""",
+                        String(), "json_str")),
+              Event("""Event emitted once at the end of the nettest. This event
+                       is always emitted, regardless of whether the nettest
+                       naturally reaches its end or is interrupted. As such, you
+                       can rely on this event as a "once" suitable for
+                       releasing all the extra resources you may have allocated
+                       as part of the nettest lifecyle.""",
+                    "status.end",
+                    Attribute(
+                        """The number of KB downloaded during the test.""",
+                        Double(), "downloaded_kb"),
+                    Attribute(
+                        """The number of KB uploaded during the test.""",
+                        Double(), "uploaded_kb"),
+                    Attribute(
+                        """The error that occurred. If no error occurred, then
+                           this variable will hold an empty string.""",
+                        String(), "failure")),
+              Event("""Event emitted once, when we discover the geolocation of
+                       the user based on their IP address.""",
+                    "status.geoip_lookup",
+                    Attribute(
+                        """The user IP address""",
+                        String(), "probe_ip"),
+                    Attribute(
+                        """The user ASN (Autonomous System Number)""",
+                        String(), "probe_asn"),
+                    Attribute(
+                        """The user country code (CC).""",
+                        String(), "probe_cc"),
+                    Attribute(
+                        """The descriptive name associated to the ASN""",
+                        String(), "probe_network_name")),
+              Event("""Emitted during the task lifecycle to indicate progress.""",
+                    "status.progress",
+                    Attribute(
+                        """Percentage of completion of the task.""",
+                        Double(), "percentage"),
+                    Attribute(
+                        """Optional message indicating what step is now complete.""",
+                        String(), "message")),
+              Event("""Emitted once to indicate that the tast has been submitted
+                       for running. Unless you run multiple test at the same
+                       time (which is discouraged), this event also implies that
+                       the test will be started immediately.""",
+                    "status.queued"),
+              Event("""Emitted when we start a new measurement within a nettest. For
+                       nettests that do not require input, there is just a single
+                       measurement within a nettest. Otherwise, there is a measurement
+                       for each input provided to the nettest.""",
+                    "status.measurement_start",
+                    Attribute(
+                        """Index of the current measurement.""",
+                        Int64(), "idx"),
+                    Attribute(
+                        """Input of the current measurement. For nettests that do not
+                           take input, this will be the empty string.""",
+                        String(), "input")),
+              Event("""Emitted when the result of a measurement has been successfully
+                       submitted to the configured collector.""",
+                    "status.measurement_submission",
+                    Attribute(
+                        """Index of the current measurement.""",
+                        Int64(), "idx")),
+              Event("""Emitted when a measurement is done. This is emitted regardless
+                       of whether there were any failures during the measurement.""",
+                    "status.measurement_done",
+                    Attribute(
+                        """Index of the current measurement.""",
+                        Int64(), "idx")),
+              Event("""Emitted when we have notified the collector that we are done
+                       with running measurements with a specific report ID.""",
+                    "status.report_close",
+                    Attribute(
+                        """Unique identifier of the nettest with the collector.""",
+                        String(), "report_id")),
+              Event("""Emitted when we have notified the collector the intention to
+                       start submitting measurements. As part of this API call, we
+                       receive back a "report ID" to be used to submit subsequent
+                       measurements that we perform.""",
+                    "status.report_create",
+                    Attribute(
+                        """Unique identifier of the nettest with the collector.""",
+                        String(), "report_id")),
+              Event("""Emitted once when we discover the user DNS resolver IP.""",
+                    "status.resolver_lookup",
+                    Attribute(
+                        """IP address of the user resolver.""",
+                        String(), "ip_address")),
+              Event("""Emitted once when the nettest has started running.""",
+                    "status.started"),
               Event("""Status update regarding the currently ongoing network
                        performance measurement. This event is, of course,
                        only emitted by network tests that measure the network
@@ -256,7 +362,20 @@ def main():
                     Attribute("Number of parallel TCP streams being used.",
                               Int64(), "num_streams"),
                     Attribute("Speed measured in kbit/s.",
-                              Double(), "speed_kbps"))]
+                              Double(), "speed_kbps")),
+              Event("""Status update regarding the currently ongoing website
+                       censorship measurement.""",
+                    "status.update.websites",
+                    Attribute(
+                        """URL that we are measuring.""",
+                        String(), "url"),
+                    Attribute(
+                        """Result of the measurement. Either "accessible"
+                           or "blocking".""",
+                        String(), "status")),
+              Event("""Emitted when a nettest is done and you attempt using
+                       the FFI API to extract more tasks from its queue.""",
+                    "task_terminated")]
 
     options = [Attribute("""Base URL of the OONI bouncer. This base URL is
                             used to construct the full URL required to contact

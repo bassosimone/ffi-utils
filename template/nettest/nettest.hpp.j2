@@ -270,8 +270,7 @@ void Runner::run(const settings::Settings &settings) {
       ev = nlohmann::json::parse(str);
     }
     {% for event in events %}if (ev.at("key") == "{{ event.key }}") {
-      events::{{ event.key.to_pascal_case() }} event;
-      {% for attribute in event.attributes %} event.{{ attribute.key.to_snake_case() }} = {{ attribute.base_type.from_json_cast("cxx") }} ev.at("value").at("{{ attribute.key }}"); {% endfor %}
+      events::{{ event.key.to_pascal_case() }} event; {% for attribute in event.attributes %} event.{{ attribute.key.to_snake_case() }} = {{ attribute.base_type.from_json_cast("cxx") }} ev.at("value").at("{{ attribute.key }}"); {% endfor %}
       on_{{ event.key.to_snake_case() }}(event);
       continue;
     }{% endfor %}

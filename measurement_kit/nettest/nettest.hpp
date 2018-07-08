@@ -225,6 +225,186 @@ class FailureStartup {
   std::string failure = "";
 };
 
+/// A log line that was emitted.
+class Log {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "log";
+
+  /// The log level as a string (e.g. "INFO").
+  std::string log_level = "";
+
+  /// The log message.
+  std::string message = "";
+};
+
+/// The result of a measurement.
+class Measurement {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "measurement";
+
+  /// Index of the current measurement
+  int64_t idx = 0;
+
+  /// The measurement result as a serialized JSON.
+  std::string json_str = "";
+};
+
+/// Event emitted once at the end of the nettest. This event is always emitted,
+/// regardless of whether the nettest naturally reaches its end or is
+/// interrupted. As such, you can rely on this event as a "once" suitable for
+/// releasing all the extra resources you may have allocated as part of the
+/// nettest lifecyle.
+class StatusEnd {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "status.end";
+
+  /// The number of KB downloaded during the test.
+  double downloaded_kb = 0.0;
+
+  /// The number of KB uploaded during the test.
+  double uploaded_kb = 0.0;
+
+  /// The error that occurred. If no error occurred, then this variable will
+  /// hold an empty string.
+  std::string failure = "";
+};
+
+/// Event emitted once, when we discover the geolocation of the user based on
+/// their IP address.
+class StatusGeoipLookup {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "status.geoip_lookup";
+
+  /// The user IP address
+  std::string probe_ip = "";
+
+  /// The user ASN (Autonomous System Number)
+  std::string probe_asn = "";
+
+  /// The user country code (CC).
+  std::string probe_cc = "";
+
+  /// The descriptive name associated to the ASN
+  std::string probe_network_name = "";
+};
+
+/// Emitted during the task lifecycle to indicate progress.
+class StatusProgress {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "status.progress";
+
+  /// Percentage of completion of the task.
+  double percentage = 0.0;
+
+  /// Optional message indicating what step is now complete.
+  std::string message = "";
+};
+
+/// Emitted once to indicate that the tast has been submitted for running.
+/// Unless you run multiple test at the same time (which is discouraged), this
+/// event also implies that the test will be started immediately.
+class StatusQueued {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "status.queued";
+};
+
+/// Emitted when we start a new measurement within a nettest. For nettests that
+/// do not require input, there is just a single measurement within a nettest.
+/// Otherwise, there is a measurement for each input provided to the nettest.
+class StatusMeasurementStart {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "status.measurement_start";
+
+  /// Index of the current measurement.
+  int64_t idx = 0;
+
+  /// Input of the current measurement. For nettests that do not take input,
+  /// this will be the empty string.
+  std::string input = "";
+};
+
+/// Emitted when the result of a measurement has been successfully submitted to
+/// the configured collector.
+class StatusMeasurementSubmission {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "status.measurement_submission";
+
+  /// Index of the current measurement.
+  int64_t idx = 0;
+};
+
+/// Emitted when a measurement is done. This is emitted regardless of whether
+/// there were any failures during the measurement.
+class StatusMeasurementDone {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "status.measurement_done";
+
+  /// Index of the current measurement.
+  int64_t idx = 0;
+};
+
+/// Emitted when we have notified the collector that we are done with running
+/// measurements with a specific report ID.
+class StatusReportClose {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "status.report_close";
+
+  /// Unique identifier of the nettest with the collector.
+  std::string report_id = "";
+};
+
+/// Emitted when we have notified the collector the intention to start
+/// submitting measurements. As part of this API call, we receive back a "report
+/// ID" to be used to submit subsequent measurements that we perform.
+class StatusReportCreate {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "status.report_create";
+
+  /// Unique identifier of the nettest with the collector.
+  std::string report_id = "";
+};
+
+/// Emitted once when we discover the user DNS resolver IP.
+class StatusResolverLookup {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "status.resolver_lookup";
+
+  /// IP address of the user resolver.
+  std::string ip_address = "";
+};
+
+/// Emitted once when the nettest has started running.
+class StatusStarted {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "status.started";
+};
+
 /// Status update regarding the currently ongoing network performance
 /// measurement. This event is, of course, only emitted by network tests that
 /// measure the network performance.
@@ -246,6 +426,30 @@ class StatusUpdatePerformance {
 
   /// Speed measured in kbit/s.
   double speed_kbps = 0.0;
+};
+
+/// Status update regarding the currently ongoing website censorship
+/// measurement.
+class StatusUpdateWebsites {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "status.update.websites";
+
+  /// URL that we are measuring.
+  std::string url = "";
+
+  /// Result of the measurement. Either "accessible" or "blocking".
+  std::string status = "";
+};
+
+/// Emitted when a nettest is done and you attempt using the FFI API to extract
+/// more tasks from its queue.
+class TaskTerminated {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "task_terminated";
 };
 
 }  // namespace events
@@ -653,9 +857,87 @@ class Runner {
     // TODO: override this callback if you're interested
   }
 
+  /// Called when the Log event occurs.
+  virtual void on_log(const events::Log &) {
+    // TODO: override this callback if you're interested
+  }
+
+  /// Called when the Measurement event occurs.
+  virtual void on_measurement(const events::Measurement &) {
+    // TODO: override this callback if you're interested
+  }
+
+  /// Called when the StatusEnd event occurs.
+  virtual void on_status_end(const events::StatusEnd &) {
+    // TODO: override this callback if you're interested
+  }
+
+  /// Called when the StatusGeoipLookup event occurs.
+  virtual void on_status_geoip_lookup(const events::StatusGeoipLookup &) {
+    // TODO: override this callback if you're interested
+  }
+
+  /// Called when the StatusProgress event occurs.
+  virtual void on_status_progress(const events::StatusProgress &) {
+    // TODO: override this callback if you're interested
+  }
+
+  /// Called when the StatusQueued event occurs.
+  virtual void on_status_queued(const events::StatusQueued &) {
+    // TODO: override this callback if you're interested
+  }
+
+  /// Called when the StatusMeasurementStart event occurs.
+  virtual void on_status_measurement_start(
+      const events::StatusMeasurementStart &) {
+    // TODO: override this callback if you're interested
+  }
+
+  /// Called when the StatusMeasurementSubmission event occurs.
+  virtual void on_status_measurement_submission(
+      const events::StatusMeasurementSubmission &) {
+    // TODO: override this callback if you're interested
+  }
+
+  /// Called when the StatusMeasurementDone event occurs.
+  virtual void on_status_measurement_done(
+      const events::StatusMeasurementDone &) {
+    // TODO: override this callback if you're interested
+  }
+
+  /// Called when the StatusReportClose event occurs.
+  virtual void on_status_report_close(const events::StatusReportClose &) {
+    // TODO: override this callback if you're interested
+  }
+
+  /// Called when the StatusReportCreate event occurs.
+  virtual void on_status_report_create(const events::StatusReportCreate &) {
+    // TODO: override this callback if you're interested
+  }
+
+  /// Called when the StatusResolverLookup event occurs.
+  virtual void on_status_resolver_lookup(const events::StatusResolverLookup &) {
+    // TODO: override this callback if you're interested
+  }
+
+  /// Called when the StatusStarted event occurs.
+  virtual void on_status_started(const events::StatusStarted &) {
+    // TODO: override this callback if you're interested
+  }
+
   /// Called when the StatusUpdatePerformance event occurs.
   virtual void on_status_update_performance(
       const events::StatusUpdatePerformance &) {
+    // TODO: override this callback if you're interested
+  }
+
+  /// Called when the StatusUpdateWebsites event occurs.
+  virtual void on_status_update_websites(const events::StatusUpdateWebsites &) {
+    // TODO: override this callback if you're interested
+  }
+
+  /// Called when the TaskTerminated event occurs.
+  virtual void on_task_terminated(const events::TaskTerminated &) {
     // TODO: override this callback if you're interested
   }
 
@@ -924,6 +1206,91 @@ void Runner::run(const settings::Settings &settings) {
       on_failure_startup(event);
       continue;
     }
+    if (ev.at("key") == "log") {
+      events::Log event;
+      event.log_level = ev.at("value").at("log_level");
+      event.message = ev.at("value").at("message");
+      on_log(event);
+      continue;
+    }
+    if (ev.at("key") == "measurement") {
+      events::Measurement event;
+      event.idx = ev.at("value").at("idx");
+      event.json_str = ev.at("value").at("json_str");
+      on_measurement(event);
+      continue;
+    }
+    if (ev.at("key") == "status.end") {
+      events::StatusEnd event;
+      event.downloaded_kb = ev.at("value").at("downloaded_kb");
+      event.uploaded_kb = ev.at("value").at("uploaded_kb");
+      event.failure = ev.at("value").at("failure");
+      on_status_end(event);
+      continue;
+    }
+    if (ev.at("key") == "status.geoip_lookup") {
+      events::StatusGeoipLookup event;
+      event.probe_ip = ev.at("value").at("probe_ip");
+      event.probe_asn = ev.at("value").at("probe_asn");
+      event.probe_cc = ev.at("value").at("probe_cc");
+      event.probe_network_name = ev.at("value").at("probe_network_name");
+      on_status_geoip_lookup(event);
+      continue;
+    }
+    if (ev.at("key") == "status.progress") {
+      events::StatusProgress event;
+      event.percentage = ev.at("value").at("percentage");
+      event.message = ev.at("value").at("message");
+      on_status_progress(event);
+      continue;
+    }
+    if (ev.at("key") == "status.queued") {
+      events::StatusQueued event;
+      on_status_queued(event);
+      continue;
+    }
+    if (ev.at("key") == "status.measurement_start") {
+      events::StatusMeasurementStart event;
+      event.idx = ev.at("value").at("idx");
+      event.input = ev.at("value").at("input");
+      on_status_measurement_start(event);
+      continue;
+    }
+    if (ev.at("key") == "status.measurement_submission") {
+      events::StatusMeasurementSubmission event;
+      event.idx = ev.at("value").at("idx");
+      on_status_measurement_submission(event);
+      continue;
+    }
+    if (ev.at("key") == "status.measurement_done") {
+      events::StatusMeasurementDone event;
+      event.idx = ev.at("value").at("idx");
+      on_status_measurement_done(event);
+      continue;
+    }
+    if (ev.at("key") == "status.report_close") {
+      events::StatusReportClose event;
+      event.report_id = ev.at("value").at("report_id");
+      on_status_report_close(event);
+      continue;
+    }
+    if (ev.at("key") == "status.report_create") {
+      events::StatusReportCreate event;
+      event.report_id = ev.at("value").at("report_id");
+      on_status_report_create(event);
+      continue;
+    }
+    if (ev.at("key") == "status.resolver_lookup") {
+      events::StatusResolverLookup event;
+      event.ip_address = ev.at("value").at("ip_address");
+      on_status_resolver_lookup(event);
+      continue;
+    }
+    if (ev.at("key") == "status.started") {
+      events::StatusStarted event;
+      on_status_started(event);
+      continue;
+    }
     if (ev.at("key") == "status.update_performance") {
       events::StatusUpdatePerformance event;
       event.direction = ev.at("value").at("direction");
@@ -931,6 +1298,18 @@ void Runner::run(const settings::Settings &settings) {
       event.num_streams = ev.at("value").at("num_streams");
       event.speed_kbps = ev.at("value").at("speed_kbps");
       on_status_update_performance(event);
+      continue;
+    }
+    if (ev.at("key") == "status.update.websites") {
+      events::StatusUpdateWebsites event;
+      event.url = ev.at("value").at("url");
+      event.status = ev.at("value").at("status");
+      on_status_update_websites(event);
+      continue;
+    }
+    if (ev.at("key") == "task_terminated") {
+      events::TaskTerminated event;
+      on_task_terminated(event);
       continue;
     }
     std::clog << "unhandled event: " << ev.at("key");
