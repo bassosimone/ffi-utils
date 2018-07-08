@@ -1,8 +1,8 @@
 /* Part of Measurement Kit <https://measurement-kit.github.io/>.
    Measurement Kit is free software under the BSD license. See AUTHORS
    and LICENSE for more information on the copying conditions. */
-#ifndef MEASUREMENT_KIT_FFI_H
-#define MEASUREMENT_KIT_FFI_H
+#ifndef MEASUREMENT_KIT_FFI_FFI_H
+#define MEASUREMENT_KIT_FFI_FFI_H
 
 /**
     @file measurement_kit/ffi/ffi.h
@@ -280,4 +280,4 @@ void mk_task_destroy(mk_task_t *task) MK_FFI_NOEXCEPT;
     top-level API specification</a> to get a better sense of the high
     level design of Measurement Kit APIs.
 */
-#endif /* MEASUREMENT_KIT_FFI_H */
+#endif /* MEASUREMENT_KIT_FFI_FFI_H */
