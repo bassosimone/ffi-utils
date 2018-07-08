@@ -54,7 +54,7 @@ class Bool(Type):
 
     def decl(self, language):
         return {
-            "cxx": "double",
+            "cxx": "bool",
             "docs": "int",
         }[language]
 
@@ -166,11 +166,12 @@ class Event(object):
         self.attributes = list(attributes)
 
 class Nettest(object):
-    def __init__(self, docs, key, reference_url, options=None):
+    def __init__(self, docs, key, reference_url, options=None, needs_input=False):
         self.docs = Documentation(docs)
         self.key = Key(key)
         self.reference_url = reference_url
         self.options = options
+        self.needs_input = Bool(needs_input)
 
 class LogLevel(object):
     def __init__(self, docs, key):
@@ -180,8 +181,61 @@ class LogLevel(object):
 def main():
     """ Main function """
 
-    events = [Event("We could not lookup the ASN (Autonomous System Number) from the probe IP.",
+    events = [Event("""We could not lookup the ASN (Autonomous System Number) from the user's IP.""",
                     "failure.asn_lookup",
+                    Attribute(
+                        "The specific error that occurred.",
+                        String(), "failure")),
+              Event("""We could not lookup the country code from the user's IP.""",
+                    "failure.cc_lookup",
+                    Attribute(
+                        "The specific error that occurred.",
+                        String(), "failure")),
+              Event("""We could not lookup the user IP address.""",
+                    "failure.ip_lookup",
+                    Attribute(
+                        "The specific error that occurred.",
+                        String(), "failure")),
+              Event("""There was a failure running the measurement.""",
+                    "failure.measurement",
+                    Attribute(
+                        "The specific error that occurred.",
+                        String(), "failure")),
+              Event("""There was a failure in submitting the measurement result
+                       to the configured collector.""",
+                    "failure.measurement_submission",
+                    Attribute(
+                        "The specific error that occurred.",
+                        String(), "failure"),
+                    Attribute(
+                        "Index of the measurement that failed",
+                        Int64(), "idx"),
+                    Attribute(
+                        "Measurement that we could not submit as a serialized JSON.",
+                        String(), "json_str")),
+              Event("""There was a failure in getting an ID for submitting results
+                       from the configured collector.""",
+                    "failure.report_create",
+                    Attribute(
+                        "The specific error that occurred.",
+                        String(), "failure")),
+              Event("""There was a failure in telling the configured collector that
+                       all the measurements related to a specific ID have now been
+                       performed.""",
+                    "failure.report_close",
+                    Attribute(
+                        "The specific error that occurred.",
+                        String(), "failure")),
+              Event("""There was a failure attempting to lookup the user
+                       DNS resolver IP address.""",
+                    "failure.resolver_lookup",
+                    Attribute(
+                        "The specific error that occurred.",
+                        String(), "failure")),
+              Event("""There was a failure in starting the nettest, most
+                       likely because you passed incorrect options. See
+                       the logs for more information of what went wrong.""",
+                    "failure.startup",
                     Attribute(
                         "The specific error that occurred.",
                         String(), "failure")),
@@ -233,13 +287,13 @@ def main():
                Attribute("""Path to the GeoIP ASN (Autonomous System Number) database file. By default this
                             option is empty. If you do not change this option to
                             contain the path to a suitable database file, MK
-                            will not be able to map the probe IP address to an
+                            will not be able to map the user's IP address to an
                             ASN.""",
                          String(), "geoip_asn_path"),
                Attribute("""Path to the GeoIP country database file. By default
                             this option is empty. If you do not change it to
                             contain the path to a suitable database file, MK will
-                            not be able to map the probe IP to a country code.""",
+                            not be able to map the user's IP to a country code.""",
                          String(), "geoip_country_path"),
                Attribute("""Whether to ignore bouncer errors. If this option
                             is true, then MK will not stop after failing to
@@ -288,11 +342,11 @@ def main():
                             the OONI collector are published within a few
                             business days.""",
                          Bool(False), "no_collector"),
-               Attribute("""Whether to avoid the the probe ASN (Autonomous System Number) lookup.""",
+               Attribute("""Whether to avoid the the user's ASN (Autonomous System Number) lookup.""",
                          Bool(False), "no_asn_lookup"),
-               Attribute("""Whether to avoid the probe country code lookup.""",
+               Attribute("""Whether to avoid the user's country code lookup.""",
                          Bool(False), "no_cc_lookup"),
-               Attribute("""Whether to avoid looking up the probe IP. Not knowing
+               Attribute("""Whether to avoid looking up the user's IP. Not knowing
                             it prevents us from looking up the ASN (Autonomous System Number)
                             and the country code. Most importantly, this also prevents us from
                             attempting to scrub the IP address from measurements results,
@@ -303,24 +357,24 @@ def main():
                Attribute("""Whether to avoid looking up the resolver IP address.""",
                          Bool(False), "no_resolver_lookup"),
                Attribute("""The ASN (Autonomous System Number) in which we are. If you set this, we will
-                            of course skip the probe ASN lookup.""",
+                            of course skip the user's ASN lookup.""",
                          String(), "probe_asn"),
                Attribute("""The country code in which we are. If you set this, we
-                            will of course skip the probe country code lookup.""",
+                            will of course skip the user's country code lookup.""",
                          String(), "probe_cc"),
-               Attribute("""The probe IP. If you set this, we will of course
-                            skip the probe IP lookup.""",
+               Attribute("""The user's IP. If you set this, we will of course
+                            skip the user's IP lookup.""",
                          String(), "probe_ip"),
                Attribute("""Whether to randomize the provided input.""",
                          Bool(True), "randomize_input"),
-               Attribute("""Whether to save the probe ASN (Autonomous System Number) in the report.""",
+               Attribute("""Whether to save the user's ASN (Autonomous System Number) in the report.""",
                          Bool(True), "save_real_probe_asn"),
-               Attribute("""Whether to save the probe country code in
+               Attribute("""Whether to save the user's country code in
                             the report.""",
                          Bool(True), "save_real_probe_cc"),
-               Attribute("""Whether to save the probe IP in the report.""",
+               Attribute("""Whether to save the user's IP in the report.""",
                          Bool(False), "save_real_probe_ip"),
-               Attribute("""Whether to save the probe resolver IP in the report.""",
+               Attribute("""Whether to save the user's resolver IP in the report.""",
                          Bool(True), "save_real_resolver_ip"),
                Attribute("""Name of the application.""",
                          String("measurement_kit"), "software_name"),
@@ -334,40 +388,63 @@ def main():
                              the OONI collector.""",
                           MapStringString(), "annotations"),
                 Attribute("""List of events that will not be emitted.""",
-                          VectorString(), "disabled_events")]
+                          VectorString(), "disabled_events"),
+                Attribute("""List of URLs or domains required by the test.""",
+                          VectorString(), "inputs"),
+                Attribute("""List of files from which to read inputs.""",
+                          VectorString(), "input_filepaths"),
+                Attribute("""File where to write log messages.""",
+                          String(), "log_filepath"),
+                Attribute("""Type of log messages you are interested into.""",
+                          String("ERR"), "log_level"),
+                Attribute("""File where to write the nettest results.""",
+                          String(), "output_filepath")]
 
-    nettests = [Nettest("""Neubot's DASH test""", "dash",
-                        "https://github.com/ooni/spec/blob/master/test-specs/ts-021-dash.md"),
-                Nettest("""OONI's captive portal test""", "captive_portal",
-                        "https://github.com/ooni/spec/blob/master/test-specs/ts-010-captive-portal.md"),
+    nettests = [Nettest("""OONI's captive portal test""", "captive_portal",
+                        "https://github.com/ooni/spec/blob/master/test-specs/ts-010-captive-portal.md",
+                        needs_input=False),
+                Nettest("""Neubot's DASH test""", "dash",
+                        "https://github.com/ooni/spec/blob/master/test-specs/ts-021-dash.md",
+                        needs_input=False),
                 Nettest("""OONI's DNS injection test""", "dns_injection",
-                        "https://github.com/ooni/spec/blob/master/test-specs/ts-012-dns-injection.md"),
+                        "https://github.com/ooni/spec/blob/master/test-specs/ts-012-dns-injection.md",
+                        needs_input=True),
                 Nettest("""OONI's Facebook Messenger test""", "facebook_messenger",
-                        "https://github.com/ooni/spec/blob/master/test-specs/ts-019-facebook-messenger.md"),
+                        "https://github.com/ooni/spec/blob/master/test-specs/ts-019-facebook-messenger.md",
+                        needs_input=False),
                 Nettest("""OONI's HTTP header field manipulation test""",
                         "http_header_field_manipulation",
-                        "https://github.com/ooni/spec/blob/master/test-specs/ts-006-header-field-manipulation.md"),
+                        "https://github.com/ooni/spec/blob/master/test-specs/ts-006-header-field-manipulation.md",
+                        needs_input=False),
                 Nettest("""OONI's HTTP invalid request line test""",
                         "http_invalid_request_line",
-                        "https://github.com/ooni/spec/blob/master/test-specs/ts-007-http-invalid-request-line.md"),
+                        "https://github.com/ooni/spec/blob/master/test-specs/ts-007-http-invalid-request-line.md",
+                        needs_input=False),
                 Nettest("""OONI's meek fronted requests test""", "meek_fronted_requests",
-                        "https://github.com/ooni/spec/blob/master/test-specs/ts-014-meek-fronted-requests.md"),
+                        "https://github.com/ooni/spec/blob/master/test-specs/ts-014-meek-fronted-requests.md",
+                        needs_input=True),
                 Nettest("""the multi NDT network performance test""", "multi_ndt",
-                        "https://github.com/ooni/spec/blob/master/test-specs/ts-022-ndt.md"),
+                        "https://github.com/ooni/spec/blob/master/test-specs/ts-022-ndt.md",
+                        needs_input=False),
                 Nettest("""the NDT network performance test""", "ndt",
-                        "https://github.com/ooni/spec/blob/master/test-specs/ts-022-ndt.md"),
+                        "https://github.com/ooni/spec/blob/master/test-specs/ts-022-ndt.md",
+                        needs_input=False),
                 Nettest("""OONI's TCP connect test""", "tcp_connect",
-                        "https://github.com/ooni/spec/blob/master/test-specs/ts-008-tcp-connect.md"),
+                        "https://github.com/ooni/spec/blob/master/test-specs/ts-008-tcp-connect.md",
+                        needs_input=True),
                 Nettest("""OONI's Telegram test""", "telegram",
-                        "https://github.com/ooni/spec/blob/master/test-specs/ts-020-telegram.md"),
+                        "https://github.com/ooni/spec/blob/master/test-specs/ts-020-telegram.md",
+                        needs_input=False),
                 Nettest("""OONI's Web Connectivity test""", "web_connectivity",
-                        "https://github.com/ooni/spec/blob/master/test-specs/ts-017-web-connectivity.md"),
+                        "https://github.com/ooni/spec/blob/master/test-specs/ts-017-web-connectivity.md",
+                        needs_input=True),
                 Nettest("""OONI's WhatsApp test""", "whatsapp",
                         "https://github.com/ooni/spec/blob/master/test-specs/ts-018-whatsapp.md",
-                        [Attribute(
+                        options=[Attribute(
                             """Whether to check all WhatsApp endpoints.""",
                             Bool(False), "all_endpoints",
-                        )])]
+                        )],
+                        needs_input=False),]
 
     log_levels = [LogLevel("""Only emit error messages""", "err"),
                   LogLevel("""Also emit warning messages""", "warning"),

@@ -9,3 +9,4 @@ PROJECT_NAME = measurement-kit
 PROJECT_NUMBER = v0.9.0-alpha.2
 RECURSIVE = NO
 STRIP_FROM_INC_PATH = include
+SORT_BRIEF_DOCS = YES

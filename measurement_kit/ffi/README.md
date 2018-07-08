@@ -76,11 +76,11 @@ process events in the `run()` and `process_event()` functions.
 The following tasks are defined (case matters):
 
 
-- `"Dash"`: [Neubot's DASH test](
-  https://github.com/ooni/spec/blob/master/test-specs/ts-021-dash.md).
-
 - `"CaptivePortal"`: [OONI's captive portal test](
   https://github.com/ooni/spec/blob/master/test-specs/ts-010-captive-portal.md).
+
+- `"Dash"`: [Neubot's DASH test](
+  https://github.com/ooni/spec/blob/master/test-specs/ts-021-dash.md).
 
 - `"DnsInjection"`: [OONI's DNS injection test](
   https://github.com/ooni/spec/blob/master/test-specs/ts-012-dns-injection.md).
@@ -261,9 +261,9 @@ These are the available options:
 
 - `"dns/engine"`: (string) What DNS engine to use. The "system" engine implies that `getaddrinfo()` is used. If you set this setting to "libevent" and you also configure the "dns/nameserver" option, MK will use libevent and the specified nameserver to resolve domain names.
 
-- `"geoip_asn_path"`: (string) Path to the GeoIP ASN (Autonomous System Number) database file. By default this option is empty. If you do not change this option to contain the path to a suitable database file, MK will not be able to map the probe IP address to an ASN.
+- `"geoip_asn_path"`: (string) Path to the GeoIP ASN (Autonomous System Number) database file. By default this option is empty. If you do not change this option to contain the path to a suitable database file, MK will not be able to map the user's IP address to an ASN.
 
-- `"geoip_country_path"`: (string) Path to the GeoIP country database file. By default this option is empty. If you do not change it to contain the path to a suitable database file, MK will not be able to map the probe IP to a country code.
+- `"geoip_country_path"`: (string) Path to the GeoIP country database file. By default this option is empty. If you do not change it to contain the path to a suitable database file, MK will not be able to map the user's IP to a country code.
 
 - `"ignore_bouncer_error"`: (int) Whether to ignore bouncer errors. If this option is true, then MK will not stop after failing to contact the OONI bouncer. Without the information provided by the bouncer, OONI tests that require a test helper will certainly fail, while other tests will just fail to submit their results to a collector, unless you manually configure a collector base URL.
 
@@ -279,31 +279,31 @@ These are the available options:
 
 - `"no_collector"`: (int) Whether to avoid using a collector. If true, it means that the test results are not submitted to a collector (by default the OONI collector) for archival or publishing purposes. All measurements submitted to the OONI collector are published within a few business days.
 
-- `"no_asn_lookup"`: (int) Whether to avoid the the probe ASN (Autonomous System Number) lookup.
+- `"no_asn_lookup"`: (int) Whether to avoid the the user's ASN (Autonomous System Number) lookup.
 
-- `"no_cc_lookup"`: (int) Whether to avoid the probe country code lookup.
+- `"no_cc_lookup"`: (int) Whether to avoid the user's country code lookup.
 
-- `"no_ip_lookup"`: (int) Whether to avoid looking up the probe IP. Not knowing it prevents us from looking up the ASN (Autonomous System Number) and the country code. Most importantly, this also prevents us from attempting to scrub the IP address from measurements results, which may be a concern for censorship tests.
+- `"no_ip_lookup"`: (int) Whether to avoid looking up the user's IP. Not knowing it prevents us from looking up the ASN (Autonomous System Number) and the country code. Most importantly, this also prevents us from attempting to scrub the IP address from measurements results, which may be a concern for censorship tests.
 
 - `"no_file_report"`: (int) Whether to avoid writing a report file to disk.
 
 - `"no_resolver_lookup"`: (int) Whether to avoid looking up the resolver IP address.
 
-- `"probe_asn"`: (string) The ASN (Autonomous System Number) in which we are. If you set this, we will of course skip the probe ASN lookup.
+- `"probe_asn"`: (string) The ASN (Autonomous System Number) in which we are. If you set this, we will of course skip the user's ASN lookup.
 
-- `"probe_cc"`: (string) The country code in which we are. If you set this, we will of course skip the probe country code lookup.
+- `"probe_cc"`: (string) The country code in which we are. If you set this, we will of course skip the user's country code lookup.
 
-- `"probe_ip"`: (string) The probe IP. If you set this, we will of course skip the probe IP lookup.
+- `"probe_ip"`: (string) The user's IP. If you set this, we will of course skip the user's IP lookup.
 
 - `"randomize_input"`: (int) Whether to randomize the provided input.
 
-- `"save_real_probe_asn"`: (int) Whether to save the probe ASN (Autonomous System Number) in the report.
+- `"save_real_probe_asn"`: (int) Whether to save the user's ASN (Autonomous System Number) in the report.
 
-- `"save_real_probe_cc"`: (int) Whether to save the probe country code in the report.
+- `"save_real_probe_cc"`: (int) Whether to save the user's country code in the report.
 
-- `"save_real_probe_ip"`: (int) Whether to save the probe IP in the report.
+- `"save_real_probe_ip"`: (int) Whether to save the user's IP in the report.
 
-- `"save_real_resolver_ip"`: (int) Whether to save the probe resolver IP in the report.
+- `"save_real_resolver_ip"`: (int) Whether to save the user's resolver IP in the report.
 
 - `"software_name"`: (string) Name of the application.
 

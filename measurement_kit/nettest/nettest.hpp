@@ -17,7 +17,7 @@
  * See https://github.com/measurement-kit/ffi-tools for more information.
  */
 
-/// \file include/measurement_kit/nettest/nettest.hpp
+/// @file measurement_kit/nettest/nettest.hpp
 ///
 /// This file contains Measurement Kit "nettest" API. This API allows you to
 /// run network tests in a uniform way from a C++11 environment.
@@ -46,14 +46,14 @@
 /// ```
 ///
 /// Write a derived class of Runner where you override the virtual methods
-/// handlings the events that you care about.
+/// handling the events that you would like to process.
 ///
 /// ```
 /// class MyRunner : public mk::nettest::Runner {
 ///  public:
 ///   using mk::nettest::Runner::Runner;
 ///
-///   virtual void on_log(const events::Log &evt) {
+///   virtual void on_log(const mk::nettest::events::Log &evt) {
 ///     std::clog << "<" << evt.log_level << ">" << evt.message << std::endl;
 ///   }
 /// };
@@ -90,7 +90,7 @@ namespace mk {
 /// Contains the nettest API.
 namespace nettest {
 
-/// Contains the log_levels. Use these values to initialize the
+/// Contains the log levels. Use these values to initialize the
 /// settings::Settings::log_level field.
 namespace log_levels {
 
@@ -116,12 +116,110 @@ constexpr const char *debug2 = "DEBUG2";
 /// callback for any kind of event.
 namespace events {
 
-/// We could not lookup the ASN (Autonomous System Number) from the probe IP.
+/// We could not lookup the ASN (Autonomous System Number) from the user's IP.
 class FailureAsnLookup {
  public:
   /// The key that uniquely identifies an event. To disable an event, append
   /// this key to the settings::Settings::disabled_events array.
   static constexpr const char *event_key = "failure.asn_lookup";
+
+  /// The specific error that occurred.
+  std::string failure = "";
+};
+
+/// We could not lookup the country code from the user's IP.
+class FailureCcLookup {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "failure.cc_lookup";
+
+  /// The specific error that occurred.
+  std::string failure = "";
+};
+
+/// We could not lookup the user IP address.
+class FailureIpLookup {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "failure.ip_lookup";
+
+  /// The specific error that occurred.
+  std::string failure = "";
+};
+
+/// There was a failure running the measurement.
+class FailureMeasurement {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "failure.measurement";
+
+  /// The specific error that occurred.
+  std::string failure = "";
+};
+
+/// There was a failure in submitting the measurement result to the configured
+/// collector.
+class FailureMeasurementSubmission {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "failure.measurement_submission";
+
+  /// The specific error that occurred.
+  std::string failure = "";
+
+  /// Index of the measurement that failed
+  int64_t idx = 0;
+
+  /// Measurement that we could not submit as a serialized JSON.
+  std::string json_str = "";
+};
+
+/// There was a failure in getting an ID for submitting results from the
+/// configured collector.
+class FailureReportCreate {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "failure.report_create";
+
+  /// The specific error that occurred.
+  std::string failure = "";
+};
+
+/// There was a failure in telling the configured collector that all the
+/// measurements related to a specific ID have now been performed.
+class FailureReportClose {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "failure.report_close";
+
+  /// The specific error that occurred.
+  std::string failure = "";
+};
+
+/// There was a failure attempting to lookup the user DNS resolver IP address.
+class FailureResolverLookup {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "failure.resolver_lookup";
+
+  /// The specific error that occurred.
+  std::string failure = "";
+};
+
+/// There was a failure in starting the nettest, most likely because you passed
+/// incorrect options. See the logs for more information of what went wrong.
+class FailureStartup {
+ public:
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
+  static constexpr const char *event_key = "failure.startup";
 
   /// The specific error that occurred.
   std::string failure = "";
@@ -152,7 +250,7 @@ class StatusUpdatePerformance {
 
 }  // namespace events
 
-/// Contains settings classes. We have a specific setting class for
+/// Contains the settings classes. We have a specific setting class for
 /// each supported network test. This inherits from generic settings
 /// defined by a base class called settings::Settings.
 namespace settings {
@@ -166,6 +264,21 @@ class Settings {
 
   /// List of events that will not be emitted.
   std::vector<std::string> disabled_events = {};
+
+  /// List of URLs or domains required by the test.
+  std::vector<std::string> inputs = {};
+
+  /// List of files from which to read inputs.
+  std::vector<std::string> input_filepaths = {};
+
+  /// File where to write log messages.
+  std::string log_filepath = "";
+
+  /// Type of log messages you are interested into.
+  std::string log_level = "ERR";
+
+  /// File where to write the nettest results.
+  std::string output_filepath = "";
 
   /// Base URL of the OONI bouncer. This base URL is used to construct the full
   /// URL required to contact the OONI bouncer and get test specific info like
@@ -193,13 +306,13 @@ class Settings {
 
   /// Path to the GeoIP ASN (Autonomous System Number) database file. By default
   /// this option is empty. If you do not change this option to contain the path
-  /// to a suitable database file, MK will not be able to map the probe IP
+  /// to a suitable database file, MK will not be able to map the user's IP
   /// address to an ASN.
   std::string geoip_asn_path = "";
 
   /// Path to the GeoIP country database file. By default this option is empty.
   /// If you do not change it to contain the path to a suitable database file,
-  /// MK will not be able to map the probe IP to a country code.
+  /// MK will not be able to map the user's IP to a country code.
   std::string geoip_country_path = "";
 
   /// Whether to ignore bouncer errors. If this option is true, then MK will not
@@ -207,10 +320,10 @@ class Settings {
   /// provided by the bouncer, OONI tests that require a test helper will
   /// certainly fail, while other tests will just fail to submit their results
   /// to a collector, unless you manually configure a collector base URL.
-  double ignore_bouncer_error = true;
+  bool ignore_bouncer_error = true;
 
   /// Whether to ignore errors opening the report with the OONI collector.
-  double ignore_open_report_error = true;
+  bool ignore_open_report_error = true;
 
   /// Max run time for nettests taking input. When you are running a nettest
   /// taking input, the test will stop after the number of seconds specified by
@@ -235,57 +348,58 @@ class Settings {
   /// tests that require test helpers will fail if you disable the bouncer.
   /// Other tests will just not be able to submit results to a collector, unless
   /// you manually configure a collector base URL.
-  double no_bouncer = false;
+  bool no_bouncer = false;
 
   /// Whether to avoid using a collector. If true, it means that the test
   /// results are not submitted to a collector (by default the OONI collector)
   /// for archival or publishing purposes. All measurements submitted to the
   /// OONI collector are published within a few business days.
-  double no_collector = false;
+  bool no_collector = false;
 
-  /// Whether to avoid the the probe ASN (Autonomous System Number) lookup.
-  double no_asn_lookup = false;
+  /// Whether to avoid the the user's ASN (Autonomous System Number) lookup.
+  bool no_asn_lookup = false;
 
-  /// Whether to avoid the probe country code lookup.
-  double no_cc_lookup = false;
+  /// Whether to avoid the user's country code lookup.
+  bool no_cc_lookup = false;
 
-  /// Whether to avoid looking up the probe IP. Not knowing it prevents us from
+  /// Whether to avoid looking up the user's IP. Not knowing it prevents us from
   /// looking up the ASN (Autonomous System Number) and the country code. Most
   /// importantly, this also prevents us from attempting to scrub the IP address
   /// from measurements results, which may be a concern for censorship tests.
-  double no_ip_lookup = false;
+  bool no_ip_lookup = false;
 
   /// Whether to avoid writing a report file to disk.
-  double no_file_report = false;
+  bool no_file_report = false;
 
   /// Whether to avoid looking up the resolver IP address.
-  double no_resolver_lookup = false;
+  bool no_resolver_lookup = false;
 
   /// The ASN (Autonomous System Number) in which we are. If you set this, we
-  /// will of course skip the probe ASN lookup.
+  /// will of course skip the user's ASN lookup.
   std::string probe_asn = "";
 
   /// The country code in which we are. If you set this, we will of course skip
-  /// the probe country code lookup.
+  /// the user's country code lookup.
   std::string probe_cc = "";
 
-  /// The probe IP. If you set this, we will of course skip the probe IP lookup.
+  /// The user's IP. If you set this, we will of course skip the user's IP
+  /// lookup.
   std::string probe_ip = "";
 
   /// Whether to randomize the provided input.
-  double randomize_input = true;
+  bool randomize_input = true;
 
-  /// Whether to save the probe ASN (Autonomous System Number) in the report.
-  double save_real_probe_asn = true;
+  /// Whether to save the user's ASN (Autonomous System Number) in the report.
+  bool save_real_probe_asn = true;
 
-  /// Whether to save the probe country code in the report.
-  double save_real_probe_cc = true;
+  /// Whether to save the user's country code in the report.
+  bool save_real_probe_cc = true;
 
-  /// Whether to save the probe IP in the report.
-  double save_real_probe_ip = false;
+  /// Whether to save the user's IP in the report.
+  bool save_real_probe_ip = false;
 
-  /// Whether to save the probe resolver IP in the report.
-  double save_real_resolver_ip = true;
+  /// Whether to save the user's resolver IP in the report.
+  bool save_real_resolver_ip = true;
 
   /// Name of the application.
   std::string software_name = "measurement_kit";
@@ -299,24 +413,30 @@ class Settings {
   virtual void serialize_into(nlohmann::json *doc) const;
 };
 
-/// Full settings for Neubot's DASH test. See
-/// https://github.com/ooni/spec/blob/master/test-specs/ts-021-dash.md.
-class DashSettings : public Settings {
- public:
-  using Settings::Settings;
-
-  ~DashSettings() noexcept override;
-
-  void serialize_into(nlohmann::json *doc) const override;
-};
-
 /// Full settings for OONI's captive portal test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-010-captive-portal.md.
 class CaptivePortalSettings : public Settings {
  public:
   using Settings::Settings;
 
+  /// Whether this test requires input.
+  static constexpr bool needs_input = false;
+
   ~CaptivePortalSettings() noexcept override;
+
+  void serialize_into(nlohmann::json *doc) const override;
+};
+
+/// Full settings for Neubot's DASH test. See
+/// https://github.com/ooni/spec/blob/master/test-specs/ts-021-dash.md.
+class DashSettings : public Settings {
+ public:
+  using Settings::Settings;
+
+  /// Whether this test requires input.
+  static constexpr bool needs_input = false;
+
+  ~DashSettings() noexcept override;
 
   void serialize_into(nlohmann::json *doc) const override;
 };
@@ -326,6 +446,9 @@ class CaptivePortalSettings : public Settings {
 class DnsInjectionSettings : public Settings {
  public:
   using Settings::Settings;
+
+  /// Whether this test requires input.
+  static constexpr bool needs_input = true;
 
   ~DnsInjectionSettings() noexcept override;
 
@@ -338,6 +461,9 @@ class FacebookMessengerSettings : public Settings {
  public:
   using Settings::Settings;
 
+  /// Whether this test requires input.
+  static constexpr bool needs_input = false;
+
   ~FacebookMessengerSettings() noexcept override;
 
   void serialize_into(nlohmann::json *doc) const override;
@@ -348,6 +474,9 @@ class FacebookMessengerSettings : public Settings {
 class HttpHeaderFieldManipulationSettings : public Settings {
  public:
   using Settings::Settings;
+
+  /// Whether this test requires input.
+  static constexpr bool needs_input = false;
 
   ~HttpHeaderFieldManipulationSettings() noexcept override;
 
@@ -360,6 +489,9 @@ class HttpInvalidRequestLineSettings : public Settings {
  public:
   using Settings::Settings;
 
+  /// Whether this test requires input.
+  static constexpr bool needs_input = false;
+
   ~HttpInvalidRequestLineSettings() noexcept override;
 
   void serialize_into(nlohmann::json *doc) const override;
@@ -370,6 +502,9 @@ class HttpInvalidRequestLineSettings : public Settings {
 class MeekFrontedRequestsSettings : public Settings {
  public:
   using Settings::Settings;
+
+  /// Whether this test requires input.
+  static constexpr bool needs_input = true;
 
   ~MeekFrontedRequestsSettings() noexcept override;
 
@@ -382,6 +517,9 @@ class MultiNdtSettings : public Settings {
  public:
   using Settings::Settings;
 
+  /// Whether this test requires input.
+  static constexpr bool needs_input = false;
+
   ~MultiNdtSettings() noexcept override;
 
   void serialize_into(nlohmann::json *doc) const override;
@@ -392,6 +530,9 @@ class MultiNdtSettings : public Settings {
 class NdtSettings : public Settings {
  public:
   using Settings::Settings;
+
+  /// Whether this test requires input.
+  static constexpr bool needs_input = false;
 
   ~NdtSettings() noexcept override;
 
@@ -404,6 +545,9 @@ class TcpConnectSettings : public Settings {
  public:
   using Settings::Settings;
 
+  /// Whether this test requires input.
+  static constexpr bool needs_input = true;
+
   ~TcpConnectSettings() noexcept override;
 
   void serialize_into(nlohmann::json *doc) const override;
@@ -415,6 +559,9 @@ class TelegramSettings : public Settings {
  public:
   using Settings::Settings;
 
+  /// Whether this test requires input.
+  static constexpr bool needs_input = false;
+
   ~TelegramSettings() noexcept override;
 
   void serialize_into(nlohmann::json *doc) const override;
@@ -425,6 +572,9 @@ class TelegramSettings : public Settings {
 class WebConnectivitySettings : public Settings {
  public:
   using Settings::Settings;
+
+  /// Whether this test requires input.
+  static constexpr bool needs_input = true;
 
   ~WebConnectivitySettings() noexcept override;
 
@@ -438,7 +588,10 @@ class WhatsappSettings : public Settings {
   using Settings::Settings;
 
   /// Whether to check all WhatsApp endpoints.
-  double all_endpoints = false;
+  bool all_endpoints = false;
+
+  /// Whether this test requires input.
+  static constexpr bool needs_input = false;
 
   ~WhatsappSettings() noexcept override;
 
@@ -455,6 +608,48 @@ class Runner {
  public:
   /// Called when the FailureAsnLookup event occurs.
   virtual void on_failure_asn_lookup(const events::FailureAsnLookup &) {
+    // TODO: override this callback if you're interested
+  }
+
+  /// Called when the FailureCcLookup event occurs.
+  virtual void on_failure_cc_lookup(const events::FailureCcLookup &) {
+    // TODO: override this callback if you're interested
+  }
+
+  /// Called when the FailureIpLookup event occurs.
+  virtual void on_failure_ip_lookup(const events::FailureIpLookup &) {
+    // TODO: override this callback if you're interested
+  }
+
+  /// Called when the FailureMeasurement event occurs.
+  virtual void on_failure_measurement(const events::FailureMeasurement &) {
+    // TODO: override this callback if you're interested
+  }
+
+  /// Called when the FailureMeasurementSubmission event occurs.
+  virtual void on_failure_measurement_submission(
+      const events::FailureMeasurementSubmission &) {
+    // TODO: override this callback if you're interested
+  }
+
+  /// Called when the FailureReportCreate event occurs.
+  virtual void on_failure_report_create(const events::FailureReportCreate &) {
+    // TODO: override this callback if you're interested
+  }
+
+  /// Called when the FailureReportClose event occurs.
+  virtual void on_failure_report_close(const events::FailureReportClose &) {
+    // TODO: override this callback if you're interested
+  }
+
+  /// Called when the FailureResolverLookup event occurs.
+  virtual void on_failure_resolver_lookup(
+      const events::FailureResolverLookup &) {
+    // TODO: override this callback if you're interested
+  }
+
+  /// Called when the FailureStartup event occurs.
+  virtual void on_failure_startup(const events::FailureStartup &) {
     // TODO: override this callback if you're interested
   }
 
@@ -486,7 +681,7 @@ class Runner {
  *                                  \/          \/
  *
  * Definitions ends here. What follows is the inline implementation of this
- * API, which you can include by setting MK_NETTEST_NO_INLINE_IMPL.
+ * API, which you can exclude by setting MK_NETTEST_NO_INLINE_IMPL.
  *
  * This is handy if you want to include this code in many translation
  * units to include the implementation into a single object.
@@ -513,6 +708,11 @@ void Settings::serialize_into(nlohmann::json *doc) const {
   assert(doc != nullptr);
   (*doc)["annotations"] = annotations;
   (*doc)["disabled_events"] = disabled_events;
+  (*doc)["inputs"] = inputs;
+  (*doc)["input_filepaths"] = input_filepaths;
+  (*doc)["log_filepath"] = log_filepath;
+  (*doc)["log_level"] = log_level;
+  (*doc)["output_filepath"] = output_filepath;
   {
     nlohmann::json so;
     so["bouncer_base_url"] = bouncer_base_url;
@@ -547,18 +747,18 @@ void Settings::serialize_into(nlohmann::json *doc) const {
   }
 }
 
-DashSettings::~DashSettings() noexcept {}
-
-void DashSettings::serialize_into(nlohmann::json *doc) const {
-  Settings::serialize_into(doc);
-  (*doc)["name"] = "Dash";
-}
-
 CaptivePortalSettings::~CaptivePortalSettings() noexcept {}
 
 void CaptivePortalSettings::serialize_into(nlohmann::json *doc) const {
   Settings::serialize_into(doc);
   (*doc)["name"] = "CaptivePortal";
+}
+
+DashSettings::~DashSettings() noexcept {}
+
+void DashSettings::serialize_into(nlohmann::json *doc) const {
+  Settings::serialize_into(doc);
+  (*doc)["name"] = "Dash";
 }
 
 DnsInjectionSettings::~DnsInjectionSettings() noexcept {}
@@ -672,6 +872,56 @@ void Runner::run(const settings::Settings &settings) {
       events::FailureAsnLookup event;
       event.failure = ev.at("value").at("failure");
       on_failure_asn_lookup(event);
+      continue;
+    }
+    if (ev.at("key") == "failure.cc_lookup") {
+      events::FailureCcLookup event;
+      event.failure = ev.at("value").at("failure");
+      on_failure_cc_lookup(event);
+      continue;
+    }
+    if (ev.at("key") == "failure.ip_lookup") {
+      events::FailureIpLookup event;
+      event.failure = ev.at("value").at("failure");
+      on_failure_ip_lookup(event);
+      continue;
+    }
+    if (ev.at("key") == "failure.measurement") {
+      events::FailureMeasurement event;
+      event.failure = ev.at("value").at("failure");
+      on_failure_measurement(event);
+      continue;
+    }
+    if (ev.at("key") == "failure.measurement_submission") {
+      events::FailureMeasurementSubmission event;
+      event.failure = ev.at("value").at("failure");
+      event.idx = ev.at("value").at("idx");
+      event.json_str = ev.at("value").at("json_str");
+      on_failure_measurement_submission(event);
+      continue;
+    }
+    if (ev.at("key") == "failure.report_create") {
+      events::FailureReportCreate event;
+      event.failure = ev.at("value").at("failure");
+      on_failure_report_create(event);
+      continue;
+    }
+    if (ev.at("key") == "failure.report_close") {
+      events::FailureReportClose event;
+      event.failure = ev.at("value").at("failure");
+      on_failure_report_close(event);
+      continue;
+    }
+    if (ev.at("key") == "failure.resolver_lookup") {
+      events::FailureResolverLookup event;
+      event.failure = ev.at("value").at("failure");
+      on_failure_resolver_lookup(event);
+      continue;
+    }
+    if (ev.at("key") == "failure.startup") {
+      events::FailureStartup event;
+      event.failure = ev.at("value").at("failure");
+      on_failure_startup(event);
       continue;
     }
     if (ev.at("key") == "status.update_performance") {

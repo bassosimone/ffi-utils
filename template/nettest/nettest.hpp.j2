@@ -17,7 +17,7 @@
  * See https://github.com/measurement-kit/ffi-tools for more information.
  */
 
-/// \file include/measurement_kit/nettest/nettest.hpp
+/// @file measurement_kit/nettest/nettest.hpp
 ///
 /// This file contains Measurement Kit "nettest" API. This API allows you to
 /// run network tests in a uniform way from a C++11 environment.
@@ -46,14 +46,14 @@
 /// ```
 ///
 /// Write a derived class of Runner where you override the virtual methods
-/// handlings the events that you care about.
+/// handling the events that you would like to process.
 ///
 /// ```
 /// class MyRunner : public mk::nettest::Runner {
 ///  public:
 ///   using mk::nettest::Runner::Runner;
 ///
-///   virtual void on_log(const events::Log &evt) {
+///   virtual void on_log(const mk::nettest::events::Log &evt) {
 ///     std::clog << "<" << evt.log_level << ">" << evt.message << std::endl;
 ///   }
 /// };
@@ -90,7 +90,7 @@ namespace mk {
 /// Contains the nettest API.
 namespace nettest {
 
-/// Contains the log_levels. Use these values to initialize the
+/// Contains the log levels. Use these values to initialize the
 /// settings::Settings::log_level field.
 namespace log_levels {
 {% for log_level in log_levels %}
@@ -121,7 +121,7 @@ class {{ event.key.to_pascal_case() }} {
 
 }  // namespace events
 
-/// Contains settings classes. We have a specific setting class for
+/// Contains the settings classes. We have a specific setting class for
 /// each supported network test. This inherits from generic settings
 /// defined by a base class called settings::Settings.
 namespace settings {
@@ -152,6 +152,9 @@ class Settings {
     {% if nettest.options is not none %}{% for option in nettest.options %}
       /// {{ option.docs }}
       {{ option.base_type.decl("cxx") }} {{ option.key.to_snake_case() }} = {{ option.base_type.default_value("cxx") }};{% endfor %}{% endif %}
+
+    /// Whether this test requires input.
+    static constexpr bool needs_input = {{ nettest.needs_input.default_value("cxx") }};
 
     ~{{ nettest.key.to_pascal_case() }}Settings() noexcept override;
 
@@ -196,7 +199,7 @@ class Runner {
  *                                  \/          \/
  *
  * Definitions ends here. What follows is the inline implementation of this
- * API, which you can include by setting MK_NETTEST_NO_INLINE_IMPL.
+ * API, which you can exclude by setting MK_NETTEST_NO_INLINE_IMPL.
  *
  * This is handy if you want to include this code in many translation
  * units to include the implementation into a single object.
