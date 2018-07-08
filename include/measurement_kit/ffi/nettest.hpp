@@ -821,4 +821,4 @@ void NettestHelper::emit_task_terminated() {
 #endif  // MK_FFI_NETTEST_NO_INLINE_IMPL
 }  // namespace ffi
 }  // namespace mk
-#endif
+#endif  // MEASUREMENT_KIT_FFI_NETTEST_HPP
