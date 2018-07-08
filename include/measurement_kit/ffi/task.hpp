@@ -1,8 +1,8 @@
 // Part of Measurement Kit <https://measurement-kit.github.io/>.
 // Measurement Kit is free software under the BSD license. See AUTHORS
 // and LICENSE for more information on the copying conditions.
-#ifndef MEASUREMENT_KIT_FFI_ENGINE_HPP
-#define MEASUREMENT_KIT_FFI_ENGINE_HPP
+#ifndef MEASUREMENT_KIT_FFI_TASK_HPP
+#define MEASUREMENT_KIT_FFI_TASK_HPP
 
 /*-
  *  __      __  _____ __________  _______  .___ _______    ________
@@ -22,8 +22,8 @@
 
 #include <assert.h>
 
-#include <atomic>
 #include <algorithm>
+#include <atomic>
 #include <condition_variable>
 #include <deque>
 #include <future>
@@ -34,45 +34,6 @@
 
 namespace mk {
 namespace ffi {
-namespace engine {
-
-// Abstraction that behaves like a semaphore. We use it to make sure that
-// tests do not run concurrently. Since a semaphore does not provide any
-// FIFO guarantee, you SHOULD NOT rely on this mechanism to guarantee that
-// nettests are executed in order because you would be disappointed.
-class Semaphore {
- public:
-  Semaphore() noexcept;
-
-  // Acquire the semaphore. Lock if another thread is active.
-  void acquire();
-
-  // Release the semaphore possibly allowing another thread to continue.
-  void release();
-
-  // Make the class non copyable and non movable.
-  Semaphore(const Semaphore &) = delete;
-  Semaphore &operator=(const Semaphore &) = delete;
-  Semaphore(Semaphore &&) = delete;
-  Semaphore &operator=(Semaphore &&) = delete;
-
-  ~Semaphore() noexcept;
-
- private:
-  std::mutex mutex_;
-};
-
-#ifndef MK_FFI_ENGINE_NO_INLINE_IMPL
-
-Semaphore::Semaphore() noexcept {}
-
-void Semaphore::acquire() { mutex_.lock(); }
-
-void Semaphore::release() { mutex_.unlock(); }
-
-Semaphore::~Semaphore() noexcept {}
-
-#endif  // MK_FFI_ENGINE_NO_INLINE_IMPL
 
 // A task that you would like to run. You should override the run() and
 // really_interrupt() methods. The class name is Task rather than Nettest
@@ -140,9 +101,35 @@ class Task {
 
   // Make sure that settings are okay and then invoke the run() method.
   void check_settings_and_run(nlohmann::json &&settings);
+
+  // Abstraction that behaves like a semaphore. We use it to make sure that
+  // tests do not run concurrently. Since a semaphore does not provide any
+  // FIFO guarantee, you SHOULD NOT rely on this mechanism to guarantee that
+  // nettests are executed in order because you would be disappointed.
+  class Semaphore {
+   public:
+    Semaphore() noexcept;
+
+    // Acquire the semaphore. Lock if another thread is active.
+    void acquire();
+
+    // Release the semaphore possibly allowing another thread to continue.
+    void release();
+
+    // Make the class non copyable and non movable.
+    Semaphore(const Semaphore &) = delete;
+    Semaphore &operator=(const Semaphore &) = delete;
+    Semaphore(Semaphore &&) = delete;
+    Semaphore &operator=(Semaphore &&) = delete;
+
+    ~Semaphore() noexcept;
+
+   private:
+    std::mutex mutex_;
+  };
 };
 
-#ifndef MK_FFI_ENGINE_NO_INLINE_IMPL
+#ifndef MK_FFI_TASK_NO_INLINE_IMPL
 
 Task::Task(nlohmann::json &&settings) {
   // The purpose of `barrier` is to wait in the constructor until the
@@ -206,7 +193,7 @@ Task::~Task() noexcept {
   if (thread_.joinable()) {
     // Configurable because this was not the default behavior in the
     // MK implementation, so I want to explicitly break compat.
-#ifdef MK_FFI_ENGINE_INTERRUPT_ON_DESTROY
+#ifdef MK_FFI_TASK_INTERRUPT_ON_DESTROY
     interrupt();
 #endif
     thread_.join();
@@ -234,8 +221,15 @@ void Task::check_settings_and_run(nlohmann::json &&settings) {
   run(std::move(settings));
 }
 
-#endif  // MK_FFI_ENGINE_NO_INLINE_IMPL
-}  // namespace engine
+Task::Semaphore::Semaphore() noexcept {}
+
+void Task::Semaphore::acquire() { mutex_.lock(); }
+
+void Task::Semaphore::release() { mutex_.unlock(); }
+
+Task::Semaphore::~Semaphore() noexcept {}
+
+#endif  // MK_FFI_TASK_NO_INLINE_IMPL
 }  // namespace ffi
 }  // namespace mk
 #endif
