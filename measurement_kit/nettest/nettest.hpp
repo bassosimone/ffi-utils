@@ -21,7 +21,58 @@
 ///
 /// This file contains Measurement Kit "nettest" API. This API allows you to
 /// run network tests in a uniform way from a C++11 environment.
+///
+/// The core idea behind this API is that a network test (nettest) requires
+/// some settings and will generate some events while running. Such events
+/// could be, e.g., a log line, a piece of result.
+///
+/// As a general rule, use documented features. Undocumented features are
+/// much more likely to be replaced or changed without notice.
+///
+/// Usage is as follows. Instantiate a settings class for the network test
+/// that you want to execute. For example:
+///
+/// ```
+/// #include <measurement_kit/nettest/nettest.hpp>
+///
+/// mk::nettest::settings::WebConnectivitySettings mySettings;
+/// ```
+///
+/// Configure the settings you care about. Some settings are shared by all
+/// network tests while others are nettest specific.
+///
+/// ```
+/// mySettings.log_level = mk::nettest::log_levels::debug;
+/// ```
+///
+/// Write a derived class of Runner where you override the virtual methods
+/// handlings the events that you care about.
+///
+/// ```
+/// class MyRunner : public mk::nettest::Runner {
+///  public:
+///   using mk::nettest::Runner::Runner;
+///
+///   virtual void on_log(const events::Log &evt) {
+///     std::clog << "<" << evt.log_level << ">" << evt.message << std::endl;
+///   }
+/// };
+/// ```
+///
+/// Instantiate your runner and run the test with your settings. Exceptions
+/// derived from `std::exception` MAY be emitted in case of serious internal
+/// error. You may want to be prepared for them.
+///
+/// ```
+/// MyRunner runner;
+/// try {
+///   runner.run(mySettings);
+/// } catch (const std::exception &exc) {
+///   // TODO: handle
+/// }
+/// ```
 
+#include <assert.h>
 #include <stdint.h>
 
 #include <iostream>
@@ -33,14 +84,15 @@
 #include <measurement_kit/ffi/ffi.h>
 #include <nlohmann/json.hpp>
 
-/// Namespace containing MK code.
+/// Contains MK code.
 namespace mk {
 
-/// Namespace containing the nettest API.
+/// Contains the nettest API.
 namespace nettest {
 
-/// Contains the available log_levels.
-namespace log_level {
+/// Contains the log_levels. Use these values to initialize the
+/// settings::Settings::log_level field.
+namespace log_levels {
 
 /// Only emit error messages.
 constexpr const char *err = "ERR";
@@ -57,16 +109,18 @@ constexpr const char *debug = "DEBUG";
 /// Emit all log messages.
 constexpr const char *debug2 = "DEBUG2";
 
-}  // namespace log_level
+}  // namespace log_levels
 
-/// Contains all the events emitted by nettests.
-namespace event {
+/// Contains the events classes. During its lifecycle, a network test emits
+/// events in reaction to what happens. The Runner will call a specific
+/// callback for any kind of event.
+namespace events {
 
-/// We could not lookup the ASN from the probe IP.
+/// We could not lookup the ASN (Autonomous System Number) from the probe IP.
 class FailureAsnLookup {
  public:
-  /// The key that uniquely identifies an event. You can pass use this key
-  /// with Settings to disable this specific event.
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
   static constexpr const char *event_key = "failure.asn_lookup";
 
   /// The specific error that occurred.
@@ -78,8 +132,8 @@ class FailureAsnLookup {
 /// measure the network performance.
 class StatusUpdatePerformance {
  public:
-  /// The key that uniquely identifies an event. You can pass use this key
-  /// with Settings to disable this specific event.
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
   static constexpr const char *event_key = "status.update_performance";
 
   /// The direction of the performance measurement. Either 'download', for
@@ -96,10 +150,23 @@ class StatusUpdatePerformance {
   double speed_kbps = 0.0;
 };
 
-}  // namespace event
+}  // namespace events
 
-class Options {
+/// Contains settings classes. We have a specific setting class for
+/// each supported network test. This inherits from generic settings
+/// defined by a base class called settings::Settings.
+namespace settings {
+
+/// Generic settings of a network test.
+class Settings {
  public:
+  /// Optional annotations (i.e. key, value string pairs) that will be included
+  /// into the JSON report sent to the OONI collector.
+  std::map<std::string, std::string> annotations = {};
+
+  /// List of events that will not be emitted.
+  std::vector<std::string> disabled_events = {};
+
   /// Base URL of the OONI bouncer. This base URL is used to construct the full
   /// URL required to contact the OONI bouncer and get test specific info like
   /// test helpers and test collectors.
@@ -114,7 +181,8 @@ class Options {
   /// DNS resolver IP address. By setting this option you will force MK to use
   /// that DNS resolver for resolving domain names to IP addresses. For this
   /// setting to work you should use a DNS engine different from the "system"
-  /// engine.
+  /// engine. By default this option is not set, as we use the system engine as
+  /// our default DNS engine.
   std::string dns_nameserver = "";
 
   /// What DNS engine to use. The "system" engine implies that `getaddrinfo()`
@@ -123,16 +191,22 @@ class Options {
   /// to resolve domain names.
   std::string dns_engine = "system";
 
-  /// Path to the GeoIP ASN database file.
+  /// Path to the GeoIP ASN (Autonomous System Number) database file. By default
+  /// this option is empty. If you do not change this option to contain the path
+  /// to a suitable database file, MK will not be able to map the probe IP
+  /// address to an ASN.
   std::string geoip_asn_path = "";
 
-  /// Path to the GeoIP country database file.
+  /// Path to the GeoIP country database file. By default this option is empty.
+  /// If you do not change it to contain the path to a suitable database file,
+  /// MK will not be able to map the probe IP to a country code.
   std::string geoip_country_path = "";
 
   /// Whether to ignore bouncer errors. If this option is true, then MK will not
   /// stop after failing to contact the OONI bouncer. Without the information
-  /// provided by the bouncer, some tests MAY still work, while others (e.g.
-  /// OONI tests) will most likely fail.
+  /// provided by the bouncer, OONI tests that require a test helper will
+  /// certainly fail, while other tests will just fail to submit their results
+  /// to a collector, unless you manually configure a collector base URL.
   double ignore_bouncer_error = true;
 
   /// Whether to ignore errors opening the report with the OONI collector.
@@ -140,33 +214,45 @@ class Options {
 
   /// Max run time for nettests taking input. When you are running a nettest
   /// taking input, the test will stop after the number of seconds specified by
-  /// this option has passed.
+  /// this option has passed (plus some extra time required to interrupt the
+  /// testing engine). Setting this option to a negative value lets the test run
+  /// as long as necessary to exhaust its input list.
   double max_runtime = -1.0;
 
   /// Path to the CA used to validate SSL certificates. This is not necessary
   /// where we use LibreSSL, because in such cases we include a CA bundle
   /// directly inside of the MK binary. This happens for Android, iOS, and
-  /// Windows systems.
+  /// Windows systems. If this option is not set and we're not using LibreSSL,
+  /// then attempting to connect to any website using HTTPS will fail.
   std::string net_ca_bundle_path = "";
 
-  /// Number of seconds after which I/O will timeout
+  /// Number of seconds after which network I/O operations (i.e. connect, recv,
+  /// send) will timeout and return an error.
   double net_timeout = 10.0;
 
-  /// Whether to avoid using a bouncer
+  /// Whether to avoid using a bouncer. Not using a bouncer means we will not
+  /// discover the base URL of a suitable collector and of test helpers. OONI
+  /// tests that require test helpers will fail if you disable the bouncer.
+  /// Other tests will just not be able to submit results to a collector, unless
+  /// you manually configure a collector base URL.
   double no_bouncer = false;
 
-  /// Whether to avoid using a collector
+  /// Whether to avoid using a collector. If true, it means that the test
+  /// results are not submitted to a collector (by default the OONI collector)
+  /// for archival or publishing purposes. All measurements submitted to the
+  /// OONI collector are published within a few business days.
   double no_collector = false;
 
-  /// Whether to avoid the the probe ASN lookup.
+  /// Whether to avoid the the probe ASN (Autonomous System Number) lookup.
   double no_asn_lookup = false;
 
-  /// Whether to avoid the probe CC lookup.
+  /// Whether to avoid the probe country code lookup.
   double no_cc_lookup = false;
 
-  /// Whether to avoid looking up the probe IP. Not knowing the probe IP
-  /// prevents us from looking up the ASN and the CC and also prevents us from
-  /// attempting to scrub the IP address from measurements results.
+  /// Whether to avoid looking up the probe IP. Not knowing it prevents us from
+  /// looking up the ASN (Autonomous System Number) and the country code. Most
+  /// importantly, this also prevents us from attempting to scrub the IP address
+  /// from measurements results, which may be a concern for censorship tests.
   double no_ip_lookup = false;
 
   /// Whether to avoid writing a report file to disk.
@@ -175,21 +261,21 @@ class Options {
   /// Whether to avoid looking up the resolver IP address.
   double no_resolver_lookup = false;
 
-  /// The ASN in which we are. If you set this, we will of course skip the probe
-  /// ASN lookup.
+  /// The ASN (Autonomous System Number) in which we are. If you set this, we
+  /// will of course skip the probe ASN lookup.
   std::string probe_asn = "";
 
   /// The country code in which we are. If you set this, we will of course skip
-  /// the probe CC lookup.
+  /// the probe country code lookup.
   std::string probe_cc = "";
 
-  /// The probe IP. If you set this, we will of course skip the probe IP lookup
+  /// The probe IP. If you set this, we will of course skip the probe IP lookup.
   std::string probe_ip = "";
 
   /// Whether to randomize the provided input.
   double randomize_input = true;
 
-  /// Whether to save the probe ASN in the report.
+  /// Whether to save the probe ASN (Autonomous System Number) in the report.
   double save_real_probe_asn = true;
 
   /// Whether to save the probe country code in the report.
@@ -201,87 +287,151 @@ class Options {
   /// Whether to save the probe resolver IP in the report.
   double save_real_resolver_ip = true;
 
-  /// Name of the application. If this is not set, the string "measurement_kit"
-  /// will be used.
-  std::string software_name = "";
+  /// Name of the application.
+  std::string software_name = "measurement_kit";
 
-  /// Version of the application. If this is not set, the current MK version
-  /// will be used.
+  /// Version of the application. By default this is an empty string. If you do
+  /// not set this variable, the current MK version will be used.
   std::string software_version = "";
-};
 
-class Settings : public Options {
- public:
-  /// Optional annotations (i.e. key, value string pairs) that will be included
-  /// into the JSON report sent to the OONI collector.
-  std::map<std::string, std::string> annotations = {};
-
-  /// List of events that will not be emitted.
-  std::vector<std::string> disabled_events = {};
-
-  /// Name of the test.
-  std::string name = "";
-
-  /// Options controlling the behavior of a nettest.
-  Options options = {};
-
-  /// Releases allocated resources.
   virtual ~Settings() noexcept;
 
- protected:
-  friend class Runner;
-  virtual void serialize_into(nlohmann::json &doc) const;
+  virtual void serialize_into(nlohmann::json *doc) const;
 };
 
-/// Settings for Neubot's DASH test. For more info see
+/// Full settings for Neubot's DASH test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-021-dash.md.
-using DashSettings = Settings;
+class DashSettings : public Settings {
+ public:
+  using Settings::Settings;
 
-/// Settings for OONI's captive portal test. For more info see
+  ~DashSettings() noexcept override;
+
+  void serialize_into(nlohmann::json *doc) const override;
+};
+
+/// Full settings for OONI's captive portal test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-010-captive-portal.md.
-using CaptivePortalSettings = Settings;
+class CaptivePortalSettings : public Settings {
+ public:
+  using Settings::Settings;
 
-/// Settings for OONI's DNS injection test. For more info see
+  ~CaptivePortalSettings() noexcept override;
+
+  void serialize_into(nlohmann::json *doc) const override;
+};
+
+/// Full settings for OONI's DNS injection test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-012-dns-injection.md.
-using DnsInjectionSettings = Settings;
+class DnsInjectionSettings : public Settings {
+ public:
+  using Settings::Settings;
 
-/// Settings for OONI's Facebook Messenger test. For more info see
+  ~DnsInjectionSettings() noexcept override;
+
+  void serialize_into(nlohmann::json *doc) const override;
+};
+
+/// Full settings for OONI's Facebook Messenger test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-019-facebook-messenger.md.
-using FacebookMessengerSettings = Settings;
+class FacebookMessengerSettings : public Settings {
+ public:
+  using Settings::Settings;
 
-/// Settings for OONI's HTTP header field manipulation test. For more info see
+  ~FacebookMessengerSettings() noexcept override;
+
+  void serialize_into(nlohmann::json *doc) const override;
+};
+
+/// Full settings for OONI's HTTP header field manipulation test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-006-header-field-manipulation.md.
-using HttpHeaderFieldManipulationSettings = Settings;
+class HttpHeaderFieldManipulationSettings : public Settings {
+ public:
+  using Settings::Settings;
 
-/// Settings for OONI's HTTP invalid request line test. For more info see
+  ~HttpHeaderFieldManipulationSettings() noexcept override;
+
+  void serialize_into(nlohmann::json *doc) const override;
+};
+
+/// Full settings for OONI's HTTP invalid request line test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-007-http-invalid-request-line.md.
-using HttpInvalidRequestLineSettings = Settings;
+class HttpInvalidRequestLineSettings : public Settings {
+ public:
+  using Settings::Settings;
 
-/// Settings for OONI's meek fronted requests test. For more info see
+  ~HttpInvalidRequestLineSettings() noexcept override;
+
+  void serialize_into(nlohmann::json *doc) const override;
+};
+
+/// Full settings for OONI's meek fronted requests test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-014-meek-fronted-requests.md.
-using MeekFrontedRequestsSettings = Settings;
+class MeekFrontedRequestsSettings : public Settings {
+ public:
+  using Settings::Settings;
 
-/// Settings for the multi NDT network performance test. For more info see
+  ~MeekFrontedRequestsSettings() noexcept override;
+
+  void serialize_into(nlohmann::json *doc) const override;
+};
+
+/// Full settings for the multi NDT network performance test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-022-ndt.md.
-using MultiNdtSettings = Settings;
+class MultiNdtSettings : public Settings {
+ public:
+  using Settings::Settings;
 
-/// Settings for the NDT network performance test. For more info see
+  ~MultiNdtSettings() noexcept override;
+
+  void serialize_into(nlohmann::json *doc) const override;
+};
+
+/// Full settings for the NDT network performance test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-022-ndt.md.
-using NdtSettings = Settings;
+class NdtSettings : public Settings {
+ public:
+  using Settings::Settings;
 
-/// Settings for OONI's TCP connect test. For more info see
+  ~NdtSettings() noexcept override;
+
+  void serialize_into(nlohmann::json *doc) const override;
+};
+
+/// Full settings for OONI's TCP connect test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-008-tcp-connect.md.
-using TcpConnectSettings = Settings;
+class TcpConnectSettings : public Settings {
+ public:
+  using Settings::Settings;
 
-/// Settings for OONI's Telegram test. For more info see
+  ~TcpConnectSettings() noexcept override;
+
+  void serialize_into(nlohmann::json *doc) const override;
+};
+
+/// Full settings for OONI's Telegram test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-020-telegram.md.
-using TelegramSettings = Settings;
+class TelegramSettings : public Settings {
+ public:
+  using Settings::Settings;
 
-/// Settings for OONI's Web Connectivity test. For more info see
+  ~TelegramSettings() noexcept override;
+
+  void serialize_into(nlohmann::json *doc) const override;
+};
+
+/// Full settings for OONI's Web Connectivity test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-017-web-connectivity.md.
-using WebConnectivitySettings = Settings;
+class WebConnectivitySettings : public Settings {
+ public:
+  using Settings::Settings;
 
-/// Settings for OONI's WhatsApp test. For more info see
+  ~WebConnectivitySettings() noexcept override;
+
+  void serialize_into(nlohmann::json *doc) const override;
+};
+
+/// Full settings for OONI's WhatsApp test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-018-whatsapp.md.
 class WhatsappSettings : public Settings {
  public:
@@ -290,34 +440,40 @@ class WhatsappSettings : public Settings {
   /// Whether to check all WhatsApp endpoints.
   double all_endpoints = false;
 
-  /// Release the allocated resources.
   ~WhatsappSettings() noexcept override;
 
- protected:
-  void serialize_into(nlohmann::json &doc) const override;
+  void serialize_into(nlohmann::json *doc) const override;
 };
 
-/// Runs network tests and routes their events.
+}  // namespace settings
+
+/// Runs network tests and routes their events. Because most events are emitted
+/// by all tests and just a couple of them are specific of specific tests, we
+/// have not created a runner class for each test. Rather we have this one for
+/// all the tests that we support in MK.
 class Runner {
  public:
   /// Called when the FailureAsnLookup event occurs.
-  virtual void on_failure_asn_lookup(const event::FailureAsnLookup &) {
+  virtual void on_failure_asn_lookup(const events::FailureAsnLookup &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the StatusUpdatePerformance event occurs.
   virtual void on_status_update_performance(
-      const event::StatusUpdatePerformance &) {
+      const events::StatusUpdatePerformance &) {
     // TODO: override this callback if you're interested
   }
 
   /// Default constructor.
   Runner() noexcept {}
 
-  /// Runs the nettest until completion.
-  void run(const Settings &settings);
+  /// Runs the nettest until completion. @throw std::exception when it is not
+  /// possible to marshal/unmarshal data structures from/to JSON as well as
+  /// if unexpected error conditions occurs. @remark in the event in which an
+  /// exception is thrown, the stack will unwind, the currently running test
+  /// will be interrupted and the thread in which it is running will be joined.
+  void run(const settings::Settings &settings);
 
-  /// Releases allocated resources.
   virtual ~Runner() noexcept;
 };
 
@@ -349,13 +505,14 @@ class EventDeleter {
 };
 using UniqueEvent = std::unique_ptr<mk_event_t, EventDeleter>;
 
+namespace settings {
+
 Settings::~Settings() noexcept {}
 
-void Settings::serialize_into(nlohmann::json &doc) const {
-  doc["annotations"] = annotations;
-  doc["disabled_events"] = disabled_events;
-  doc["name"] = name;
-  doc["options"] = options;
+void Settings::serialize_into(nlohmann::json *doc) const {
+  assert(doc != nullptr);
+  (*doc)["annotations"] = annotations;
+  (*doc)["disabled_events"] = disabled_events;
   {
     nlohmann::json so;
     so["bouncer_base_url"] = bouncer_base_url;
@@ -386,24 +543,113 @@ void Settings::serialize_into(nlohmann::json &doc) const {
     so["save_real_resolver_ip"] = (int64_t)save_real_resolver_ip;
     so["software_name"] = software_name;
     so["software_version"] = software_version;
-    doc["options"] = so;
+    (*doc)["options"] = so;
   }
 }
 
-Runner::~Runner() noexcept {}
+DashSettings::~DashSettings() noexcept {}
+
+void DashSettings::serialize_into(nlohmann::json *doc) const {
+  Settings::serialize_into(doc);
+  (*doc)["name"] = "Dash";
+}
+
+CaptivePortalSettings::~CaptivePortalSettings() noexcept {}
+
+void CaptivePortalSettings::serialize_into(nlohmann::json *doc) const {
+  Settings::serialize_into(doc);
+  (*doc)["name"] = "CaptivePortal";
+}
+
+DnsInjectionSettings::~DnsInjectionSettings() noexcept {}
+
+void DnsInjectionSettings::serialize_into(nlohmann::json *doc) const {
+  Settings::serialize_into(doc);
+  (*doc)["name"] = "DnsInjection";
+}
+
+FacebookMessengerSettings::~FacebookMessengerSettings() noexcept {}
+
+void FacebookMessengerSettings::serialize_into(nlohmann::json *doc) const {
+  Settings::serialize_into(doc);
+  (*doc)["name"] = "FacebookMessenger";
+}
+
+HttpHeaderFieldManipulationSettings::
+    ~HttpHeaderFieldManipulationSettings() noexcept {}
+
+void HttpHeaderFieldManipulationSettings::serialize_into(
+    nlohmann::json *doc) const {
+  Settings::serialize_into(doc);
+  (*doc)["name"] = "HttpHeaderFieldManipulation";
+}
+
+HttpInvalidRequestLineSettings::~HttpInvalidRequestLineSettings() noexcept {}
+
+void HttpInvalidRequestLineSettings::serialize_into(nlohmann::json *doc) const {
+  Settings::serialize_into(doc);
+  (*doc)["name"] = "HttpInvalidRequestLine";
+}
+
+MeekFrontedRequestsSettings::~MeekFrontedRequestsSettings() noexcept {}
+
+void MeekFrontedRequestsSettings::serialize_into(nlohmann::json *doc) const {
+  Settings::serialize_into(doc);
+  (*doc)["name"] = "MeekFrontedRequests";
+}
+
+MultiNdtSettings::~MultiNdtSettings() noexcept {}
+
+void MultiNdtSettings::serialize_into(nlohmann::json *doc) const {
+  Settings::serialize_into(doc);
+  (*doc)["name"] = "MultiNdt";
+}
+
+NdtSettings::~NdtSettings() noexcept {}
+
+void NdtSettings::serialize_into(nlohmann::json *doc) const {
+  Settings::serialize_into(doc);
+  (*doc)["name"] = "Ndt";
+}
+
+TcpConnectSettings::~TcpConnectSettings() noexcept {}
+
+void TcpConnectSettings::serialize_into(nlohmann::json *doc) const {
+  Settings::serialize_into(doc);
+  (*doc)["name"] = "TcpConnect";
+}
+
+TelegramSettings::~TelegramSettings() noexcept {}
+
+void TelegramSettings::serialize_into(nlohmann::json *doc) const {
+  Settings::serialize_into(doc);
+  (*doc)["name"] = "Telegram";
+}
+
+WebConnectivitySettings::~WebConnectivitySettings() noexcept {}
+
+void WebConnectivitySettings::serialize_into(nlohmann::json *doc) const {
+  Settings::serialize_into(doc);
+  (*doc)["name"] = "WebConnectivity";
+}
 
 WhatsappSettings::~WhatsappSettings() noexcept {}
 
-void WhatsappSettings::serialize_into(nlohmann::json &doc) const {
+void WhatsappSettings::serialize_into(nlohmann::json *doc) const {
   Settings::serialize_into(doc);
-  doc["options"]["all_endpoints"] = (int64_t)all_endpoints;
+  (*doc)["name"] = "Whatsapp";
+  (*doc)["options"]["all_endpoints"] = (int64_t)all_endpoints;
 }
 
-void Runner::run(const Settings &settings) {
+}  // namespace settings
+
+Runner::~Runner() noexcept {}
+
+void Runner::run(const settings::Settings &settings) {
   UniqueTask task;
   {
     nlohmann::json s;
-    settings.serialize_into(s);
+    settings.serialize_into(&s);
     task.reset(mk_task_start(s.dump().c_str()));
     if (!task) {
       throw std::runtime_error("mk_task_start() failed");
@@ -423,13 +669,13 @@ void Runner::run(const Settings &settings) {
       ev = nlohmann::json::parse(str);
     }
     if (ev.at("key") == "failure.asn_lookup") {
-      event::FailureAsnLookup event;
+      events::FailureAsnLookup event;
       event.failure = ev.at("value").at("failure");
       on_failure_asn_lookup(event);
       continue;
     }
     if (ev.at("key") == "status.update_performance") {
-      event::StatusUpdatePerformance event;
+      events::StatusUpdatePerformance event;
       event.direction = ev.at("value").at("direction");
       event.elapsed = ev.at("value").at("elapsed");
       event.num_streams = ev.at("value").at("num_streams");

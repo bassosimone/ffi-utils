@@ -21,7 +21,58 @@
 ///
 /// This file contains Measurement Kit "nettest" API. This API allows you to
 /// run network tests in a uniform way from a C++11 environment.
+///
+/// The core idea behind this API is that a network test (nettest) requires
+/// some settings and will generate some events while running. Such events
+/// could be, e.g., a log line, a piece of result.
+///
+/// As a general rule, use documented features. Undocumented features are
+/// much more likely to be replaced or changed without notice.
+///
+/// Usage is as follows. Instantiate a settings class for the network test
+/// that you want to execute. For example:
+///
+/// ```
+/// #include <measurement_kit/nettest/nettest.hpp>
+///
+/// mk::nettest::settings::WebConnectivitySettings mySettings;
+/// ```
+///
+/// Configure the settings you care about. Some settings are shared by all
+/// network tests while others are nettest specific.
+///
+/// ```
+/// mySettings.log_level = mk::nettest::log_levels::debug;
+/// ```
+///
+/// Write a derived class of Runner where you override the virtual methods
+/// handlings the events that you care about.
+///
+/// ```
+/// class MyRunner : public mk::nettest::Runner {
+///  public:
+///   using mk::nettest::Runner::Runner;
+///
+///   virtual void on_log(const events::Log &evt) {
+///     std::clog << "<" << evt.log_level << ">" << evt.message << std::endl;
+///   }
+/// };
+/// ```
+///
+/// Instantiate your runner and run the test with your settings. Exceptions
+/// derived from `std::exception` MAY be emitted in case of serious internal
+/// error. You may want to be prepared for them.
+///
+/// ```
+/// MyRunner runner;
+/// try {
+///   runner.run(mySettings);
+/// } catch (const std::exception &exc) {
+///   // TODO: handle
+/// }
+/// ```
 
+#include <assert.h>
 #include <stdint.h>
 
 #include <iostream>
@@ -33,29 +84,32 @@
 #include <measurement_kit/ffi/ffi.h>
 #include <nlohmann/json.hpp>
 
-/// Namespace containing MK code.
+/// Contains MK code.
 namespace mk {
 
-/// Namespace containing the nettest API.
+/// Contains the nettest API.
 namespace nettest {
 
-/// Contains the available log_levels.
-namespace log_level {
+/// Contains the log_levels. Use these values to initialize the
+/// settings::Settings::log_level field.
+namespace log_levels {
 {% for log_level in log_levels %}
 /// {{ log_level.docs }}.
 constexpr const char *{{ log_level.key.to_snake_case() }} = "{{ log_level.key.to_snake_case_upper() }}";
 {% endfor %}
 }  // namespace log_level
 
-/// Contains all the events emitted by nettests.
-namespace event {
+/// Contains the events classes. During its lifecycle, a network test emits
+/// events in reaction to what happens. The Runner will call a specific
+/// callback for any kind of event.
+namespace events {
 
 {% for event in events %}
 /// {{ event.docs }}
 class {{ event.key.to_pascal_case() }} {
  public:
-  /// The key that uniquely identifies an event. You can pass use this key
-  /// with Settings to disable this specific event.
+  /// The key that uniquely identifies an event. To disable an event, append
+  /// this key to the settings::Settings::disabled_events array.
   static constexpr const char *event_key = "{{ event.key }}";
 
   {% for attribute in event.attributes %}
@@ -65,57 +119,57 @@ class {{ event.key.to_pascal_case() }} {
 };
 {% endfor %}
 
-}  // namespace event
+}  // namespace events
 
-class Options {
- public:
-  {% for attribute in options %}
-    /// {{ attribute.docs }}
-    {{ attribute.base_type.decl("cxx") }} {{ attribute.key.to_snake_case() }} = {{ attribute.base_type.default_value("cxx") }};
-  {% endfor %}
-};
+/// Contains settings classes. We have a specific setting class for
+/// each supported network test. This inherits from generic settings
+/// defined by a base class called settings::Settings.
+namespace settings {
 
-class Settings : public Options {
+/// Generic settings of a network test.
+class Settings {
  public:
   {% for attribute in settings %}
     /// {{ attribute.docs }}
     {{ attribute.base_type.decl("cxx") }} {{ attribute.key.to_snake_case() }} = {{ attribute.base_type.default_value("cxx") }};
   {% endfor %}
 
-  /// Releases allocated resources.
+  {% for attribute in options %}
+    /// {{ attribute.docs }}
+    {{ attribute.base_type.decl("cxx") }} {{ attribute.key.to_snake_case() }} = {{ attribute.base_type.default_value("cxx") }};
+  {% endfor %}
+
   virtual ~Settings() noexcept;
 
- protected:
-  friend class Runner;
-  virtual void serialize_into(nlohmann::json &doc) const;
+  virtual void serialize_into(nlohmann::json *doc) const;
 };
 
 {% for nettest in nettests %}
-  /// Settings for {{ nettest.docs }}. For more info see {{ nettest.reference_url }}.
-  {% if nettest.options is not none %}class {{ nettest.key.to_pascal_case() }}Settings : public Settings {
-     public:
-      using Settings::Settings;
+  /// Full settings for {{ nettest.docs }}. See {{ nettest.reference_url }}.
+  class {{ nettest.key.to_pascal_case() }}Settings : public Settings {
+   public:
+    using Settings::Settings;
+    {% if nettest.options is not none %}{% for option in nettest.options %}
+      /// {{ option.docs }}
+      {{ option.base_type.decl("cxx") }} {{ option.key.to_snake_case() }} = {{ option.base_type.default_value("cxx") }};{% endfor %}{% endif %}
 
-      {% for option in nettest.options %}
-        /// {{ option.docs }}
-        {{ option.base_type.decl("cxx") }} {{ option.key.to_snake_case() }} = {{ option.base_type.default_value("cxx") }};
-      {% endfor %}
+    ~{{ nettest.key.to_pascal_case() }}Settings() noexcept override;
 
-      /// Release the allocated resources.
-      ~{{ nettest.key.to_pascal_case() }}Settings() noexcept override;
-
-     protected:
-       void serialize_into(nlohmann::json &doc) const override;
-    };
-  {% else %} using {{ nettest.key.to_pascal_case() }}Settings = Settings; {% endif %}
+     void serialize_into(nlohmann::json *doc) const override;
+  };
 {% endfor %}
 
-/// Runs network tests and routes their events.
+}  // namespace settings
+
+/// Runs network tests and routes their events. Because most events are emitted
+/// by all tests and just a couple of them are specific of specific tests, we
+/// have not created a runner class for each test. Rather we have this one for
+/// all the tests that we support in MK.
 class Runner {
  public:
   {% for event in events %}
     /// Called when the {{ event.key.to_pascal_case() }} event occurs.
-    virtual void on_{{ event.key.to_snake_case() }}(const event::{{ event.key.to_pascal_case() }} &) {
+    virtual void on_{{ event.key.to_snake_case() }}(const events::{{ event.key.to_pascal_case() }} &) {
       // TODO: override this callback if you're interested
     }
   {% endfor %}
@@ -123,10 +177,13 @@ class Runner {
   /// Default constructor.
   Runner() noexcept {}
 
-  /// Runs the nettest until completion.
-  void run(const Settings &settings);
+  /// Runs the nettest until completion. @throw std::exception when it is not
+  /// possible to marshal/unmarshal data structures from/to JSON as well as
+  /// if unexpected error conditions occurs. @remark in the event in which an
+  /// exception is thrown, the stack will unwind, the currently running test
+  /// will be interrupted and the thread in which it is running will be joined.
+  void run(const settings::Settings &settings);
 
-  /// Releases allocated resources.
   virtual ~Runner() noexcept;
 };
 
@@ -158,35 +215,39 @@ class EventDeleter {
 };
 using UniqueEvent = std::unique_ptr<mk_event_t, EventDeleter>;
 
+namespace settings {
+
 Settings::~Settings() noexcept {}
 
-void Settings::serialize_into(nlohmann::json &doc) const {
-  {% for attribute in settings if attribute.key != "options" %} doc["{{ attribute.key }}"] = {{ attribute.base_type.to_json_cast("cxx") }} {{ attribute.key.to_snake_case() }}; {% endfor %}
+void Settings::serialize_into(nlohmann::json *doc) const {
+  assert(doc != nullptr);
+  {% for attribute in settings if attribute.key != "options" %} (*doc)["{{ attribute.key }}"] = {{ attribute.base_type.to_json_cast("cxx") }} {{ attribute.key.to_snake_case() }}; {% endfor %}
   {
     nlohmann::json so;
     {% for attribute in options %} so["{{ attribute.key }}"] = {{ attribute.base_type.to_json_cast("cxx") }} {{ attribute.key.to_snake_case() }}; {% endfor %}
-    doc["options"] = so;
+    (*doc)["options"] = so;
   }
 }
 
-Runner::~Runner() noexcept {}
-
 {% for nettest in nettests %}
-  {% if nettest.options is not none %}
-    {{ nettest.key.to_pascal_case() }}Settings::~{{ nettest.key.to_pascal_case() }}Settings() noexcept {}
+  {{ nettest.key.to_pascal_case() }}Settings::~{{ nettest.key.to_pascal_case() }}Settings() noexcept {}
 
-    void {{ nettest.key.to_pascal_case() }}Settings::serialize_into(nlohmann::json &doc) const {
-      Settings::serialize_into(doc);
-      {% for option in nettest.options %} doc["options"]["{{ option.key }}"] = {{ option.base_type.to_json_cast("cxx") }} {{ option.key.to_snake_case() }}; {% endfor %}
-    }
-  {% endif %}
+  void {{ nettest.key.to_pascal_case() }}Settings::serialize_into(nlohmann::json *doc) const {
+    Settings::serialize_into(doc);
+    (*doc)["name"] = "{{ nettest.key.to_pascal_case() }}";
+    {% if nettest.options is not none %}{% for option in nettest.options %} (*doc)["options"]["{{ option.key }}"] = {{ option.base_type.to_json_cast("cxx") }} {{ option.key.to_snake_case() }}; {% endfor %} {% endif %}
+  }
 {% endfor %}
 
-void Runner::run(const Settings &settings) {
+}  // namespace settings
+
+Runner::~Runner() noexcept {}
+
+void Runner::run(const settings::Settings &settings) {
   UniqueTask task;
   {
     nlohmann::json s;
-    settings.serialize_into(s);
+    settings.serialize_into(&s);
     task.reset(mk_task_start(s.dump().c_str()));
     if (!task) {
       throw std::runtime_error("mk_task_start() failed");
@@ -206,7 +267,7 @@ void Runner::run(const Settings &settings) {
       ev = nlohmann::json::parse(str);
     }
     {% for event in events %}if (ev.at("key") == "{{ event.key }}") {
-      event::{{ event.key.to_pascal_case() }} event;
+      events::{{ event.key.to_pascal_case() }} event;
       {% for attribute in event.attributes %} event.{{ attribute.key.to_snake_case() }} = {{ attribute.base_type.from_json_cast("cxx") }} ev.at("value").at("{{ attribute.key }}"); {% endfor %}
       on_{{ event.key.to_snake_case() }}(event);
       continue;

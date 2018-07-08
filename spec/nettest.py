@@ -153,20 +153,6 @@ class VectorString(Type):
             "cxx": "{}",
         }[language]
 
-class Options(Type):
-    def __init__(self):
-        super().__init__()
-
-    def decl(self, language):
-        return {
-            "cxx": "Options",
-        }[language]
-
-    def default_value(self, language):
-        return {
-            "cxx": "{}",
-        }[language]
-
 class Attribute(object):
     def __init__(self, docs, base_type, key):
         self.docs = Documentation(docs)
@@ -194,7 +180,7 @@ class LogLevel(object):
 def main():
     """ Main function """
 
-    events = [Event("We could not lookup the ASN from the probe IP.",
+    events = [Event("We could not lookup the ASN (Autonomous System Number) from the probe IP.",
                     "failure.asn_lookup",
                     Attribute(
                         "The specific error that occurred.",
@@ -233,7 +219,9 @@ def main():
                             you will force MK to use that DNS resolver for
                             resolving domain names to IP addresses. For this
                             setting to work you should use a DNS engine
-                            different from the "system" engine.""",
+                            different from the "system" engine. By default
+                            this option is not set, as we use the system engine
+                            as our default DNS engine.""",
                          String(), "dns/nameserver"),
                Attribute("""What DNS engine to use. The "system" engine implies
                             that `getaddrinfo()` is used. If you set this
@@ -242,16 +230,25 @@ def main():
                             and the specified nameserver to resolve domain
                             names.""",
                          String("system"), "dns/engine"),
-               Attribute("""Path to the GeoIP ASN database file.""",
+               Attribute("""Path to the GeoIP ASN (Autonomous System Number) database file. By default this
+                            option is empty. If you do not change this option to
+                            contain the path to a suitable database file, MK
+                            will not be able to map the probe IP address to an
+                            ASN.""",
                          String(), "geoip_asn_path"),
-               Attribute("""Path to the GeoIP country database file.""",
+               Attribute("""Path to the GeoIP country database file. By default
+                            this option is empty. If you do not change it to
+                            contain the path to a suitable database file, MK will
+                            not be able to map the probe IP to a country code.""",
                          String(), "geoip_country_path"),
                Attribute("""Whether to ignore bouncer errors. If this option
                             is true, then MK will not stop after failing to
                             contact the OONI bouncer. Without the information
-                            provided by the bouncer, some tests MAY still
-                            work, while others (e.g. OONI tests) will most
-                            likely fail.""",
+                            provided by the bouncer, OONI tests that require
+                            a test helper will certainly fail, while other tests
+                            will just fail to submit their results to a
+                            collector, unless you manually configure a collector
+                            base URL.""",
                          Bool(True), "ignore_bouncer_error"),
                Attribute("""Whether to ignore errors opening the report with
                             the OONI collector.""",
@@ -259,45 +256,64 @@ def main():
                Attribute("""Max run time for nettests taking input. When you
                             are running a nettest taking input, the test will
                             stop after the number of seconds specified by
-                            this option has passed.""",
+                            this option has passed (plus some extra time required
+                            to interrupt the testing engine). Setting this
+                            option to a negative value lets the test run as
+                            long as necessary to exhaust its input list.""",
                          Double(-1.0), "max_runtime"),
                Attribute("""Path to the CA used to validate SSL certificates. This
                             is not necessary where we use LibreSSL, because in
                             such cases we include a CA bundle directly inside of
                             the MK binary. This happens for Android, iOS, and
-                            Windows systems.""",
+                            Windows systems. If this option is not set and
+                            we're not using LibreSSL, then attempting to connect
+                            to any website using HTTPS will fail.""",
                          String(), "net/ca_bundle_path"),
-               Attribute("""Number of seconds after which I/O will timeout""",
+               Attribute("""Number of seconds after which network I/O
+                            operations (i.e. connect, recv, send) will
+                            timeout and return an error.""",
                          Double(10.0), "net/timeout"),
-               Attribute("""Whether to avoid using a bouncer""", Bool(False),
-                         "no_bouncer"),
-               Attribute("""Whether to avoid using a collector""", Bool(False),
-                         "no_collector"),
-               Attribute("""Whether to avoid the the probe ASN lookup.""",
+               Attribute("""Whether to avoid using a bouncer. Not using a
+                            bouncer means we will not discover the base URL
+                            of a suitable collector and of test helpers.
+                            OONI tests that require test helpers will fail
+                            if you disable the bouncer. Other tests will just not be
+                            able to submit results to a collector, unless
+                            you manually configure a collector base URL.""",
+                         Bool(False), "no_bouncer"),
+               Attribute("""Whether to avoid using a collector. If true, it means
+                            that the test results are not submitted to a collector
+                            (by default the OONI collector) for archival or
+                            publishing purposes. All measurements submitted to
+                            the OONI collector are published within a few
+                            business days.""",
+                         Bool(False), "no_collector"),
+               Attribute("""Whether to avoid the the probe ASN (Autonomous System Number) lookup.""",
                          Bool(False), "no_asn_lookup"),
-               Attribute("""Whether to avoid the probe CC lookup.""",
+               Attribute("""Whether to avoid the probe country code lookup.""",
                          Bool(False), "no_cc_lookup"),
                Attribute("""Whether to avoid looking up the probe IP. Not knowing
-                            the probe IP prevents us from looking up the ASN
-                            and the CC and also prevents us from attempting to
-                            scrub the IP address from measurements results.""",
+                            it prevents us from looking up the ASN (Autonomous System Number)
+                            and the country code. Most importantly, this also prevents us from
+                            attempting to scrub the IP address from measurements results,
+                            which may be a concern for censorship tests.""",
                          Bool(False), "no_ip_lookup"),
                Attribute("""Whether to avoid writing a report file to disk.""",
                          Bool(False), "no_file_report"),
                Attribute("""Whether to avoid looking up the resolver IP address.""",
                          Bool(False), "no_resolver_lookup"),
-               Attribute("""The ASN in which we are. If you set this, we will
+               Attribute("""The ASN (Autonomous System Number) in which we are. If you set this, we will
                             of course skip the probe ASN lookup.""",
                          String(), "probe_asn"),
                Attribute("""The country code in which we are. If you set this, we
-                            will of course skip the probe CC lookup.""",
+                            will of course skip the probe country code lookup.""",
                          String(), "probe_cc"),
                Attribute("""The probe IP. If you set this, we will of course
-                            skip the probe IP lookup""",
+                            skip the probe IP lookup.""",
                          String(), "probe_ip"),
                Attribute("""Whether to randomize the provided input.""",
                          Bool(True), "randomize_input"),
-               Attribute("""Whether to save the probe ASN in the report.""",
+               Attribute("""Whether to save the probe ASN (Autonomous System Number) in the report.""",
                          Bool(True), "save_real_probe_asn"),
                Attribute("""Whether to save the probe country code in
                             the report.""",
@@ -306,10 +322,10 @@ def main():
                          Bool(False), "save_real_probe_ip"),
                Attribute("""Whether to save the probe resolver IP in the report.""",
                          Bool(True), "save_real_resolver_ip"),
-               Attribute("""Name of the application. If this is not set, the
-                            string "measurement_kit" will be used.""",
-                         String(), "software_name"),
-               Attribute("""Version of the application. If this is not set,
+               Attribute("""Name of the application.""",
+                         String("measurement_kit"), "software_name"),
+               Attribute("""Version of the application. By default this is
+                            an empty string. If you do not set this variable,
                             the current MK version will be used.""",
                          String(), "software_version")]
 
@@ -318,11 +334,7 @@ def main():
                              the OONI collector.""",
                           MapStringString(), "annotations"),
                 Attribute("""List of events that will not be emitted.""",
-                          VectorString(), "disabled_events"),
-                Attribute("""Name of the test.""",
-                          String(), "name"),
-                Attribute("""Options controlling the behavior of a nettest.""",
-                          Options(), "options")]
+                          VectorString(), "disabled_events")]
 
     nettests = [Nettest("""Neubot's DASH test""", "dash",
                         "https://github.com/ooni/spec/blob/master/test-specs/ts-021-dash.md"),

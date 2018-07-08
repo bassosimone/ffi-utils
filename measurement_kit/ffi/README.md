@@ -257,47 +257,47 @@ These are the available options:
 
 - `"collector_base_url"`: (string) Base URL of the OONI collector. This base URL is used to construct the full URL required to contact manage the report submission with the collector. By default this option is not set because we use the bouncer to retrieve the collector base URL.
 
-- `"dns/nameserver"`: (string) DNS resolver IP address. By setting this option you will force MK to use that DNS resolver for resolving domain names to IP addresses. For this setting to work you should use a DNS engine different from the "system" engine.
+- `"dns/nameserver"`: (string) DNS resolver IP address. By setting this option you will force MK to use that DNS resolver for resolving domain names to IP addresses. For this setting to work you should use a DNS engine different from the "system" engine. By default this option is not set, as we use the system engine as our default DNS engine.
 
 - `"dns/engine"`: (string) What DNS engine to use. The "system" engine implies that `getaddrinfo()` is used. If you set this setting to "libevent" and you also configure the "dns/nameserver" option, MK will use libevent and the specified nameserver to resolve domain names.
 
-- `"geoip_asn_path"`: (string) Path to the GeoIP ASN database file.
+- `"geoip_asn_path"`: (string) Path to the GeoIP ASN (Autonomous System Number) database file. By default this option is empty. If you do not change this option to contain the path to a suitable database file, MK will not be able to map the probe IP address to an ASN.
 
-- `"geoip_country_path"`: (string) Path to the GeoIP country database file.
+- `"geoip_country_path"`: (string) Path to the GeoIP country database file. By default this option is empty. If you do not change it to contain the path to a suitable database file, MK will not be able to map the probe IP to a country code.
 
-- `"ignore_bouncer_error"`: (int) Whether to ignore bouncer errors. If this option is true, then MK will not stop after failing to contact the OONI bouncer. Without the information provided by the bouncer, some tests MAY still work, while others (e.g. OONI tests) will most likely fail.
+- `"ignore_bouncer_error"`: (int) Whether to ignore bouncer errors. If this option is true, then MK will not stop after failing to contact the OONI bouncer. Without the information provided by the bouncer, OONI tests that require a test helper will certainly fail, while other tests will just fail to submit their results to a collector, unless you manually configure a collector base URL.
 
 - `"ignore_open_report_error"`: (int) Whether to ignore errors opening the report with the OONI collector.
 
-- `"max_runtime"`: (float) Max run time for nettests taking input. When you are running a nettest taking input, the test will stop after the number of seconds specified by this option has passed.
+- `"max_runtime"`: (float) Max run time for nettests taking input. When you are running a nettest taking input, the test will stop after the number of seconds specified by this option has passed (plus some extra time required to interrupt the testing engine). Setting this option to a negative value lets the test run as long as necessary to exhaust its input list.
 
-- `"net/ca_bundle_path"`: (string) Path to the CA used to validate SSL certificates. This is not necessary where we use LibreSSL, because in such cases we include a CA bundle directly inside of the MK binary. This happens for Android, iOS, and Windows systems.
+- `"net/ca_bundle_path"`: (string) Path to the CA used to validate SSL certificates. This is not necessary where we use LibreSSL, because in such cases we include a CA bundle directly inside of the MK binary. This happens for Android, iOS, and Windows systems. If this option is not set and we're not using LibreSSL, then attempting to connect to any website using HTTPS will fail.
 
-- `"net/timeout"`: (float) Number of seconds after which I/O will timeout
+- `"net/timeout"`: (float) Number of seconds after which network I/O operations (i.e. connect, recv, send) will timeout and return an error.
 
-- `"no_bouncer"`: (int) Whether to avoid using a bouncer
+- `"no_bouncer"`: (int) Whether to avoid using a bouncer. Not using a bouncer means we will not discover the base URL of a suitable collector and of test helpers. OONI tests that require test helpers will fail if you disable the bouncer. Other tests will just not be able to submit results to a collector, unless you manually configure a collector base URL.
 
-- `"no_collector"`: (int) Whether to avoid using a collector
+- `"no_collector"`: (int) Whether to avoid using a collector. If true, it means that the test results are not submitted to a collector (by default the OONI collector) for archival or publishing purposes. All measurements submitted to the OONI collector are published within a few business days.
 
-- `"no_asn_lookup"`: (int) Whether to avoid the the probe ASN lookup.
+- `"no_asn_lookup"`: (int) Whether to avoid the the probe ASN (Autonomous System Number) lookup.
 
-- `"no_cc_lookup"`: (int) Whether to avoid the probe CC lookup.
+- `"no_cc_lookup"`: (int) Whether to avoid the probe country code lookup.
 
-- `"no_ip_lookup"`: (int) Whether to avoid looking up the probe IP. Not knowing the probe IP prevents us from looking up the ASN and the CC and also prevents us from attempting to scrub the IP address from measurements results.
+- `"no_ip_lookup"`: (int) Whether to avoid looking up the probe IP. Not knowing it prevents us from looking up the ASN (Autonomous System Number) and the country code. Most importantly, this also prevents us from attempting to scrub the IP address from measurements results, which may be a concern for censorship tests.
 
 - `"no_file_report"`: (int) Whether to avoid writing a report file to disk.
 
 - `"no_resolver_lookup"`: (int) Whether to avoid looking up the resolver IP address.
 
-- `"probe_asn"`: (string) The ASN in which we are. If you set this, we will of course skip the probe ASN lookup.
+- `"probe_asn"`: (string) The ASN (Autonomous System Number) in which we are. If you set this, we will of course skip the probe ASN lookup.
 
-- `"probe_cc"`: (string) The country code in which we are. If you set this, we will of course skip the probe CC lookup.
+- `"probe_cc"`: (string) The country code in which we are. If you set this, we will of course skip the probe country code lookup.
 
-- `"probe_ip"`: (string) The probe IP. If you set this, we will of course skip the probe IP lookup
+- `"probe_ip"`: (string) The probe IP. If you set this, we will of course skip the probe IP lookup.
 
 - `"randomize_input"`: (int) Whether to randomize the provided input.
 
-- `"save_real_probe_asn"`: (int) Whether to save the probe ASN in the report.
+- `"save_real_probe_asn"`: (int) Whether to save the probe ASN (Autonomous System Number) in the report.
 
 - `"save_real_probe_cc"`: (int) Whether to save the probe country code in the report.
 
@@ -305,9 +305,9 @@ These are the available options:
 
 - `"save_real_resolver_ip"`: (int) Whether to save the probe resolver IP in the report.
 
-- `"software_name"`: (string) Name of the application. If this is not set, the string "measurement_kit" will be used.
+- `"software_name"`: (string) Name of the application.
 
-- `"software_version"`: (string) Version of the application. If this is not set, the current MK version will be used.
+- `"software_version"`: (string) Version of the application. By default this is an empty string. If you do not set this variable, the current MK version will be used.
 
 
 ## Events
