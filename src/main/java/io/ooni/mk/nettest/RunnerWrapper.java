@@ -211,7 +211,7 @@ class RunnerWrapper extends io.ooni.mk.nettest.swig.Runner {
     /* No event specific attributes */
     parent.onTaskTerminated(event);
   }
-
+  /*
   @Override
   public void run_captive_portal(io.ooni.mk.nettest.swig.CaptivePortal swigSettings) {
     super.run_captive_portal(swigSettings);
@@ -276,6 +276,6 @@ class RunnerWrapper extends io.ooni.mk.nettest.swig.Runner {
   public void run_whatsapp(io.ooni.mk.nettest.swig.Whatsapp swigSettings) {
     super.run_whatsapp(swigSettings);
   }
-
+  */
   private Runner parent;
 }

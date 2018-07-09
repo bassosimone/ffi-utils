@@ -44,14 +44,20 @@ public class Runner {
   // Runners
   // -------
   {% for nettest in nettests %}
-  void run{{ nettest.key.to_pascal_case() }}(io.ooni.mk.nettest.settings.{{ nettest.key.to_pascal_case() }} settings) {
+  String prepare{{ nettest.key.to_pascal_case() }}(io.ooni.mk.nettest.settings.{{ nettest.key.to_pascal_case() }} settings) {
     io.ooni.mk.nettest.swig.{{ nettest.key.to_pascal_case() }} swigSettings = new io.ooni.mk.nettest.swig.{{ nettest.key.to_pascal_case() }}();
     {% if nettest.options is not none %}{% for option in nettest.options %}swigSettings.set{{ option.key.to_snake_case() | capitalize }}(settings.{{ option.key.to_camel_case() }});{% endfor %}{% else %}/* No nettest specific options. */{% endif %}
     setCommonOptions(settings, swigSettings);
-    Runner swigRunner = new RunnerWrapper(this);
-    swigRunner.run_{{ nettest.key.to_snake_case() }}(swigSettings);
+    // Use a temporary runner for generating the serialized settings.
+    io.ooni.mk.nettest.swig.Runner swigRunner = new RunnerWrapper(this);
+    return swigRunner.prepare_{{ nettest.key.to_snake_case() }}(swigSettings);
   }
   {% endfor %}
+
+  public void run(String serializedSettings) {
+    io.ooni.mk.nettest.swig.Runner swigRunner = new RunnerWrapper(this);
+    swigRunner.run(serializedSettings);
+  }
 
   // Private stuff
   // -------------
@@ -95,11 +101,11 @@ class RunnerWrapper extends io.ooni.mk.nettest.swig.Runner {
     {% if event.attributes | length > 0 %}{% for attribute in event.attributes %}event.{{ attribute.key.to_camel_case() }} = swigEvent.get{{ attribute.key.to_snake_case() | capitalize }}();{{ "\n    " if not loop.last }}{% endfor %}{% else %}/* No event specific attributes */{% endif %}
     parent.on{{ event.key.to_pascal_case() }}(event);
   }
-  {% endfor %}{% for nettest in nettests %}
+  {% endfor %}/*{% for nettest in nettests %}
   @Override
   public void run_{{ nettest.key.to_snake_case() }}(io.ooni.mk.nettest.swig.{{ nettest.key.to_pascal_case() }} swigSettings) {
     super.run_{{ nettest.key.to_snake_case() }}(swigSettings);
   }
-  {% endfor %}
+  {% endfor %}*/
   private Runner parent;
 }

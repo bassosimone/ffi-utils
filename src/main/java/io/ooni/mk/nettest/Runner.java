@@ -124,110 +124,128 @@ public class Runner {
   // Runners
   // -------
 
-  void runCaptivePortal(io.ooni.mk.nettest.settings.CaptivePortal settings) {
+  String prepareCaptivePortal(io.ooni.mk.nettest.settings.CaptivePortal settings) {
     io.ooni.mk.nettest.swig.CaptivePortal swigSettings = new io.ooni.mk.nettest.swig.CaptivePortal();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    Runner swigRunner = new RunnerWrapper(this);
-    swigRunner.run_captive_portal(swigSettings);
+    // Use a temporary runner for generating the serialized settings.
+    io.ooni.mk.nettest.swig.Runner swigRunner = new RunnerWrapper(this);
+    return swigRunner.prepare_captive_portal(swigSettings);
   }
 
-  void runDash(io.ooni.mk.nettest.settings.Dash settings) {
+  String prepareDash(io.ooni.mk.nettest.settings.Dash settings) {
     io.ooni.mk.nettest.swig.Dash swigSettings = new io.ooni.mk.nettest.swig.Dash();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    Runner swigRunner = new RunnerWrapper(this);
-    swigRunner.run_dash(swigSettings);
+    // Use a temporary runner for generating the serialized settings.
+    io.ooni.mk.nettest.swig.Runner swigRunner = new RunnerWrapper(this);
+    return swigRunner.prepare_dash(swigSettings);
   }
 
-  void runDnsInjection(io.ooni.mk.nettest.settings.DnsInjection settings) {
+  String prepareDnsInjection(io.ooni.mk.nettest.settings.DnsInjection settings) {
     io.ooni.mk.nettest.swig.DnsInjection swigSettings = new io.ooni.mk.nettest.swig.DnsInjection();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    Runner swigRunner = new RunnerWrapper(this);
-    swigRunner.run_dns_injection(swigSettings);
+    // Use a temporary runner for generating the serialized settings.
+    io.ooni.mk.nettest.swig.Runner swigRunner = new RunnerWrapper(this);
+    return swigRunner.prepare_dns_injection(swigSettings);
   }
 
-  void runFacebookMessenger(io.ooni.mk.nettest.settings.FacebookMessenger settings) {
+  String prepareFacebookMessenger(io.ooni.mk.nettest.settings.FacebookMessenger settings) {
     io.ooni.mk.nettest.swig.FacebookMessenger swigSettings = new io.ooni.mk.nettest.swig.FacebookMessenger();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    Runner swigRunner = new RunnerWrapper(this);
-    swigRunner.run_facebook_messenger(swigSettings);
+    // Use a temporary runner for generating the serialized settings.
+    io.ooni.mk.nettest.swig.Runner swigRunner = new RunnerWrapper(this);
+    return swigRunner.prepare_facebook_messenger(swigSettings);
   }
 
-  void runHttpHeaderFieldManipulation(io.ooni.mk.nettest.settings.HttpHeaderFieldManipulation settings) {
+  String prepareHttpHeaderFieldManipulation(io.ooni.mk.nettest.settings.HttpHeaderFieldManipulation settings) {
     io.ooni.mk.nettest.swig.HttpHeaderFieldManipulation swigSettings = new io.ooni.mk.nettest.swig.HttpHeaderFieldManipulation();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    Runner swigRunner = new RunnerWrapper(this);
-    swigRunner.run_http_header_field_manipulation(swigSettings);
+    // Use a temporary runner for generating the serialized settings.
+    io.ooni.mk.nettest.swig.Runner swigRunner = new RunnerWrapper(this);
+    return swigRunner.prepare_http_header_field_manipulation(swigSettings);
   }
 
-  void runHttpInvalidRequestLine(io.ooni.mk.nettest.settings.HttpInvalidRequestLine settings) {
+  String prepareHttpInvalidRequestLine(io.ooni.mk.nettest.settings.HttpInvalidRequestLine settings) {
     io.ooni.mk.nettest.swig.HttpInvalidRequestLine swigSettings = new io.ooni.mk.nettest.swig.HttpInvalidRequestLine();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    Runner swigRunner = new RunnerWrapper(this);
-    swigRunner.run_http_invalid_request_line(swigSettings);
+    // Use a temporary runner for generating the serialized settings.
+    io.ooni.mk.nettest.swig.Runner swigRunner = new RunnerWrapper(this);
+    return swigRunner.prepare_http_invalid_request_line(swigSettings);
   }
 
-  void runMeekFrontedRequests(io.ooni.mk.nettest.settings.MeekFrontedRequests settings) {
+  String prepareMeekFrontedRequests(io.ooni.mk.nettest.settings.MeekFrontedRequests settings) {
     io.ooni.mk.nettest.swig.MeekFrontedRequests swigSettings = new io.ooni.mk.nettest.swig.MeekFrontedRequests();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    Runner swigRunner = new RunnerWrapper(this);
-    swigRunner.run_meek_fronted_requests(swigSettings);
+    // Use a temporary runner for generating the serialized settings.
+    io.ooni.mk.nettest.swig.Runner swigRunner = new RunnerWrapper(this);
+    return swigRunner.prepare_meek_fronted_requests(swigSettings);
   }
 
-  void runMultiNdt(io.ooni.mk.nettest.settings.MultiNdt settings) {
+  String prepareMultiNdt(io.ooni.mk.nettest.settings.MultiNdt settings) {
     io.ooni.mk.nettest.swig.MultiNdt swigSettings = new io.ooni.mk.nettest.swig.MultiNdt();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    Runner swigRunner = new RunnerWrapper(this);
-    swigRunner.run_multi_ndt(swigSettings);
+    // Use a temporary runner for generating the serialized settings.
+    io.ooni.mk.nettest.swig.Runner swigRunner = new RunnerWrapper(this);
+    return swigRunner.prepare_multi_ndt(swigSettings);
   }
 
-  void runNdt(io.ooni.mk.nettest.settings.Ndt settings) {
+  String prepareNdt(io.ooni.mk.nettest.settings.Ndt settings) {
     io.ooni.mk.nettest.swig.Ndt swigSettings = new io.ooni.mk.nettest.swig.Ndt();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    Runner swigRunner = new RunnerWrapper(this);
-    swigRunner.run_ndt(swigSettings);
+    // Use a temporary runner for generating the serialized settings.
+    io.ooni.mk.nettest.swig.Runner swigRunner = new RunnerWrapper(this);
+    return swigRunner.prepare_ndt(swigSettings);
   }
 
-  void runTcpConnect(io.ooni.mk.nettest.settings.TcpConnect settings) {
+  String prepareTcpConnect(io.ooni.mk.nettest.settings.TcpConnect settings) {
     io.ooni.mk.nettest.swig.TcpConnect swigSettings = new io.ooni.mk.nettest.swig.TcpConnect();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    Runner swigRunner = new RunnerWrapper(this);
-    swigRunner.run_tcp_connect(swigSettings);
+    // Use a temporary runner for generating the serialized settings.
+    io.ooni.mk.nettest.swig.Runner swigRunner = new RunnerWrapper(this);
+    return swigRunner.prepare_tcp_connect(swigSettings);
   }
 
-  void runTelegram(io.ooni.mk.nettest.settings.Telegram settings) {
+  String prepareTelegram(io.ooni.mk.nettest.settings.Telegram settings) {
     io.ooni.mk.nettest.swig.Telegram swigSettings = new io.ooni.mk.nettest.swig.Telegram();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    Runner swigRunner = new RunnerWrapper(this);
-    swigRunner.run_telegram(swigSettings);
+    // Use a temporary runner for generating the serialized settings.
+    io.ooni.mk.nettest.swig.Runner swigRunner = new RunnerWrapper(this);
+    return swigRunner.prepare_telegram(swigSettings);
   }
 
-  void runWebConnectivity(io.ooni.mk.nettest.settings.WebConnectivity settings) {
+  String prepareWebConnectivity(io.ooni.mk.nettest.settings.WebConnectivity settings) {
     io.ooni.mk.nettest.swig.WebConnectivity swigSettings = new io.ooni.mk.nettest.swig.WebConnectivity();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    Runner swigRunner = new RunnerWrapper(this);
-    swigRunner.run_web_connectivity(swigSettings);
+    // Use a temporary runner for generating the serialized settings.
+    io.ooni.mk.nettest.swig.Runner swigRunner = new RunnerWrapper(this);
+    return swigRunner.prepare_web_connectivity(swigSettings);
   }
 
-  void runWhatsapp(io.ooni.mk.nettest.settings.Whatsapp settings) {
+  String prepareWhatsapp(io.ooni.mk.nettest.settings.Whatsapp settings) {
     io.ooni.mk.nettest.swig.Whatsapp swigSettings = new io.ooni.mk.nettest.swig.Whatsapp();
     swigSettings.setAll_endpoints(settings.allEndpoints);
     setCommonOptions(settings, swigSettings);
-    Runner swigRunner = new RunnerWrapper(this);
-    swigRunner.run_whatsapp(swigSettings);
+    // Use a temporary runner for generating the serialized settings.
+    io.ooni.mk.nettest.swig.Runner swigRunner = new RunnerWrapper(this);
+    return swigRunner.prepare_whatsapp(swigSettings);
   }
 
+
+  public void run(String serializedSettings) {
+    io.ooni.mk.nettest.swig.Runner swigRunner = new RunnerWrapper(this);
+    swigRunner.run(serializedSettings);
+  }
 
   // Private stuff
   // -------------
