@@ -37,10 +37,5 @@ int main(int argc, char **argv) {
     --argc, ++argv;
   }
   MyRunner my_runner;
-  try {
-    my_runner.run_web_connectivity(settings);
-  } catch (const std::exception &exc) {
-    std::clog << "EXCEPTION: " << exc.what() << std::endl;
-    return EXIT_FAILURE;
-  }
+  my_runner.run(my_runner.prepare_web_connectivity(settings));
 }

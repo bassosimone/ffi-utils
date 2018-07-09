@@ -150,56 +150,60 @@ public class Runner {
     if (getClass() == Runner.class) MkNettestJNI.Runner_on_task_terminated(swigCPtr, this, TaskTerminated.getCPtr(arg0), arg0); else MkNettestJNI.Runner_on_task_terminatedSwigExplicitRunner(swigCPtr, this, TaskTerminated.getCPtr(arg0), arg0);
   }
 
-  public void run_captive_portal(CaptivePortal settings) {
-    MkNettestJNI.Runner_run_captive_portal(swigCPtr, this, CaptivePortal.getCPtr(settings), settings);
+  public String prepare_captive_portal(CaptivePortal settings) {
+    return MkNettestJNI.Runner_prepare_captive_portal(swigCPtr, this, CaptivePortal.getCPtr(settings), settings);
   }
 
-  public void run_dash(Dash settings) {
-    MkNettestJNI.Runner_run_dash(swigCPtr, this, Dash.getCPtr(settings), settings);
+  public String prepare_dash(Dash settings) {
+    return MkNettestJNI.Runner_prepare_dash(swigCPtr, this, Dash.getCPtr(settings), settings);
   }
 
-  public void run_dns_injection(DnsInjection settings) {
-    MkNettestJNI.Runner_run_dns_injection(swigCPtr, this, DnsInjection.getCPtr(settings), settings);
+  public String prepare_dns_injection(DnsInjection settings) {
+    return MkNettestJNI.Runner_prepare_dns_injection(swigCPtr, this, DnsInjection.getCPtr(settings), settings);
   }
 
-  public void run_facebook_messenger(FacebookMessenger settings) {
-    MkNettestJNI.Runner_run_facebook_messenger(swigCPtr, this, FacebookMessenger.getCPtr(settings), settings);
+  public String prepare_facebook_messenger(FacebookMessenger settings) {
+    return MkNettestJNI.Runner_prepare_facebook_messenger(swigCPtr, this, FacebookMessenger.getCPtr(settings), settings);
   }
 
-  public void run_http_header_field_manipulation(HttpHeaderFieldManipulation settings) {
-    MkNettestJNI.Runner_run_http_header_field_manipulation(swigCPtr, this, HttpHeaderFieldManipulation.getCPtr(settings), settings);
+  public String prepare_http_header_field_manipulation(HttpHeaderFieldManipulation settings) {
+    return MkNettestJNI.Runner_prepare_http_header_field_manipulation(swigCPtr, this, HttpHeaderFieldManipulation.getCPtr(settings), settings);
   }
 
-  public void run_http_invalid_request_line(HttpInvalidRequestLine settings) {
-    MkNettestJNI.Runner_run_http_invalid_request_line(swigCPtr, this, HttpInvalidRequestLine.getCPtr(settings), settings);
+  public String prepare_http_invalid_request_line(HttpInvalidRequestLine settings) {
+    return MkNettestJNI.Runner_prepare_http_invalid_request_line(swigCPtr, this, HttpInvalidRequestLine.getCPtr(settings), settings);
   }
 
-  public void run_meek_fronted_requests(MeekFrontedRequests settings) {
-    MkNettestJNI.Runner_run_meek_fronted_requests(swigCPtr, this, MeekFrontedRequests.getCPtr(settings), settings);
+  public String prepare_meek_fronted_requests(MeekFrontedRequests settings) {
+    return MkNettestJNI.Runner_prepare_meek_fronted_requests(swigCPtr, this, MeekFrontedRequests.getCPtr(settings), settings);
   }
 
-  public void run_multi_ndt(MultiNdt settings) {
-    MkNettestJNI.Runner_run_multi_ndt(swigCPtr, this, MultiNdt.getCPtr(settings), settings);
+  public String prepare_multi_ndt(MultiNdt settings) {
+    return MkNettestJNI.Runner_prepare_multi_ndt(swigCPtr, this, MultiNdt.getCPtr(settings), settings);
   }
 
-  public void run_ndt(Ndt settings) {
-    MkNettestJNI.Runner_run_ndt(swigCPtr, this, Ndt.getCPtr(settings), settings);
+  public String prepare_ndt(Ndt settings) {
+    return MkNettestJNI.Runner_prepare_ndt(swigCPtr, this, Ndt.getCPtr(settings), settings);
   }
 
-  public void run_tcp_connect(TcpConnect settings) {
-    MkNettestJNI.Runner_run_tcp_connect(swigCPtr, this, TcpConnect.getCPtr(settings), settings);
+  public String prepare_tcp_connect(TcpConnect settings) {
+    return MkNettestJNI.Runner_prepare_tcp_connect(swigCPtr, this, TcpConnect.getCPtr(settings), settings);
   }
 
-  public void run_telegram(Telegram settings) {
-    MkNettestJNI.Runner_run_telegram(swigCPtr, this, Telegram.getCPtr(settings), settings);
+  public String prepare_telegram(Telegram settings) {
+    return MkNettestJNI.Runner_prepare_telegram(swigCPtr, this, Telegram.getCPtr(settings), settings);
   }
 
-  public void run_web_connectivity(WebConnectivity settings) {
-    MkNettestJNI.Runner_run_web_connectivity(swigCPtr, this, WebConnectivity.getCPtr(settings), settings);
+  public String prepare_web_connectivity(WebConnectivity settings) {
+    return MkNettestJNI.Runner_prepare_web_connectivity(swigCPtr, this, WebConnectivity.getCPtr(settings), settings);
   }
 
-  public void run_whatsapp(Whatsapp settings) {
-    MkNettestJNI.Runner_run_whatsapp(swigCPtr, this, Whatsapp.getCPtr(settings), settings);
+  public String prepare_whatsapp(Whatsapp settings) {
+    return MkNettestJNI.Runner_prepare_whatsapp(swigCPtr, this, Whatsapp.getCPtr(settings), settings);
+  }
+
+  public void run(String s) {
+    MkNettestJNI.Runner_run(swigCPtr, this, s);
   }
 
   public Runner() {

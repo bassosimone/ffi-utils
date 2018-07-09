@@ -29,8 +29,10 @@
 /// As a general rule, use documented features. Undocumented features are
 /// much more likely to be replaced or changed without notice.
 ///
-/// Usage is as follows. Instantiate a settings class for the network test
-/// that you want to execute. For example:
+/// Usage is as follows:
+///
+/// 1) Instantiate a settings class for the network test that you want
+/// to run. For example:
 ///
 /// ```
 /// #include <measurement_kit/nettest/nettest.hpp>
@@ -38,15 +40,22 @@
 /// mk::nettest::settings::Whatsapp settings;
 /// ```
 ///
-/// Then, if needed, configure options specific of the network test.
+/// Then, configure all options for which you do not like the default and
+/// supply the required parameters (e.g. input list for tests requiring input).
 ///
 /// ```
 /// settings.all_endpoints = true;
 /// settings.log_level = settings.log_level_debug;
 /// ```
 ///
-/// Write a derived class of Runner where you override the virtual methods
-/// handling the events that you would like to process.
+/// There is a common base class for all settings that contains the options
+/// settable by more than one nettest. This design should allow you to easily
+/// write sections of code that set options common to many tests.
+///
+/// 2) Write a derived class of Runner where you override the virtual methods
+/// handling the events that you would like to process. There is a single
+/// runner allowing to run different nettests, such that you can use the same
+/// class for different nettests, if that makes sense for your use case.
 ///
 /// ```
 /// class MyRunner : public mk::nettest::Runner {
@@ -59,21 +68,32 @@
 /// };
 /// ```
 ///
-/// Instantiate your runner and run the test with your settings. Exceptions
-/// derived from `std::exception` MAY be emitted in case of serious internal
-/// error. You may want to be prepared for them.
+/// 3) Instantiate your runner and run the test with your settings. To do that,
+/// chain the prepare_NETTEST_NAME() and then run() methods.
 ///
 /// ```
 /// MyRunner runner;
-/// try {
-///   runner.run_whatsapp(settings);
-/// } catch (const std::exception &exc) {
-///   // TODO: handle
-/// }
+/// // ...
+/// runner.run(runner.prepare_whatsapp(settings));
 /// ```
 ///
-/// If an exception is thrown, the running network test is automatically
-/// stopped and the related thread is joined.
+/// Note that prepare_NETTEST_NAME() and run() are two separate methods so that
+/// you can prepare a nettest in nettest specific code and use common code to
+/// actually execute it. That is:
+///
+/// ```
+/// // Alternative example where runner.run() occurs much later.
+/// MyRunner runner;
+/// // ...
+/// std::string serialized_config = runner.prepare_whatsapp(settings);
+/// // ...
+/// runner.run(serialized_config);
+/// ```
+///
+/// Exceptions derived from `std::exception` MAY be emitted in case of serious
+/// internal error. As such, it can probably make sense to just ignore them. If
+/// an exception is thrown, the running network test is automatically stopped
+/// and the related thread is joined.
 ///
 /// @addtogroup nettest Nettest API
 /// @brief C++11 API for running nettests.
@@ -810,100 +830,146 @@ class Runner {
   // Runners
   // -------
 
-  /// Runs captive_portal until completion. @throw std::exception when it is not
-  /// possible to marshal/unmarshal data structures from/to JSON as well as
-  /// if unexpected error conditions occurs. @remark in the event in which an
-  /// exception is thrown, the stack will unwind, the currently running test
-  /// will be interrupted and the thread in which it is running will be joined.
-  void run_captive_portal(const settings::CaptivePortal &settings);
+  /// Prepare for running captive_portal until completion. @return the
+  /// string to be passed to run(), at your earliest convenience, to
+  /// actually run the configured test. @throw std::exception when it is
+  /// not possible to marshal/unmarshal data structures from/to JSON as
+  /// well as if unexpected error conditions occurs. @remark in case
+  /// of exception, the stack will unwind, the currently running test
+  /// will be interrupted and we will wait for the completion of the
+  /// background thread running the nettest.
+  std::string prepare_captive_portal(const settings::CaptivePortal &settings);
 
-  /// Runs dash until completion. @throw std::exception when it is not
-  /// possible to marshal/unmarshal data structures from/to JSON as well as
-  /// if unexpected error conditions occurs. @remark in the event in which an
-  /// exception is thrown, the stack will unwind, the currently running test
-  /// will be interrupted and the thread in which it is running will be joined.
-  void run_dash(const settings::Dash &settings);
+  /// Prepare for running dash until completion. @return the
+  /// string to be passed to run(), at your earliest convenience, to
+  /// actually run the configured test. @throw std::exception when it is
+  /// not possible to marshal/unmarshal data structures from/to JSON as
+  /// well as if unexpected error conditions occurs. @remark in case
+  /// of exception, the stack will unwind, the currently running test
+  /// will be interrupted and we will wait for the completion of the
+  /// background thread running the nettest.
+  std::string prepare_dash(const settings::Dash &settings);
 
-  /// Runs dns_injection until completion. @throw std::exception when it is not
-  /// possible to marshal/unmarshal data structures from/to JSON as well as
-  /// if unexpected error conditions occurs. @remark in the event in which an
-  /// exception is thrown, the stack will unwind, the currently running test
-  /// will be interrupted and the thread in which it is running will be joined.
-  void run_dns_injection(const settings::DnsInjection &settings);
+  /// Prepare for running dns_injection until completion. @return the
+  /// string to be passed to run(), at your earliest convenience, to
+  /// actually run the configured test. @throw std::exception when it is
+  /// not possible to marshal/unmarshal data structures from/to JSON as
+  /// well as if unexpected error conditions occurs. @remark in case
+  /// of exception, the stack will unwind, the currently running test
+  /// will be interrupted and we will wait for the completion of the
+  /// background thread running the nettest.
+  std::string prepare_dns_injection(const settings::DnsInjection &settings);
 
-  /// Runs facebook_messenger until completion. @throw std::exception when it is
-  /// not possible to marshal/unmarshal data structures from/to JSON as well as
-  /// if unexpected error conditions occurs. @remark in the event in which an
-  /// exception is thrown, the stack will unwind, the currently running test
-  /// will be interrupted and the thread in which it is running will be joined.
-  void run_facebook_messenger(const settings::FacebookMessenger &settings);
+  /// Prepare for running facebook_messenger until completion. @return the
+  /// string to be passed to run(), at your earliest convenience, to
+  /// actually run the configured test. @throw std::exception when it is
+  /// not possible to marshal/unmarshal data structures from/to JSON as
+  /// well as if unexpected error conditions occurs. @remark in case
+  /// of exception, the stack will unwind, the currently running test
+  /// will be interrupted and we will wait for the completion of the
+  /// background thread running the nettest.
+  std::string prepare_facebook_messenger(
+      const settings::FacebookMessenger &settings);
 
-  /// Runs http_header_field_manipulation until completion. @throw
-  /// std::exception when it is not possible to marshal/unmarshal data
-  /// structures from/to JSON as well as if unexpected error conditions occurs.
-  /// @remark in the event in which an exception is thrown, the stack will
-  /// unwind, the currently running test will be interrupted and the thread in
-  /// which it is running will be joined.
-  void run_http_header_field_manipulation(
+  /// Prepare for running http_header_field_manipulation until completion.
+  /// @return the string to be passed to run(), at your earliest convenience, to
+  /// actually run the configured test. @throw std::exception when it is
+  /// not possible to marshal/unmarshal data structures from/to JSON as
+  /// well as if unexpected error conditions occurs. @remark in case
+  /// of exception, the stack will unwind, the currently running test
+  /// will be interrupted and we will wait for the completion of the
+  /// background thread running the nettest.
+  std::string prepare_http_header_field_manipulation(
       const settings::HttpHeaderFieldManipulation &settings);
 
-  /// Runs http_invalid_request_line until completion. @throw std::exception
-  /// when it is not possible to marshal/unmarshal data structures from/to JSON
-  /// as well as if unexpected error conditions occurs. @remark in the event in
-  /// which an exception is thrown, the stack will unwind, the currently running
-  /// test will be interrupted and the thread in which it is running will be
-  /// joined.
-  void run_http_invalid_request_line(
+  /// Prepare for running http_invalid_request_line until completion. @return
+  /// the string to be passed to run(), at your earliest convenience, to
+  /// actually run the configured test. @throw std::exception when it is
+  /// not possible to marshal/unmarshal data structures from/to JSON as
+  /// well as if unexpected error conditions occurs. @remark in case
+  /// of exception, the stack will unwind, the currently running test
+  /// will be interrupted and we will wait for the completion of the
+  /// background thread running the nettest.
+  std::string prepare_http_invalid_request_line(
       const settings::HttpInvalidRequestLine &settings);
 
-  /// Runs meek_fronted_requests until completion. @throw std::exception when it
-  /// is not possible to marshal/unmarshal data structures from/to JSON as well
-  /// as if unexpected error conditions occurs. @remark in the event in which an
-  /// exception is thrown, the stack will unwind, the currently running test
-  /// will be interrupted and the thread in which it is running will be joined.
-  void run_meek_fronted_requests(const settings::MeekFrontedRequests &settings);
+  /// Prepare for running meek_fronted_requests until completion. @return the
+  /// string to be passed to run(), at your earliest convenience, to
+  /// actually run the configured test. @throw std::exception when it is
+  /// not possible to marshal/unmarshal data structures from/to JSON as
+  /// well as if unexpected error conditions occurs. @remark in case
+  /// of exception, the stack will unwind, the currently running test
+  /// will be interrupted and we will wait for the completion of the
+  /// background thread running the nettest.
+  std::string prepare_meek_fronted_requests(
+      const settings::MeekFrontedRequests &settings);
 
-  /// Runs multi_ndt until completion. @throw std::exception when it is not
-  /// possible to marshal/unmarshal data structures from/to JSON as well as
-  /// if unexpected error conditions occurs. @remark in the event in which an
-  /// exception is thrown, the stack will unwind, the currently running test
-  /// will be interrupted and the thread in which it is running will be joined.
-  void run_multi_ndt(const settings::MultiNdt &settings);
+  /// Prepare for running multi_ndt until completion. @return the
+  /// string to be passed to run(), at your earliest convenience, to
+  /// actually run the configured test. @throw std::exception when it is
+  /// not possible to marshal/unmarshal data structures from/to JSON as
+  /// well as if unexpected error conditions occurs. @remark in case
+  /// of exception, the stack will unwind, the currently running test
+  /// will be interrupted and we will wait for the completion of the
+  /// background thread running the nettest.
+  std::string prepare_multi_ndt(const settings::MultiNdt &settings);
 
-  /// Runs ndt until completion. @throw std::exception when it is not
-  /// possible to marshal/unmarshal data structures from/to JSON as well as
-  /// if unexpected error conditions occurs. @remark in the event in which an
-  /// exception is thrown, the stack will unwind, the currently running test
-  /// will be interrupted and the thread in which it is running will be joined.
-  void run_ndt(const settings::Ndt &settings);
+  /// Prepare for running ndt until completion. @return the
+  /// string to be passed to run(), at your earliest convenience, to
+  /// actually run the configured test. @throw std::exception when it is
+  /// not possible to marshal/unmarshal data structures from/to JSON as
+  /// well as if unexpected error conditions occurs. @remark in case
+  /// of exception, the stack will unwind, the currently running test
+  /// will be interrupted and we will wait for the completion of the
+  /// background thread running the nettest.
+  std::string prepare_ndt(const settings::Ndt &settings);
 
-  /// Runs tcp_connect until completion. @throw std::exception when it is not
-  /// possible to marshal/unmarshal data structures from/to JSON as well as
-  /// if unexpected error conditions occurs. @remark in the event in which an
-  /// exception is thrown, the stack will unwind, the currently running test
-  /// will be interrupted and the thread in which it is running will be joined.
-  void run_tcp_connect(const settings::TcpConnect &settings);
+  /// Prepare for running tcp_connect until completion. @return the
+  /// string to be passed to run(), at your earliest convenience, to
+  /// actually run the configured test. @throw std::exception when it is
+  /// not possible to marshal/unmarshal data structures from/to JSON as
+  /// well as if unexpected error conditions occurs. @remark in case
+  /// of exception, the stack will unwind, the currently running test
+  /// will be interrupted and we will wait for the completion of the
+  /// background thread running the nettest.
+  std::string prepare_tcp_connect(const settings::TcpConnect &settings);
 
-  /// Runs telegram until completion. @throw std::exception when it is not
-  /// possible to marshal/unmarshal data structures from/to JSON as well as
-  /// if unexpected error conditions occurs. @remark in the event in which an
-  /// exception is thrown, the stack will unwind, the currently running test
-  /// will be interrupted and the thread in which it is running will be joined.
-  void run_telegram(const settings::Telegram &settings);
+  /// Prepare for running telegram until completion. @return the
+  /// string to be passed to run(), at your earliest convenience, to
+  /// actually run the configured test. @throw std::exception when it is
+  /// not possible to marshal/unmarshal data structures from/to JSON as
+  /// well as if unexpected error conditions occurs. @remark in case
+  /// of exception, the stack will unwind, the currently running test
+  /// will be interrupted and we will wait for the completion of the
+  /// background thread running the nettest.
+  std::string prepare_telegram(const settings::Telegram &settings);
 
-  /// Runs web_connectivity until completion. @throw std::exception when it is
-  /// not possible to marshal/unmarshal data structures from/to JSON as well as
-  /// if unexpected error conditions occurs. @remark in the event in which an
-  /// exception is thrown, the stack will unwind, the currently running test
-  /// will be interrupted and the thread in which it is running will be joined.
-  void run_web_connectivity(const settings::WebConnectivity &settings);
+  /// Prepare for running web_connectivity until completion. @return the
+  /// string to be passed to run(), at your earliest convenience, to
+  /// actually run the configured test. @throw std::exception when it is
+  /// not possible to marshal/unmarshal data structures from/to JSON as
+  /// well as if unexpected error conditions occurs. @remark in case
+  /// of exception, the stack will unwind, the currently running test
+  /// will be interrupted and we will wait for the completion of the
+  /// background thread running the nettest.
+  std::string prepare_web_connectivity(
+      const settings::WebConnectivity &settings);
 
-  /// Runs whatsapp until completion. @throw std::exception when it is not
-  /// possible to marshal/unmarshal data structures from/to JSON as well as
-  /// if unexpected error conditions occurs. @remark in the event in which an
-  /// exception is thrown, the stack will unwind, the currently running test
-  /// will be interrupted and the thread in which it is running will be joined.
-  void run_whatsapp(const settings::Whatsapp &settings);
+  /// Prepare for running whatsapp until completion. @return the
+  /// string to be passed to run(), at your earliest convenience, to
+  /// actually run the configured test. @throw std::exception when it is
+  /// not possible to marshal/unmarshal data structures from/to JSON as
+  /// well as if unexpected error conditions occurs. @remark in case
+  /// of exception, the stack will unwind, the currently running test
+  /// will be interrupted and we will wait for the completion of the
+  /// background thread running the nettest.
+  std::string prepare_whatsapp(const settings::Whatsapp &settings);
+
+  /// Run the nettest identified by @p s. @param s should be a string
+  /// returned to you by one of the prepare_NETTEST_NAME() methods. @throw
+  /// std::exception when it is not possible to marshal/unmarshal data
+  /// structures from/to JSON as well on internal errors.
+  void run(std::string s);
 
   // Misc
   // ----
@@ -913,7 +979,8 @@ class Runner {
   virtual ~Runner() noexcept;
 
  private:
-  void run(nlohmann::json &&doc, const settings::Common &common);
+  std::string prepare_common(nlohmann::json &&doc,
+                             const settings::Common &common);
 };
 
 /*-
@@ -1004,143 +1071,146 @@ void Runner::on_status_update_websites(const event::StatusUpdateWebsites &) {}
 
 void Runner::on_task_terminated(const event::TaskTerminated &) {}
 
-// Running nettests
-// ----------------
+// Preparing nettests
+// ------------------
 
-void Runner::run_captive_portal(const settings::CaptivePortal &settings) {
+std::string Runner::prepare_captive_portal(
+    const settings::CaptivePortal &settings) {
   nlohmann::json doc;
   doc["name"] = "CaptivePortal";
-  run(std::move(doc), settings);
+  return prepare_common(std::move(doc), settings);
 }
 
-void Runner::run_dash(const settings::Dash &settings) {
+std::string Runner::prepare_dash(const settings::Dash &settings) {
   nlohmann::json doc;
   doc["name"] = "Dash";
-  run(std::move(doc), settings);
+  return prepare_common(std::move(doc), settings);
 }
 
-void Runner::run_dns_injection(const settings::DnsInjection &settings) {
+std::string Runner::prepare_dns_injection(
+    const settings::DnsInjection &settings) {
   nlohmann::json doc;
   doc["name"] = "DnsInjection";
-  run(std::move(doc), settings);
+  return prepare_common(std::move(doc), settings);
 }
 
-void Runner::run_facebook_messenger(
+std::string Runner::prepare_facebook_messenger(
     const settings::FacebookMessenger &settings) {
   nlohmann::json doc;
   doc["name"] = "FacebookMessenger";
-  run(std::move(doc), settings);
+  return prepare_common(std::move(doc), settings);
 }
 
-void Runner::run_http_header_field_manipulation(
+std::string Runner::prepare_http_header_field_manipulation(
     const settings::HttpHeaderFieldManipulation &settings) {
   nlohmann::json doc;
   doc["name"] = "HttpHeaderFieldManipulation";
-  run(std::move(doc), settings);
+  return prepare_common(std::move(doc), settings);
 }
 
-void Runner::run_http_invalid_request_line(
+std::string Runner::prepare_http_invalid_request_line(
     const settings::HttpInvalidRequestLine &settings) {
   nlohmann::json doc;
   doc["name"] = "HttpInvalidRequestLine";
-  run(std::move(doc), settings);
+  return prepare_common(std::move(doc), settings);
 }
 
-void Runner::run_meek_fronted_requests(
+std::string Runner::prepare_meek_fronted_requests(
     const settings::MeekFrontedRequests &settings) {
   nlohmann::json doc;
   doc["name"] = "MeekFrontedRequests";
-  run(std::move(doc), settings);
+  return prepare_common(std::move(doc), settings);
 }
 
-void Runner::run_multi_ndt(const settings::MultiNdt &settings) {
+std::string Runner::prepare_multi_ndt(const settings::MultiNdt &settings) {
   nlohmann::json doc;
   doc["name"] = "MultiNdt";
-  run(std::move(doc), settings);
+  return prepare_common(std::move(doc), settings);
 }
 
-void Runner::run_ndt(const settings::Ndt &settings) {
+std::string Runner::prepare_ndt(const settings::Ndt &settings) {
   nlohmann::json doc;
   doc["name"] = "Ndt";
-  run(std::move(doc), settings);
+  return prepare_common(std::move(doc), settings);
 }
 
-void Runner::run_tcp_connect(const settings::TcpConnect &settings) {
+std::string Runner::prepare_tcp_connect(const settings::TcpConnect &settings) {
   nlohmann::json doc;
   doc["name"] = "TcpConnect";
-  run(std::move(doc), settings);
+  return prepare_common(std::move(doc), settings);
 }
 
-void Runner::run_telegram(const settings::Telegram &settings) {
+std::string Runner::prepare_telegram(const settings::Telegram &settings) {
   nlohmann::json doc;
   doc["name"] = "Telegram";
-  run(std::move(doc), settings);
+  return prepare_common(std::move(doc), settings);
 }
 
-void Runner::run_web_connectivity(const settings::WebConnectivity &settings) {
+std::string Runner::prepare_web_connectivity(
+    const settings::WebConnectivity &settings) {
   nlohmann::json doc;
   doc["name"] = "WebConnectivity";
-  run(std::move(doc), settings);
+  return prepare_common(std::move(doc), settings);
 }
 
-void Runner::run_whatsapp(const settings::Whatsapp &settings) {
+std::string Runner::prepare_whatsapp(const settings::Whatsapp &settings) {
   nlohmann::json doc;
   doc["name"] = "Whatsapp";
   doc["options"]["all_endpoints"] = (int64_t)settings.all_endpoints;
-  run(std::move(doc), settings);
+  return prepare_common(std::move(doc), settings);
 }
 
-void Runner::run(nlohmann::json &&doc, const settings::Common &cs) {
-  UniqueTask task;
+std::string Runner::prepare_common(nlohmann::json &&doc,
+                                   const settings::Common &cs) {
+  doc["annotations"] = cs.annotations;
+  doc["disabled_events"] = cs.disabled_events;
+  doc["inputs"] = cs.inputs;
+  doc["input_filepaths"] = cs.input_filepaths;
+  doc["log_filepath"] = cs.log_filepath;
+  doc["log_level"] = cs.log_level;
+  doc["output_filepath"] = cs.output_filepath;
   {
-    {
-      doc["annotations"] = cs.annotations;
-      doc["disabled_events"] = cs.disabled_events;
-      doc["inputs"] = cs.inputs;
-      doc["input_filepaths"] = cs.input_filepaths;
-      doc["log_filepath"] = cs.log_filepath;
-      doc["log_level"] = cs.log_level;
-      doc["output_filepath"] = cs.output_filepath;
-      {
-        auto &o = doc["options"];
-        o["bouncer_base_url"] = cs.bouncer_base_url;
-        o["collector_base_url"] = cs.collector_base_url;
-        o["dns/nameserver"] = cs.dns_nameserver;
-        o["dns/engine"] = cs.dns_engine;
-        o["geoip_asn_path"] = cs.geoip_asn_path;
-        o["geoip_country_path"] = cs.geoip_country_path;
-        o["ignore_bouncer_error"] = (int64_t)cs.ignore_bouncer_error;
-        o["ignore_open_report_error"] = (int64_t)cs.ignore_open_report_error;
-        o["max_runtime"] = cs.max_runtime;
-        o["net/ca_bundle_path"] = cs.net_ca_bundle_path;
-        o["net/timeout"] = cs.net_timeout;
-        o["no_bouncer"] = (int64_t)cs.no_bouncer;
-        o["no_collector"] = (int64_t)cs.no_collector;
-        o["no_asn_lookup"] = (int64_t)cs.no_asn_lookup;
-        o["no_cc_lookup"] = (int64_t)cs.no_cc_lookup;
-        o["no_ip_lookup"] = (int64_t)cs.no_ip_lookup;
-        o["no_file_report"] = (int64_t)cs.no_file_report;
-        o["no_resolver_lookup"] = (int64_t)cs.no_resolver_lookup;
-        o["probe_asn"] = cs.probe_asn;
-        o["probe_cc"] = cs.probe_cc;
-        o["probe_ip"] = cs.probe_ip;
-        o["randomize_input"] = (int64_t)cs.randomize_input;
-        o["save_real_probe_asn"] = (int64_t)cs.save_real_probe_asn;
-        o["save_real_probe_cc"] = (int64_t)cs.save_real_probe_cc;
-        o["save_real_probe_ip"] = (int64_t)cs.save_real_probe_ip;
-        o["save_real_resolver_ip"] = (int64_t)cs.save_real_resolver_ip;
-        o["software_name"] = cs.software_name;
-        o["software_version"] = cs.software_version;
-      }
-    }
-    auto str = doc.dump();
+    auto &o = doc["options"];
+    o["bouncer_base_url"] = cs.bouncer_base_url;
+    o["collector_base_url"] = cs.collector_base_url;
+    o["dns/nameserver"] = cs.dns_nameserver;
+    o["dns/engine"] = cs.dns_engine;
+    o["geoip_asn_path"] = cs.geoip_asn_path;
+    o["geoip_country_path"] = cs.geoip_country_path;
+    o["ignore_bouncer_error"] = (int64_t)cs.ignore_bouncer_error;
+    o["ignore_open_report_error"] = (int64_t)cs.ignore_open_report_error;
+    o["max_runtime"] = cs.max_runtime;
+    o["net/ca_bundle_path"] = cs.net_ca_bundle_path;
+    o["net/timeout"] = cs.net_timeout;
+    o["no_bouncer"] = (int64_t)cs.no_bouncer;
+    o["no_collector"] = (int64_t)cs.no_collector;
+    o["no_asn_lookup"] = (int64_t)cs.no_asn_lookup;
+    o["no_cc_lookup"] = (int64_t)cs.no_cc_lookup;
+    o["no_ip_lookup"] = (int64_t)cs.no_ip_lookup;
+    o["no_file_report"] = (int64_t)cs.no_file_report;
+    o["no_resolver_lookup"] = (int64_t)cs.no_resolver_lookup;
+    o["probe_asn"] = cs.probe_asn;
+    o["probe_cc"] = cs.probe_cc;
+    o["probe_ip"] = cs.probe_ip;
+    o["randomize_input"] = (int64_t)cs.randomize_input;
+    o["save_real_probe_asn"] = (int64_t)cs.save_real_probe_asn;
+    o["save_real_probe_cc"] = (int64_t)cs.save_real_probe_cc;
+    o["save_real_probe_ip"] = (int64_t)cs.save_real_probe_ip;
+    o["save_real_resolver_ip"] = (int64_t)cs.save_real_resolver_ip;
+    o["software_name"] = cs.software_name;
+    o["software_version"] = cs.software_version;
+  }
+  return doc.dump();
+}
+
+void Runner::run(std::string str) {
+  UniqueTask task;
 #ifdef MK_NETTEST_TRACE
-    std::clog << "NETTEST: settings: " << str << std::endl;
+  std::clog << "NETTEST: settings: " << str << std::endl;
 #endif
-    task.reset(mk_task_start(str.c_str()));
-    if (!task) {
-      throw std::runtime_error("mk_task_start() failed");
-    }
+  task.reset(mk_task_start(str.c_str()));
+  if (!task) {
+    throw std::runtime_error("mk_task_start() failed");
   }
   while (!mk_task_is_done(task.get())) {
     nlohmann::json ev;

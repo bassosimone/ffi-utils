@@ -40,7 +40,8 @@
 /// mk::nettest::settings::Whatsapp settings;
 /// ```
 ///
-/// Then, if needed, configure options specific of the network test.
+/// Then, configure all options for which you do not like the default and
+/// supply the required parameters (e.g. input list for tests requiring input).
 ///
 /// ```
 /// settings.all_endpoints = true;
@@ -52,7 +53,9 @@
 /// write sections of code that set options common to many tests.
 ///
 /// 2) Write a derived class of Runner where you override the virtual methods
-/// handling the events that you would like to process.
+/// handling the events that you would like to process. There is a single
+/// runner allowing to run different nettests, such that you can use the same
+/// class for different nettests, if that makes sense for your use case.
 ///
 /// ```
 /// class MyRunner : public mk::nettest::Runner {
@@ -65,21 +68,32 @@
 /// };
 /// ```
 ///
-/// Instantiate your runner and run the test with your settings. Exceptions
-/// derived from `std::exception` MAY be emitted in case of serious internal
-/// error. You may want to be prepared for them.
+/// 3) Instantiate your runner and run the test with your settings. To do that,
+/// chain the prepare_NETTEST_NAME() and then run() methods.
 ///
 /// ```
 /// MyRunner runner;
-/// try {
-///   runner.run_whatsapp(settings);
-/// } catch (const std::exception &exc) {
-///   // TODO: handle
-/// }
+/// // ...
+/// runner.run(runner.prepare_whatsapp(settings));
 /// ```
 ///
-/// If an exception is thrown, the running network test is automatically
-/// stopped and the related thread is joined.
+/// Note that prepare_NETTEST_NAME() and run() are two separate methods so that
+/// you can prepare a nettest in nettest specific code and use common code to
+/// actually execute it. That is:
+///
+/// ```
+/// // Alternative example where runner.run() occurs much later.
+/// MyRunner runner;
+/// // ...
+/// std::string serialized_config = runner.prepare_whatsapp(settings);
+/// // ...
+/// runner.run(serialized_config);
+/// ```
+///
+/// Exceptions derived from `std::exception` MAY be emitted in case of serious
+/// internal error. As such, it can probably make sense to just ignore them. If
+/// an exception is thrown, the running network test is automatically stopped
+/// and the related thread is joined.
 ///
 /// @addtogroup nettest Nettest API
 /// @brief C++11 API for running nettests.
@@ -177,13 +191,22 @@ class Runner {
   // -------
 
   {% for nettest in nettests %}
-  /// Runs {{ nettest.key }} until completion. @throw std::exception when it is not
-  /// possible to marshal/unmarshal data structures from/to JSON as well as
-  /// if unexpected error conditions occurs. @remark in the event in which an
-  /// exception is thrown, the stack will unwind, the currently running test
-  /// will be interrupted and the thread in which it is running will be joined.
-  void run_{{ nettest.key.to_snake_case() }}(const settings::{{ nettest.key.to_pascal_case() }} &settings);
+  /// Prepare for running {{ nettest.key }} until completion. @return the
+  /// string to be passed to run(), at your earliest convenience, to
+  /// actually run the configured test. @throw std::exception when it is
+  /// not possible to marshal/unmarshal data structures from/to JSON as
+  /// well as if unexpected error conditions occurs. @remark in case
+  /// of exception, the stack will unwind, the currently running test
+  /// will be interrupted and we will wait for the completion of the
+  /// background thread running the nettest.
+  std::string prepare_{{ nettest.key.to_snake_case() }}(const settings::{{ nettest.key.to_pascal_case() }} &settings);
   {% endfor %}
+
+  /// Run the nettest identified by @p s. @param s should be a string
+  /// returned to you by one of the prepare_NETTEST_NAME() methods. @throw
+  /// std::exception when it is not possible to marshal/unmarshal data
+  /// structures from/to JSON as well on internal errors.
+  void run(std::string s);
 
   // Misc
   // ----
@@ -193,7 +216,7 @@ class Runner {
   virtual ~Runner() noexcept;
 
  private:
-  void run(nlohmann::json &&doc, const settings::Common &common);
+  std::string prepare_common(nlohmann::json &&doc, const settings::Common &common);
 };
 
 /*-
@@ -234,35 +257,34 @@ using UniqueEvent = std::unique_ptr<mk_event_t, EventDeleter>;
 void Runner::on_{{ event.key.to_snake_case() }}(const event::{{ event.key.to_pascal_case() }} &) {}
 {% endfor %}
 
-// Running nettests
-// ----------------
+// Preparing nettests
+// ------------------
 
 {% for nettest in nettests %}
-void Runner::run_{{ nettest.key.to_snake_case() }}(const settings::{{ nettest.key.to_pascal_case() }} &settings) {
+std::string Runner::prepare_{{ nettest.key.to_snake_case() }}(const settings::{{ nettest.key.to_pascal_case() }} &settings) {
   nlohmann::json doc;
   doc["name"] = "{{ nettest.key.to_pascal_case() }}";{% if nettest.options is not none %}{% for option in nettest.options %} doc["options"]["{{ option.key }}"] = {{ option.base_type.to_json_cast("cxx") }}settings.{{ option.key.to_snake_case() }};{% endfor %}{% endif %}
-  run(std::move(doc), settings);
+  return prepare_common(std::move(doc), settings);
 }
 {% endfor %}
 
-void Runner::run(nlohmann::json &&doc, const settings::Common &cs) {
-  UniqueTask task;
+std::string Runner::prepare_common(nlohmann::json &&doc, const settings::Common &cs) {
+  {% for attribute in settings if not attribute.low_level %} doc["{{ attribute.key }}"] = {{ attribute.base_type.to_json_cast("cxx") }}cs.{{ attribute.key.to_snake_case() }}; {% endfor %}
   {
-    {
-      {% for attribute in settings if not attribute.low_level %} doc["{{ attribute.key }}"] = {{ attribute.base_type.to_json_cast("cxx") }}cs.{{ attribute.key.to_snake_case() }}; {% endfor %}
-      {
-        auto &o = doc["options"];
-        {% for attribute in options %} o["{{ attribute.key }}"] = {{ attribute.base_type.to_json_cast("cxx") }}cs.{{ attribute.key.to_snake_case() }}; {% endfor %}
-      }
-    }
-    auto str = doc.dump();
+    auto &o = doc["options"];
+    {% for attribute in options %} o["{{ attribute.key }}"] = {{ attribute.base_type.to_json_cast("cxx") }}cs.{{ attribute.key.to_snake_case() }}; {% endfor %}
+  }
+  return doc.dump();
+}
+
+void Runner::run(std::string str) {
+  UniqueTask task;
 #ifdef MK_NETTEST_TRACE
-    std::clog << "NETTEST: settings: " << str << std::endl;
+  std::clog << "NETTEST: settings: " << str << std::endl;
 #endif
-    task.reset(mk_task_start(str.c_str()));
-    if (!task) {
-      throw std::runtime_error("mk_task_start() failed");
-    }
+  task.reset(mk_task_start(str.c_str()));
+  if (!task) {
+    throw std::runtime_error("mk_task_start() failed");
   }
   while (!mk_task_is_done(task.get())) {
     nlohmann::json ev;

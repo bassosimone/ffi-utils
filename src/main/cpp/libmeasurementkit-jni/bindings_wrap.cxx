@@ -6586,9 +6586,11 @@ SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1on_1ta
 }
 
 
-SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1captive_1portal(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+SWIGEXPORT jstring JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1prepare_1captive_1portal(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  jstring jresult = 0 ;
   mk::nettest::Runner *arg1 = (mk::nettest::Runner *) 0 ;
   mk::nettest::settings::CaptivePortal *arg2 = 0 ;
+  std::string result;
   
   (void)jenv;
   (void)jcls;
@@ -6598,15 +6600,19 @@ SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1c
   arg2 = *(mk::nettest::settings::CaptivePortal **)&jarg2;
   if (!arg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "mk::nettest::settings::CaptivePortal const & reference is null");
-    return ;
+    return 0;
   } 
-  (arg1)->run_captive_portal((mk::nettest::settings::CaptivePortal const &)*arg2);
+  result = (arg1)->prepare_captive_portal((mk::nettest::settings::CaptivePortal const &)*arg2);
+  jresult = jenv->NewStringUTF((&result)->c_str()); 
+  return jresult;
 }
 
 
-SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1dash(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+SWIGEXPORT jstring JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1prepare_1dash(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  jstring jresult = 0 ;
   mk::nettest::Runner *arg1 = (mk::nettest::Runner *) 0 ;
   mk::nettest::settings::Dash *arg2 = 0 ;
+  std::string result;
   
   (void)jenv;
   (void)jcls;
@@ -6616,15 +6622,19 @@ SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1d
   arg2 = *(mk::nettest::settings::Dash **)&jarg2;
   if (!arg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "mk::nettest::settings::Dash const & reference is null");
-    return ;
+    return 0;
   } 
-  (arg1)->run_dash((mk::nettest::settings::Dash const &)*arg2);
+  result = (arg1)->prepare_dash((mk::nettest::settings::Dash const &)*arg2);
+  jresult = jenv->NewStringUTF((&result)->c_str()); 
+  return jresult;
 }
 
 
-SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1dns_1injection(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+SWIGEXPORT jstring JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1prepare_1dns_1injection(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  jstring jresult = 0 ;
   mk::nettest::Runner *arg1 = (mk::nettest::Runner *) 0 ;
   mk::nettest::settings::DnsInjection *arg2 = 0 ;
+  std::string result;
   
   (void)jenv;
   (void)jcls;
@@ -6634,15 +6644,19 @@ SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1d
   arg2 = *(mk::nettest::settings::DnsInjection **)&jarg2;
   if (!arg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "mk::nettest::settings::DnsInjection const & reference is null");
-    return ;
+    return 0;
   } 
-  (arg1)->run_dns_injection((mk::nettest::settings::DnsInjection const &)*arg2);
+  result = (arg1)->prepare_dns_injection((mk::nettest::settings::DnsInjection const &)*arg2);
+  jresult = jenv->NewStringUTF((&result)->c_str()); 
+  return jresult;
 }
 
 
-SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1facebook_1messenger(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+SWIGEXPORT jstring JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1prepare_1facebook_1messenger(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  jstring jresult = 0 ;
   mk::nettest::Runner *arg1 = (mk::nettest::Runner *) 0 ;
   mk::nettest::settings::FacebookMessenger *arg2 = 0 ;
+  std::string result;
   
   (void)jenv;
   (void)jcls;
@@ -6652,15 +6666,19 @@ SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1f
   arg2 = *(mk::nettest::settings::FacebookMessenger **)&jarg2;
   if (!arg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "mk::nettest::settings::FacebookMessenger const & reference is null");
-    return ;
+    return 0;
   } 
-  (arg1)->run_facebook_messenger((mk::nettest::settings::FacebookMessenger const &)*arg2);
+  result = (arg1)->prepare_facebook_messenger((mk::nettest::settings::FacebookMessenger const &)*arg2);
+  jresult = jenv->NewStringUTF((&result)->c_str()); 
+  return jresult;
 }
 
 
-SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1http_1header_1field_1manipulation(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+SWIGEXPORT jstring JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1prepare_1http_1header_1field_1manipulation(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  jstring jresult = 0 ;
   mk::nettest::Runner *arg1 = (mk::nettest::Runner *) 0 ;
   mk::nettest::settings::HttpHeaderFieldManipulation *arg2 = 0 ;
+  std::string result;
   
   (void)jenv;
   (void)jcls;
@@ -6670,15 +6688,19 @@ SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1h
   arg2 = *(mk::nettest::settings::HttpHeaderFieldManipulation **)&jarg2;
   if (!arg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "mk::nettest::settings::HttpHeaderFieldManipulation const & reference is null");
-    return ;
+    return 0;
   } 
-  (arg1)->run_http_header_field_manipulation((mk::nettest::settings::HttpHeaderFieldManipulation const &)*arg2);
+  result = (arg1)->prepare_http_header_field_manipulation((mk::nettest::settings::HttpHeaderFieldManipulation const &)*arg2);
+  jresult = jenv->NewStringUTF((&result)->c_str()); 
+  return jresult;
 }
 
 
-SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1http_1invalid_1request_1line(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+SWIGEXPORT jstring JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1prepare_1http_1invalid_1request_1line(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  jstring jresult = 0 ;
   mk::nettest::Runner *arg1 = (mk::nettest::Runner *) 0 ;
   mk::nettest::settings::HttpInvalidRequestLine *arg2 = 0 ;
+  std::string result;
   
   (void)jenv;
   (void)jcls;
@@ -6688,15 +6710,19 @@ SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1h
   arg2 = *(mk::nettest::settings::HttpInvalidRequestLine **)&jarg2;
   if (!arg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "mk::nettest::settings::HttpInvalidRequestLine const & reference is null");
-    return ;
+    return 0;
   } 
-  (arg1)->run_http_invalid_request_line((mk::nettest::settings::HttpInvalidRequestLine const &)*arg2);
+  result = (arg1)->prepare_http_invalid_request_line((mk::nettest::settings::HttpInvalidRequestLine const &)*arg2);
+  jresult = jenv->NewStringUTF((&result)->c_str()); 
+  return jresult;
 }
 
 
-SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1meek_1fronted_1requests(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+SWIGEXPORT jstring JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1prepare_1meek_1fronted_1requests(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  jstring jresult = 0 ;
   mk::nettest::Runner *arg1 = (mk::nettest::Runner *) 0 ;
   mk::nettest::settings::MeekFrontedRequests *arg2 = 0 ;
+  std::string result;
   
   (void)jenv;
   (void)jcls;
@@ -6706,15 +6732,19 @@ SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1m
   arg2 = *(mk::nettest::settings::MeekFrontedRequests **)&jarg2;
   if (!arg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "mk::nettest::settings::MeekFrontedRequests const & reference is null");
-    return ;
+    return 0;
   } 
-  (arg1)->run_meek_fronted_requests((mk::nettest::settings::MeekFrontedRequests const &)*arg2);
+  result = (arg1)->prepare_meek_fronted_requests((mk::nettest::settings::MeekFrontedRequests const &)*arg2);
+  jresult = jenv->NewStringUTF((&result)->c_str()); 
+  return jresult;
 }
 
 
-SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1multi_1ndt(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+SWIGEXPORT jstring JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1prepare_1multi_1ndt(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  jstring jresult = 0 ;
   mk::nettest::Runner *arg1 = (mk::nettest::Runner *) 0 ;
   mk::nettest::settings::MultiNdt *arg2 = 0 ;
+  std::string result;
   
   (void)jenv;
   (void)jcls;
@@ -6724,15 +6754,19 @@ SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1m
   arg2 = *(mk::nettest::settings::MultiNdt **)&jarg2;
   if (!arg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "mk::nettest::settings::MultiNdt const & reference is null");
-    return ;
+    return 0;
   } 
-  (arg1)->run_multi_ndt((mk::nettest::settings::MultiNdt const &)*arg2);
+  result = (arg1)->prepare_multi_ndt((mk::nettest::settings::MultiNdt const &)*arg2);
+  jresult = jenv->NewStringUTF((&result)->c_str()); 
+  return jresult;
 }
 
 
-SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1ndt(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+SWIGEXPORT jstring JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1prepare_1ndt(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  jstring jresult = 0 ;
   mk::nettest::Runner *arg1 = (mk::nettest::Runner *) 0 ;
   mk::nettest::settings::Ndt *arg2 = 0 ;
+  std::string result;
   
   (void)jenv;
   (void)jcls;
@@ -6742,15 +6776,19 @@ SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1n
   arg2 = *(mk::nettest::settings::Ndt **)&jarg2;
   if (!arg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "mk::nettest::settings::Ndt const & reference is null");
-    return ;
+    return 0;
   } 
-  (arg1)->run_ndt((mk::nettest::settings::Ndt const &)*arg2);
+  result = (arg1)->prepare_ndt((mk::nettest::settings::Ndt const &)*arg2);
+  jresult = jenv->NewStringUTF((&result)->c_str()); 
+  return jresult;
 }
 
 
-SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1tcp_1connect(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+SWIGEXPORT jstring JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1prepare_1tcp_1connect(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  jstring jresult = 0 ;
   mk::nettest::Runner *arg1 = (mk::nettest::Runner *) 0 ;
   mk::nettest::settings::TcpConnect *arg2 = 0 ;
+  std::string result;
   
   (void)jenv;
   (void)jcls;
@@ -6760,15 +6798,19 @@ SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1t
   arg2 = *(mk::nettest::settings::TcpConnect **)&jarg2;
   if (!arg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "mk::nettest::settings::TcpConnect const & reference is null");
-    return ;
+    return 0;
   } 
-  (arg1)->run_tcp_connect((mk::nettest::settings::TcpConnect const &)*arg2);
+  result = (arg1)->prepare_tcp_connect((mk::nettest::settings::TcpConnect const &)*arg2);
+  jresult = jenv->NewStringUTF((&result)->c_str()); 
+  return jresult;
 }
 
 
-SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1telegram(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+SWIGEXPORT jstring JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1prepare_1telegram(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  jstring jresult = 0 ;
   mk::nettest::Runner *arg1 = (mk::nettest::Runner *) 0 ;
   mk::nettest::settings::Telegram *arg2 = 0 ;
+  std::string result;
   
   (void)jenv;
   (void)jcls;
@@ -6778,15 +6820,19 @@ SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1t
   arg2 = *(mk::nettest::settings::Telegram **)&jarg2;
   if (!arg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "mk::nettest::settings::Telegram const & reference is null");
-    return ;
+    return 0;
   } 
-  (arg1)->run_telegram((mk::nettest::settings::Telegram const &)*arg2);
+  result = (arg1)->prepare_telegram((mk::nettest::settings::Telegram const &)*arg2);
+  jresult = jenv->NewStringUTF((&result)->c_str()); 
+  return jresult;
 }
 
 
-SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1web_1connectivity(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+SWIGEXPORT jstring JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1prepare_1web_1connectivity(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  jstring jresult = 0 ;
   mk::nettest::Runner *arg1 = (mk::nettest::Runner *) 0 ;
   mk::nettest::settings::WebConnectivity *arg2 = 0 ;
+  std::string result;
   
   (void)jenv;
   (void)jcls;
@@ -6796,15 +6842,19 @@ SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1w
   arg2 = *(mk::nettest::settings::WebConnectivity **)&jarg2;
   if (!arg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "mk::nettest::settings::WebConnectivity const & reference is null");
-    return ;
+    return 0;
   } 
-  (arg1)->run_web_connectivity((mk::nettest::settings::WebConnectivity const &)*arg2);
+  result = (arg1)->prepare_web_connectivity((mk::nettest::settings::WebConnectivity const &)*arg2);
+  jresult = jenv->NewStringUTF((&result)->c_str()); 
+  return jresult;
 }
 
 
-SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1whatsapp(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+SWIGEXPORT jstring JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1prepare_1whatsapp(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  jstring jresult = 0 ;
   mk::nettest::Runner *arg1 = (mk::nettest::Runner *) 0 ;
   mk::nettest::settings::Whatsapp *arg2 = 0 ;
+  std::string result;
   
   (void)jenv;
   (void)jcls;
@@ -6814,9 +6864,31 @@ SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run_1w
   arg2 = *(mk::nettest::settings::Whatsapp **)&jarg2;
   if (!arg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "mk::nettest::settings::Whatsapp const & reference is null");
+    return 0;
+  } 
+  result = (arg1)->prepare_whatsapp((mk::nettest::settings::Whatsapp const &)*arg2);
+  jresult = jenv->NewStringUTF((&result)->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_io_ooni_mk_nettest_swig_MkNettestJNI_Runner_1run(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  mk::nettest::Runner *arg1 = (mk::nettest::Runner *) 0 ;
+  std::string arg2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(mk::nettest::Runner **)&jarg1; 
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null string");
     return ;
   } 
-  (arg1)->run_whatsapp((mk::nettest::settings::Whatsapp const &)*arg2);
+  const char *arg2_pstr = (const char *)jenv->GetStringUTFChars(jarg2, 0); 
+  if (!arg2_pstr) return ;
+  (&arg2)->assign(arg2_pstr);
+  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr); 
+  (arg1)->run(arg2);
 }
 
 
