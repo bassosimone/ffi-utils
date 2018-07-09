@@ -91,27 +91,6 @@ namespace mk {
 /// Contains the nettest API.
 namespace nettest {
 
-/// Contains the log levels. Use these values to initialize the
-/// settings::Settings::log_level field.
-namespace log_levels {
-
-/// Only emit error messages.
-constexpr const char *err = "ERR";
-
-/// Also emit warning messages.
-constexpr const char *warning = "WARNING";
-
-/// Also emit informational messages.
-constexpr const char *info = "INFO";
-
-/// Also emit debug messages.
-constexpr const char *debug = "DEBUG";
-
-/// Emit all log messages.
-constexpr const char *debug2 = "DEBUG2";
-
-}  // namespace log_levels
-
 /// Contains the events classes. During its lifecycle, a network test emits
 /// events in reaction to what happens. The Runner will call a specific
 /// callback for any kind of event.
@@ -463,6 +442,21 @@ namespace settings {
 /// Generic settings of a network test.
 class Settings {
  public:
+  /// Only emit error messages.
+  static constexpr const char *log_level_err = "ERR";
+
+  /// Also emit warning messages.
+  static constexpr const char *log_level_warning = "WARNING";
+
+  /// Also emit informational messages.
+  static constexpr const char *log_level_info = "INFO";
+
+  /// Also emit debug messages.
+  static constexpr const char *log_level_debug = "DEBUG";
+
+  /// Emit all log messages.
+  static constexpr const char *log_level_debug2 = "DEBUG2";
+
   /// Optional annotations (i.e. key, value string pairs) that will be included
   /// into the JSON report sent to the OONI collector.
   std::map<std::string, std::string> annotations = {};
