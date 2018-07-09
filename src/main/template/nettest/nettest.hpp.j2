@@ -42,7 +42,7 @@
 /// network tests while others are nettest specific.
 ///
 /// ```
-/// mySettings.log_level = mk::nettest::log_levels::debug;
+/// mySettings.log_level = mySettings.log_level_debug;
 /// ```
 ///
 /// Write a derived class of Runner where you override the virtual methods
@@ -53,7 +53,7 @@
 ///  public:
 ///   using mk::nettest::Runner::Runner;
 ///
-///   void on_log(const mk::nettest::events::Log &evt) override {
+///   void on_log(const mk::nettest::event::Log &evt) override {
 ///     std::clog << "<" << evt.log_level << ">" << evt.message << std::endl;
 ///   }
 /// };
@@ -94,7 +94,7 @@ namespace nettest {
 /// Contains the events classes. During its lifecycle, a network test emits
 /// events in reaction to what happens. The Runner will call a specific
 /// callback for any kind of event.
-namespace events {
+namespace event {
 
 {% for event in events %}
 /// {{ event.docs }}
@@ -111,7 +111,7 @@ class {{ event.key.to_pascal_case() }} {
 };
 {% endfor %}
 
-}  // namespace events
+}  // namespace event
 
 /// Contains the settings classes. We have a specific setting class for
 /// each supported network test. This inherits from generic settings
@@ -169,7 +169,7 @@ class Runner {
  public:
   {% for event in events %}
     /// Called when the {{ event.key.to_pascal_case() }} event occurs.
-    virtual void on_{{ event.key.to_snake_case() }}(const events::{{ event.key.to_pascal_case() }} &) {
+    virtual void on_{{ event.key.to_snake_case() }}(const event::{{ event.key.to_pascal_case() }} &) {
       // TODO: override this callback if you're interested
     }
   {% endfor %}
@@ -274,7 +274,7 @@ void Runner::run(const settings::Settings &settings) {
       ev = nlohmann::json::parse(str);
     }
     {% for event in events %}if (ev.at("key") == "{{ event.key }}") {
-      events::{{ event.key.to_pascal_case() }} event; {% for attribute in event.attributes %} event.{{ attribute.key.to_snake_case() }} = {{ attribute.base_type.from_json_cast("cxx") }} ev.at("value").at("{{ attribute.key }}"); {% endfor %}
+      event::{{ event.key.to_pascal_case() }} event; {% for attribute in event.attributes %} event.{{ attribute.key.to_snake_case() }} = {{ attribute.base_type.from_json_cast("cxx") }} ev.at("value").at("{{ attribute.key }}"); {% endfor %}
       on_{{ event.key.to_snake_case() }}(event);
       continue;
     }{% endfor %}

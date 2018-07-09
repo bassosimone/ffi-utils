@@ -42,7 +42,7 @@
 /// network tests while others are nettest specific.
 ///
 /// ```
-/// mySettings.log_level = mk::nettest::log_levels::debug;
+/// mySettings.log_level = mySettings.log_level_debug;
 /// ```
 ///
 /// Write a derived class of Runner where you override the virtual methods
@@ -53,7 +53,7 @@
 ///  public:
 ///   using mk::nettest::Runner::Runner;
 ///
-///   void on_log(const mk::nettest::events::Log &evt) override {
+///   void on_log(const mk::nettest::event::Log &evt) override {
 ///     std::clog << "<" << evt.log_level << ">" << evt.message << std::endl;
 ///   }
 /// };
@@ -94,7 +94,7 @@ namespace nettest {
 /// Contains the events classes. During its lifecycle, a network test emits
 /// events in reaction to what happens. The Runner will call a specific
 /// callback for any kind of event.
-namespace events {
+namespace event {
 
 /// We could not lookup the ASN (Autonomous System Number) from the user's IP.
 class FailureAsnLookup {
@@ -432,7 +432,7 @@ class TaskTerminated {
   static constexpr const char *event_key = "task_terminated";
 };
 
-}  // namespace events
+}  // namespace event
 
 /// Contains the settings classes. We have a specific setting class for
 /// each supported network test. This inherits from generic settings
@@ -806,133 +806,133 @@ class WhatsappSettings : public Settings {
 class Runner {
  public:
   /// Called when the FailureAsnLookup event occurs.
-  virtual void on_failure_asn_lookup(const events::FailureAsnLookup &) {
+  virtual void on_failure_asn_lookup(const event::FailureAsnLookup &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the FailureCcLookup event occurs.
-  virtual void on_failure_cc_lookup(const events::FailureCcLookup &) {
+  virtual void on_failure_cc_lookup(const event::FailureCcLookup &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the FailureIpLookup event occurs.
-  virtual void on_failure_ip_lookup(const events::FailureIpLookup &) {
+  virtual void on_failure_ip_lookup(const event::FailureIpLookup &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the FailureMeasurement event occurs.
-  virtual void on_failure_measurement(const events::FailureMeasurement &) {
+  virtual void on_failure_measurement(const event::FailureMeasurement &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the FailureMeasurementSubmission event occurs.
   virtual void on_failure_measurement_submission(
-      const events::FailureMeasurementSubmission &) {
+      const event::FailureMeasurementSubmission &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the FailureReportCreate event occurs.
-  virtual void on_failure_report_create(const events::FailureReportCreate &) {
+  virtual void on_failure_report_create(const event::FailureReportCreate &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the FailureReportClose event occurs.
-  virtual void on_failure_report_close(const events::FailureReportClose &) {
+  virtual void on_failure_report_close(const event::FailureReportClose &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the FailureResolverLookup event occurs.
   virtual void on_failure_resolver_lookup(
-      const events::FailureResolverLookup &) {
+      const event::FailureResolverLookup &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the FailureStartup event occurs.
-  virtual void on_failure_startup(const events::FailureStartup &) {
+  virtual void on_failure_startup(const event::FailureStartup &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the Log event occurs.
-  virtual void on_log(const events::Log &) {
+  virtual void on_log(const event::Log &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the Measurement event occurs.
-  virtual void on_measurement(const events::Measurement &) {
+  virtual void on_measurement(const event::Measurement &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the StatusEnd event occurs.
-  virtual void on_status_end(const events::StatusEnd &) {
+  virtual void on_status_end(const event::StatusEnd &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the StatusGeoipLookup event occurs.
-  virtual void on_status_geoip_lookup(const events::StatusGeoipLookup &) {
+  virtual void on_status_geoip_lookup(const event::StatusGeoipLookup &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the StatusProgress event occurs.
-  virtual void on_status_progress(const events::StatusProgress &) {
+  virtual void on_status_progress(const event::StatusProgress &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the StatusQueued event occurs.
-  virtual void on_status_queued(const events::StatusQueued &) {
+  virtual void on_status_queued(const event::StatusQueued &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the StatusMeasurementStart event occurs.
   virtual void on_status_measurement_start(
-      const events::StatusMeasurementStart &) {
+      const event::StatusMeasurementStart &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the StatusMeasurementSubmission event occurs.
   virtual void on_status_measurement_submission(
-      const events::StatusMeasurementSubmission &) {
+      const event::StatusMeasurementSubmission &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the StatusMeasurementDone event occurs.
   virtual void on_status_measurement_done(
-      const events::StatusMeasurementDone &) {
+      const event::StatusMeasurementDone &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the StatusReportClose event occurs.
-  virtual void on_status_report_close(const events::StatusReportClose &) {
+  virtual void on_status_report_close(const event::StatusReportClose &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the StatusReportCreate event occurs.
-  virtual void on_status_report_create(const events::StatusReportCreate &) {
+  virtual void on_status_report_create(const event::StatusReportCreate &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the StatusResolverLookup event occurs.
-  virtual void on_status_resolver_lookup(const events::StatusResolverLookup &) {
+  virtual void on_status_resolver_lookup(const event::StatusResolverLookup &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the StatusStarted event occurs.
-  virtual void on_status_started(const events::StatusStarted &) {
+  virtual void on_status_started(const event::StatusStarted &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the StatusUpdatePerformance event occurs.
   virtual void on_status_update_performance(
-      const events::StatusUpdatePerformance &) {
+      const event::StatusUpdatePerformance &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the StatusUpdateWebsites event occurs.
-  virtual void on_status_update_websites(const events::StatusUpdateWebsites &) {
+  virtual void on_status_update_websites(const event::StatusUpdateWebsites &) {
     // TODO: override this callback if you're interested
   }
 
   /// Called when the TaskTerminated event occurs.
-  virtual void on_task_terminated(const events::TaskTerminated &) {
+  virtual void on_task_terminated(const event::TaskTerminated &) {
     // TODO: override this callback if you're interested
   }
 
@@ -1153,31 +1153,31 @@ void Runner::run(const settings::Settings &settings) {
       ev = nlohmann::json::parse(str);
     }
     if (ev.at("key") == "failure.asn_lookup") {
-      events::FailureAsnLookup event;
+      event::FailureAsnLookup event;
       event.failure = ev.at("value").at("failure");
       on_failure_asn_lookup(event);
       continue;
     }
     if (ev.at("key") == "failure.cc_lookup") {
-      events::FailureCcLookup event;
+      event::FailureCcLookup event;
       event.failure = ev.at("value").at("failure");
       on_failure_cc_lookup(event);
       continue;
     }
     if (ev.at("key") == "failure.ip_lookup") {
-      events::FailureIpLookup event;
+      event::FailureIpLookup event;
       event.failure = ev.at("value").at("failure");
       on_failure_ip_lookup(event);
       continue;
     }
     if (ev.at("key") == "failure.measurement") {
-      events::FailureMeasurement event;
+      event::FailureMeasurement event;
       event.failure = ev.at("value").at("failure");
       on_failure_measurement(event);
       continue;
     }
     if (ev.at("key") == "failure.measurement_submission") {
-      events::FailureMeasurementSubmission event;
+      event::FailureMeasurementSubmission event;
       event.failure = ev.at("value").at("failure");
       event.idx = ev.at("value").at("idx");
       event.json_str = ev.at("value").at("json_str");
@@ -1185,45 +1185,45 @@ void Runner::run(const settings::Settings &settings) {
       continue;
     }
     if (ev.at("key") == "failure.report_create") {
-      events::FailureReportCreate event;
+      event::FailureReportCreate event;
       event.failure = ev.at("value").at("failure");
       on_failure_report_create(event);
       continue;
     }
     if (ev.at("key") == "failure.report_close") {
-      events::FailureReportClose event;
+      event::FailureReportClose event;
       event.failure = ev.at("value").at("failure");
       on_failure_report_close(event);
       continue;
     }
     if (ev.at("key") == "failure.resolver_lookup") {
-      events::FailureResolverLookup event;
+      event::FailureResolverLookup event;
       event.failure = ev.at("value").at("failure");
       on_failure_resolver_lookup(event);
       continue;
     }
     if (ev.at("key") == "failure.startup") {
-      events::FailureStartup event;
+      event::FailureStartup event;
       event.failure = ev.at("value").at("failure");
       on_failure_startup(event);
       continue;
     }
     if (ev.at("key") == "log") {
-      events::Log event;
+      event::Log event;
       event.log_level = ev.at("value").at("log_level");
       event.message = ev.at("value").at("message");
       on_log(event);
       continue;
     }
     if (ev.at("key") == "measurement") {
-      events::Measurement event;
+      event::Measurement event;
       event.idx = ev.at("value").at("idx");
       event.json_str = ev.at("value").at("json_str");
       on_measurement(event);
       continue;
     }
     if (ev.at("key") == "status.end") {
-      events::StatusEnd event;
+      event::StatusEnd event;
       event.downloaded_kb = ev.at("value").at("downloaded_kb");
       event.uploaded_kb = ev.at("value").at("uploaded_kb");
       event.failure = ev.at("value").at("failure");
@@ -1231,7 +1231,7 @@ void Runner::run(const settings::Settings &settings) {
       continue;
     }
     if (ev.at("key") == "status.geoip_lookup") {
-      events::StatusGeoipLookup event;
+      event::StatusGeoipLookup event;
       event.probe_ip = ev.at("value").at("probe_ip");
       event.probe_asn = ev.at("value").at("probe_asn");
       event.probe_cc = ev.at("value").at("probe_cc");
@@ -1240,61 +1240,61 @@ void Runner::run(const settings::Settings &settings) {
       continue;
     }
     if (ev.at("key") == "status.progress") {
-      events::StatusProgress event;
+      event::StatusProgress event;
       event.percentage = ev.at("value").at("percentage");
       event.message = ev.at("value").at("message");
       on_status_progress(event);
       continue;
     }
     if (ev.at("key") == "status.queued") {
-      events::StatusQueued event;
+      event::StatusQueued event;
       on_status_queued(event);
       continue;
     }
     if (ev.at("key") == "status.measurement_start") {
-      events::StatusMeasurementStart event;
+      event::StatusMeasurementStart event;
       event.idx = ev.at("value").at("idx");
       event.input = ev.at("value").at("input");
       on_status_measurement_start(event);
       continue;
     }
     if (ev.at("key") == "status.measurement_submission") {
-      events::StatusMeasurementSubmission event;
+      event::StatusMeasurementSubmission event;
       event.idx = ev.at("value").at("idx");
       on_status_measurement_submission(event);
       continue;
     }
     if (ev.at("key") == "status.measurement_done") {
-      events::StatusMeasurementDone event;
+      event::StatusMeasurementDone event;
       event.idx = ev.at("value").at("idx");
       on_status_measurement_done(event);
       continue;
     }
     if (ev.at("key") == "status.report_close") {
-      events::StatusReportClose event;
+      event::StatusReportClose event;
       event.report_id = ev.at("value").at("report_id");
       on_status_report_close(event);
       continue;
     }
     if (ev.at("key") == "status.report_create") {
-      events::StatusReportCreate event;
+      event::StatusReportCreate event;
       event.report_id = ev.at("value").at("report_id");
       on_status_report_create(event);
       continue;
     }
     if (ev.at("key") == "status.resolver_lookup") {
-      events::StatusResolverLookup event;
+      event::StatusResolverLookup event;
       event.ip_address = ev.at("value").at("ip_address");
       on_status_resolver_lookup(event);
       continue;
     }
     if (ev.at("key") == "status.started") {
-      events::StatusStarted event;
+      event::StatusStarted event;
       on_status_started(event);
       continue;
     }
     if (ev.at("key") == "status.update_performance") {
-      events::StatusUpdatePerformance event;
+      event::StatusUpdatePerformance event;
       event.direction = ev.at("value").at("direction");
       event.elapsed = ev.at("value").at("elapsed");
       event.num_streams = ev.at("value").at("num_streams");
@@ -1303,14 +1303,14 @@ void Runner::run(const settings::Settings &settings) {
       continue;
     }
     if (ev.at("key") == "status.update.websites") {
-      events::StatusUpdateWebsites event;
+      event::StatusUpdateWebsites event;
       event.url = ev.at("value").at("url");
       event.status = ev.at("value").at("status");
       on_status_update_websites(event);
       continue;
     }
     if (ev.at("key") == "task_terminated") {
-      events::TaskTerminated event;
+      event::TaskTerminated event;
       on_task_terminated(event);
       continue;
     }
