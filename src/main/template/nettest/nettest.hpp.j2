@@ -53,7 +53,7 @@
 ///  public:
 ///   using mk::nettest::Runner::Runner;
 ///
-///   virtual void on_log(const mk::nettest::events::Log &evt) {
+///   void on_log(const mk::nettest::events::Log &evt) override {
 ///     std::clog << "<" << evt.log_level << ">" << evt.message << std::endl;
 ///   }
 /// };
