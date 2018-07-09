@@ -83,7 +83,7 @@ nlohmann::json NettestHelper::possibly_validate_event(nlohmann::json &&ev) {
     assert(known_log_level);
   }
 #endif
-  return std::move(ev);
+  return ev;
 }
 
 bool NettestHelper::check_settings(const nlohmann::json &settings) {
@@ -184,8 +184,9 @@ bool NettestHelper::check_settings(const nlohmann::json &settings) {
 
 {% for event in events %}
 void NettestHelper::emit_{{ event.key.to_snake_case() }}({% for attribute in event.attributes %}{{ attribute.base_type.decl("cxx") }} {{ attribute.key.to_snake_case() }}{{ "," if not loop.last }} {% endfor %}) {
-  nlohmann::json doc; {% for attribute in event.attributes %} doc["value"]["{{ attribute.key }}"] = {{ attribute.key.to_snake_case() }};{% endfor %}
+  nlohmann::json doc;
   doc["key"] = "{{ event.key }}";
+  doc["value"] = nlohmann::json::object(); {% for attribute in event.attributes %} doc["value"]["{{ attribute.key }}"] = {{ attribute.key.to_snake_case() }};{% endfor %}
   emit(std::move(doc));
 }
 {% endfor %}

@@ -368,7 +368,7 @@ nlohmann::json NettestHelper::possibly_validate_event(nlohmann::json &&ev) {
     assert(known_log_level);
   }
 #endif
-  return std::move(ev);
+  return ev;
 }
 
 bool NettestHelper::check_settings(const nlohmann::json &settings) {
@@ -621,29 +621,33 @@ bool NettestHelper::check_settings(const nlohmann::json &settings) {
 
 void NettestHelper::emit_failure_asn_lookup(std::string failure) {
   nlohmann::json doc;
-  doc["value"]["failure"] = failure;
   doc["key"] = "failure.asn_lookup";
+  doc["value"] = nlohmann::json::object();
+  doc["value"]["failure"] = failure;
   emit(std::move(doc));
 }
 
 void NettestHelper::emit_failure_cc_lookup(std::string failure) {
   nlohmann::json doc;
-  doc["value"]["failure"] = failure;
   doc["key"] = "failure.cc_lookup";
+  doc["value"] = nlohmann::json::object();
+  doc["value"]["failure"] = failure;
   emit(std::move(doc));
 }
 
 void NettestHelper::emit_failure_ip_lookup(std::string failure) {
   nlohmann::json doc;
-  doc["value"]["failure"] = failure;
   doc["key"] = "failure.ip_lookup";
+  doc["value"] = nlohmann::json::object();
+  doc["value"]["failure"] = failure;
   emit(std::move(doc));
 }
 
 void NettestHelper::emit_failure_measurement(std::string failure) {
   nlohmann::json doc;
-  doc["value"]["failure"] = failure;
   doc["key"] = "failure.measurement";
+  doc["value"] = nlohmann::json::object();
+  doc["value"]["failure"] = failure;
   emit(std::move(doc));
 }
 
@@ -651,64 +655,72 @@ void NettestHelper::emit_failure_measurement_submission(std::string failure,
                                                         int64_t idx,
                                                         std::string json_str) {
   nlohmann::json doc;
+  doc["key"] = "failure.measurement_submission";
+  doc["value"] = nlohmann::json::object();
   doc["value"]["failure"] = failure;
   doc["value"]["idx"] = idx;
   doc["value"]["json_str"] = json_str;
-  doc["key"] = "failure.measurement_submission";
   emit(std::move(doc));
 }
 
 void NettestHelper::emit_failure_report_create(std::string failure) {
   nlohmann::json doc;
-  doc["value"]["failure"] = failure;
   doc["key"] = "failure.report_create";
+  doc["value"] = nlohmann::json::object();
+  doc["value"]["failure"] = failure;
   emit(std::move(doc));
 }
 
 void NettestHelper::emit_failure_report_close(std::string failure) {
   nlohmann::json doc;
-  doc["value"]["failure"] = failure;
   doc["key"] = "failure.report_close";
+  doc["value"] = nlohmann::json::object();
+  doc["value"]["failure"] = failure;
   emit(std::move(doc));
 }
 
 void NettestHelper::emit_failure_resolver_lookup(std::string failure) {
   nlohmann::json doc;
-  doc["value"]["failure"] = failure;
   doc["key"] = "failure.resolver_lookup";
+  doc["value"] = nlohmann::json::object();
+  doc["value"]["failure"] = failure;
   emit(std::move(doc));
 }
 
 void NettestHelper::emit_failure_startup(std::string failure) {
   nlohmann::json doc;
-  doc["value"]["failure"] = failure;
   doc["key"] = "failure.startup";
+  doc["value"] = nlohmann::json::object();
+  doc["value"]["failure"] = failure;
   emit(std::move(doc));
 }
 
 void NettestHelper::emit_log(std::string log_level, std::string message) {
   nlohmann::json doc;
+  doc["key"] = "log";
+  doc["value"] = nlohmann::json::object();
   doc["value"]["log_level"] = log_level;
   doc["value"]["message"] = message;
-  doc["key"] = "log";
   emit(std::move(doc));
 }
 
 void NettestHelper::emit_measurement(int64_t idx, std::string json_str) {
   nlohmann::json doc;
+  doc["key"] = "measurement";
+  doc["value"] = nlohmann::json::object();
   doc["value"]["idx"] = idx;
   doc["value"]["json_str"] = json_str;
-  doc["key"] = "measurement";
   emit(std::move(doc));
 }
 
 void NettestHelper::emit_status_end(double downloaded_kb, double uploaded_kb,
                                     std::string failure) {
   nlohmann::json doc;
+  doc["key"] = "status.end";
+  doc["value"] = nlohmann::json::object();
   doc["value"]["downloaded_kb"] = downloaded_kb;
   doc["value"]["uploaded_kb"] = uploaded_kb;
   doc["value"]["failure"] = failure;
-  doc["key"] = "status.end";
   emit(std::move(doc));
 }
 
@@ -717,76 +729,86 @@ void NettestHelper::emit_status_geoip_lookup(std::string probe_ip,
                                              std::string probe_cc,
                                              std::string probe_network_name) {
   nlohmann::json doc;
+  doc["key"] = "status.geoip_lookup";
+  doc["value"] = nlohmann::json::object();
   doc["value"]["probe_ip"] = probe_ip;
   doc["value"]["probe_asn"] = probe_asn;
   doc["value"]["probe_cc"] = probe_cc;
   doc["value"]["probe_network_name"] = probe_network_name;
-  doc["key"] = "status.geoip_lookup";
   emit(std::move(doc));
 }
 
 void NettestHelper::emit_status_progress(double percentage,
                                          std::string message) {
   nlohmann::json doc;
+  doc["key"] = "status.progress";
+  doc["value"] = nlohmann::json::object();
   doc["value"]["percentage"] = percentage;
   doc["value"]["message"] = message;
-  doc["key"] = "status.progress";
   emit(std::move(doc));
 }
 
 void NettestHelper::emit_status_queued() {
   nlohmann::json doc;
   doc["key"] = "status.queued";
+  doc["value"] = nlohmann::json::object();
   emit(std::move(doc));
 }
 
 void NettestHelper::emit_status_measurement_start(int64_t idx,
                                                   std::string input) {
   nlohmann::json doc;
+  doc["key"] = "status.measurement_start";
+  doc["value"] = nlohmann::json::object();
   doc["value"]["idx"] = idx;
   doc["value"]["input"] = input;
-  doc["key"] = "status.measurement_start";
   emit(std::move(doc));
 }
 
 void NettestHelper::emit_status_measurement_submission(int64_t idx) {
   nlohmann::json doc;
-  doc["value"]["idx"] = idx;
   doc["key"] = "status.measurement_submission";
+  doc["value"] = nlohmann::json::object();
+  doc["value"]["idx"] = idx;
   emit(std::move(doc));
 }
 
 void NettestHelper::emit_status_measurement_done(int64_t idx) {
   nlohmann::json doc;
-  doc["value"]["idx"] = idx;
   doc["key"] = "status.measurement_done";
+  doc["value"] = nlohmann::json::object();
+  doc["value"]["idx"] = idx;
   emit(std::move(doc));
 }
 
 void NettestHelper::emit_status_report_close(std::string report_id) {
   nlohmann::json doc;
-  doc["value"]["report_id"] = report_id;
   doc["key"] = "status.report_close";
+  doc["value"] = nlohmann::json::object();
+  doc["value"]["report_id"] = report_id;
   emit(std::move(doc));
 }
 
 void NettestHelper::emit_status_report_create(std::string report_id) {
   nlohmann::json doc;
-  doc["value"]["report_id"] = report_id;
   doc["key"] = "status.report_create";
+  doc["value"] = nlohmann::json::object();
+  doc["value"]["report_id"] = report_id;
   emit(std::move(doc));
 }
 
 void NettestHelper::emit_status_resolver_lookup(std::string ip_address) {
   nlohmann::json doc;
-  doc["value"]["ip_address"] = ip_address;
   doc["key"] = "status.resolver_lookup";
+  doc["value"] = nlohmann::json::object();
+  doc["value"]["ip_address"] = ip_address;
   emit(std::move(doc));
 }
 
 void NettestHelper::emit_status_started() {
   nlohmann::json doc;
   doc["key"] = "status.started";
+  doc["value"] = nlohmann::json::object();
   emit(std::move(doc));
 }
 
@@ -795,26 +817,29 @@ void NettestHelper::emit_status_update_performance(std::string direction,
                                                    int64_t num_streams,
                                                    double speed_kbps) {
   nlohmann::json doc;
+  doc["key"] = "status.update_performance";
+  doc["value"] = nlohmann::json::object();
   doc["value"]["direction"] = direction;
   doc["value"]["elapsed"] = elapsed;
   doc["value"]["num_streams"] = num_streams;
   doc["value"]["speed_kbps"] = speed_kbps;
-  doc["key"] = "status.update_performance";
   emit(std::move(doc));
 }
 
 void NettestHelper::emit_status_update_websites(std::string url,
                                                 std::string status) {
   nlohmann::json doc;
+  doc["key"] = "status.update.websites";
+  doc["value"] = nlohmann::json::object();
   doc["value"]["url"] = url;
   doc["value"]["status"] = status;
-  doc["key"] = "status.update.websites";
   emit(std::move(doc));
 }
 
 void NettestHelper::emit_task_terminated() {
   nlohmann::json doc;
   doc["key"] = "task_terminated";
+  doc["value"] = nlohmann::json::object();
   emit(std::move(doc));
 }
 

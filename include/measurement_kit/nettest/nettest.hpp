@@ -1131,9 +1131,13 @@ Runner::~Runner() noexcept {}
 void Runner::run(const settings::Settings &settings) {
   UniqueTask task;
   {
-    nlohmann::json s;
-    settings.serialize_into(&s);
-    task.reset(mk_task_start(s.dump().c_str()));
+    nlohmann::json doc;
+    settings.serialize_into(&doc);
+    auto str = doc.dump();
+#ifdef MK_NETTEST_TRACE
+    std::clog << "NETTEST: settings: " << str << std::endl;
+#endif
+    task.reset(mk_task_start(str.c_str()));
     if (!task) {
       throw std::runtime_error("mk_task_start() failed");
     }
@@ -1149,6 +1153,9 @@ void Runner::run(const settings::Settings &settings) {
       if (!str) {
         throw std::runtime_error("mk_event_serialize() failed");
       }
+#ifdef MK_NETTEST_TRACE
+      std::clog << "NETTEST: event: " << str << std::endl;
+#endif
       ev = nlohmann::json::parse(str);
     }
     if (ev.at("key") == "failure.asn_lookup") {

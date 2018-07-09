@@ -216,7 +216,7 @@ void Task::really_interrupt() {}
 void Task::run(nlohmann::json &&) {}
 
 nlohmann::json Task::possibly_validate_event(nlohmann::json &&ev) {
-  return std::move(ev);
+  return ev;
 }
 
 bool Task::check_settings(const nlohmann::json &) {

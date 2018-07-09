@@ -2,6 +2,8 @@
 // Measurement Kit is free software under the BSD license. See AUTHORS
 // and LICENSE for more information on the copying conditions. */
 
+#define MK_NETTEST_TRACE 1 // force nettest.hpp to emit diagnostics
+
 #include <measurement_kit/nettest/nettest.hpp>
 
 #include <stdlib.h>
@@ -20,6 +22,10 @@ class MyRunner : public mk::nettest::Runner {
       const mk::nettest::events::StatusProgress &e) override {
     std::clog << "PROGRESS: " << e.percentage << " " << e.message << std::endl;
   }
+
+  void on_status_queued(const mk::nettest::events::StatusQueued &) override {
+    std::clog << "QUEUED" << std::endl;
+  }
 };
 
 int main(int argc, char **argv) {
@@ -34,7 +40,7 @@ int main(int argc, char **argv) {
   try {
     my_runner.run(my_settings);
   } catch (const std::exception &exc) {
-    std::clog << "EXCEPTION: " << exc.what();
+    std::clog << "EXCEPTION: " << exc.what() << std::endl;
     return EXIT_FAILURE;
   }
 }

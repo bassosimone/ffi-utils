@@ -110,7 +110,7 @@ std::string mk_task_t::really_run(nlohmann::json &&settings,
       break;
     }
     emit_status_measurement_start(idx, input);
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     emit_measurement(idx, R"({
       "annotations": {
         "engine_name": "libmeasurement_kit",
@@ -162,12 +162,12 @@ std::string mk_task_t::really_run(nlohmann::json &&settings,
   return "";
 }
 
-struct mk_event_ : public nlohmann::json {
-  using nlohmann::json::json;
+struct mk_event_ : public std::string {
+  using std::string::string;
 };
 
 const char *mk_event_serialize(mk_event_t *event) noexcept {
-  return (event) ? event->dump().c_str() : nullptr;
+  return (event) ? event->c_str() : nullptr;
 }
 
 void mk_event_destroy(mk_event_t *event) noexcept { delete event; }
@@ -186,7 +186,7 @@ mk_task_t *mk_task_start(const char *settings) noexcept {
 }
 
 mk_event_t *mk_task_wait_for_next_event(mk_task_t *task) noexcept {
-  return (task) ? new mk_event_t{task->wait_for_next_event()} : nullptr;
+  return (task) ? new mk_event_t{task->wait_for_next_event().dump()} : nullptr;
 }
 
 int mk_task_is_done(mk_task_t *task) noexcept {

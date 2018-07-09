@@ -9,4 +9,6 @@
 /html
 /latex
 /libffimock.dylib
+/mock
+/mock-ffi
 /venv
