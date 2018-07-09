@@ -35,14 +35,14 @@
 /// ```
 /// #include <measurement_kit/nettest/nettest.hpp>
 ///
-/// mk::nettest::settings::WebConnectivitySettings mySettings;
+/// mk::nettest::settings::Whatsapp settings;
 /// ```
 ///
-/// Configure the settings you care about. Some settings are shared by all
-/// network tests while others are nettest specific.
+/// Then, if needed, configure options specific of the network test.
 ///
 /// ```
-/// mySettings.log_level = mySettings.log_level_debug;
+/// settings.all_endpoints = true;
+/// settings.log_level = settings.log_level_debug;
 /// ```
 ///
 /// Write a derived class of Runner where you override the virtual methods
@@ -66,11 +66,18 @@
 /// ```
 /// MyRunner runner;
 /// try {
-///   runner.run(mySettings);
+///   runner.run_whatsapp(settings);
 /// } catch (const std::exception &exc) {
 ///   // TODO: handle
 /// }
 /// ```
+///
+/// If an exception is thrown, the running network test is automatically
+/// stopped and the related thread is joined.
+///
+/// @addtogroup nettest Nettest API
+/// @brief C++11 API for running nettests.
+/// @{
 
 #include <assert.h>
 #include <stdint.h>
@@ -99,9 +106,8 @@ namespace event {
 /// We could not lookup the ASN (Autonomous System Number) from the user's IP.
 class FailureAsnLookup {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "failure.asn_lookup";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "failure.asn_lookup";
 
   /// The specific error that occurred.
   std::string failure = "";
@@ -110,9 +116,8 @@ class FailureAsnLookup {
 /// We could not lookup the country code from the user's IP.
 class FailureCcLookup {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "failure.cc_lookup";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "failure.cc_lookup";
 
   /// The specific error that occurred.
   std::string failure = "";
@@ -121,9 +126,8 @@ class FailureCcLookup {
 /// We could not lookup the user IP address.
 class FailureIpLookup {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "failure.ip_lookup";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "failure.ip_lookup";
 
   /// The specific error that occurred.
   std::string failure = "";
@@ -132,9 +136,8 @@ class FailureIpLookup {
 /// There was a failure running the measurement.
 class FailureMeasurement {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "failure.measurement";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "failure.measurement";
 
   /// The specific error that occurred.
   std::string failure = "";
@@ -144,9 +147,8 @@ class FailureMeasurement {
 /// collector.
 class FailureMeasurementSubmission {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "failure.measurement_submission";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "failure.measurement_submission";
 
   /// The specific error that occurred.
   std::string failure = "";
@@ -162,9 +164,8 @@ class FailureMeasurementSubmission {
 /// configured collector.
 class FailureReportCreate {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "failure.report_create";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "failure.report_create";
 
   /// The specific error that occurred.
   std::string failure = "";
@@ -174,9 +175,8 @@ class FailureReportCreate {
 /// measurements related to a specific ID have now been performed.
 class FailureReportClose {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "failure.report_close";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "failure.report_close";
 
   /// The specific error that occurred.
   std::string failure = "";
@@ -185,9 +185,8 @@ class FailureReportClose {
 /// There was a failure attempting to lookup the user DNS resolver IP address.
 class FailureResolverLookup {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "failure.resolver_lookup";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "failure.resolver_lookup";
 
   /// The specific error that occurred.
   std::string failure = "";
@@ -197,9 +196,8 @@ class FailureResolverLookup {
 /// incorrect options. See the logs for more information of what went wrong.
 class FailureStartup {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "failure.startup";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "failure.startup";
 
   /// The specific error that occurred.
   std::string failure = "";
@@ -208,9 +206,8 @@ class FailureStartup {
 /// A log line that was emitted.
 class Log {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "log";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "log";
 
   /// The log level as a string (e.g. "INFO").
   std::string log_level = "";
@@ -222,9 +219,8 @@ class Log {
 /// The result of a measurement.
 class Measurement {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "measurement";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "measurement";
 
   /// Index of the current measurement
   int64_t idx = 0;
@@ -240,9 +236,8 @@ class Measurement {
 /// nettest lifecyle.
 class StatusEnd {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "status.end";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "status.end";
 
   /// The number of KB downloaded during the test.
   double downloaded_kb = 0.0;
@@ -259,9 +254,8 @@ class StatusEnd {
 /// their IP address.
 class StatusGeoipLookup {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "status.geoip_lookup";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "status.geoip_lookup";
 
   /// The user IP address
   std::string probe_ip = "";
@@ -279,9 +273,8 @@ class StatusGeoipLookup {
 /// Emitted during the task lifecycle to indicate progress.
 class StatusProgress {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "status.progress";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "status.progress";
 
   /// Percentage of completion of the task.
   double percentage = 0.0;
@@ -295,9 +288,8 @@ class StatusProgress {
 /// event also implies that the test will be started immediately.
 class StatusQueued {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "status.queued";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "status.queued";
 };
 
 /// Emitted when we start a new measurement within a nettest. For nettests that
@@ -305,9 +297,8 @@ class StatusQueued {
 /// Otherwise, there is a measurement for each input provided to the nettest.
 class StatusMeasurementStart {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "status.measurement_start";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "status.measurement_start";
 
   /// Index of the current measurement.
   int64_t idx = 0;
@@ -321,9 +312,8 @@ class StatusMeasurementStart {
 /// the configured collector.
 class StatusMeasurementSubmission {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "status.measurement_submission";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "status.measurement_submission";
 
   /// Index of the current measurement.
   int64_t idx = 0;
@@ -333,9 +323,8 @@ class StatusMeasurementSubmission {
 /// there were any failures during the measurement.
 class StatusMeasurementDone {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "status.measurement_done";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "status.measurement_done";
 
   /// Index of the current measurement.
   int64_t idx = 0;
@@ -345,9 +334,8 @@ class StatusMeasurementDone {
 /// measurements with a specific report ID.
 class StatusReportClose {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "status.report_close";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "status.report_close";
 
   /// Unique identifier of the nettest with the collector.
   std::string report_id = "";
@@ -358,9 +346,8 @@ class StatusReportClose {
 /// ID" to be used to submit subsequent measurements that we perform.
 class StatusReportCreate {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "status.report_create";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "status.report_create";
 
   /// Unique identifier of the nettest with the collector.
   std::string report_id = "";
@@ -369,9 +356,8 @@ class StatusReportCreate {
 /// Emitted once when we discover the user DNS resolver IP.
 class StatusResolverLookup {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "status.resolver_lookup";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "status.resolver_lookup";
 
   /// IP address of the user resolver.
   std::string ip_address = "";
@@ -380,9 +366,8 @@ class StatusResolverLookup {
 /// Emitted once when the nettest has started running.
 class StatusStarted {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "status.started";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "status.started";
 };
 
 /// Status update regarding the currently ongoing network performance
@@ -390,9 +375,8 @@ class StatusStarted {
 /// measure the network performance.
 class StatusUpdatePerformance {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "status.update_performance";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "status.update_performance";
 
   /// The direction of the performance measurement. Either 'download', for
   /// download measurements, or 'upload' for upload measurements.
@@ -412,9 +396,8 @@ class StatusUpdatePerformance {
 /// measurement.
 class StatusUpdateWebsites {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "status.update.websites";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "status.update.websites";
 
   /// URL that we are measuring.
   std::string url = "";
@@ -427,20 +410,17 @@ class StatusUpdateWebsites {
 /// more tasks from its queue.
 class TaskTerminated {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "task_terminated";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "task_terminated";
 };
 
 }  // namespace event
 
-/// Contains the settings classes. We have a specific setting class for
-/// each supported network test. This inherits from generic settings
-/// defined by a base class called settings::Settings.
+/// Contains the settings classes.
 namespace settings {
 
-/// Generic settings of a network test.
-class Settings {
+/// Settings common to all network tests.
+class Common {
  public:
   /// Only emit error messages.
   static constexpr const char *log_level_err = "ERR";
@@ -606,347 +586,334 @@ class Settings {
   /// Version of the application. By default this is an empty string. If you do
   /// not set this variable, the current MK version will be used.
   std::string software_version = "";
-
-  virtual ~Settings() noexcept;
-
-  virtual void serialize_into(nlohmann::json *doc) const;
 };
 
 /// Full settings for OONI's captive portal test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-010-captive-portal.md.
-class CaptivePortalSettings : public Settings {
+class CaptivePortal : public Common {
  public:
-  using Settings::Settings;
-
   /// Whether this test requires input.
   static constexpr bool needs_input = false;
-
-  ~CaptivePortalSettings() noexcept override;
-
-  void serialize_into(nlohmann::json *doc) const override;
 };
 
 /// Full settings for Neubot's DASH test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-021-dash.md.
-class DashSettings : public Settings {
+class Dash : public Common {
  public:
-  using Settings::Settings;
-
   /// Whether this test requires input.
   static constexpr bool needs_input = false;
-
-  ~DashSettings() noexcept override;
-
-  void serialize_into(nlohmann::json *doc) const override;
 };
 
 /// Full settings for OONI's DNS injection test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-012-dns-injection.md.
-class DnsInjectionSettings : public Settings {
+class DnsInjection : public Common {
  public:
-  using Settings::Settings;
-
   /// Whether this test requires input.
   static constexpr bool needs_input = true;
-
-  ~DnsInjectionSettings() noexcept override;
-
-  void serialize_into(nlohmann::json *doc) const override;
 };
 
 /// Full settings for OONI's Facebook Messenger test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-019-facebook-messenger.md.
-class FacebookMessengerSettings : public Settings {
+class FacebookMessenger : public Common {
  public:
-  using Settings::Settings;
-
   /// Whether this test requires input.
   static constexpr bool needs_input = false;
-
-  ~FacebookMessengerSettings() noexcept override;
-
-  void serialize_into(nlohmann::json *doc) const override;
 };
 
 /// Full settings for OONI's HTTP header field manipulation test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-006-header-field-manipulation.md.
-class HttpHeaderFieldManipulationSettings : public Settings {
+class HttpHeaderFieldManipulation : public Common {
  public:
-  using Settings::Settings;
-
   /// Whether this test requires input.
   static constexpr bool needs_input = false;
-
-  ~HttpHeaderFieldManipulationSettings() noexcept override;
-
-  void serialize_into(nlohmann::json *doc) const override;
 };
 
 /// Full settings for OONI's HTTP invalid request line test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-007-http-invalid-request-line.md.
-class HttpInvalidRequestLineSettings : public Settings {
+class HttpInvalidRequestLine : public Common {
  public:
-  using Settings::Settings;
-
   /// Whether this test requires input.
   static constexpr bool needs_input = false;
-
-  ~HttpInvalidRequestLineSettings() noexcept override;
-
-  void serialize_into(nlohmann::json *doc) const override;
 };
 
 /// Full settings for OONI's meek fronted requests test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-014-meek-fronted-requests.md.
-class MeekFrontedRequestsSettings : public Settings {
+class MeekFrontedRequests : public Common {
  public:
-  using Settings::Settings;
-
   /// Whether this test requires input.
   static constexpr bool needs_input = true;
-
-  ~MeekFrontedRequestsSettings() noexcept override;
-
-  void serialize_into(nlohmann::json *doc) const override;
 };
 
 /// Full settings for the multi NDT network performance test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-022-ndt.md.
-class MultiNdtSettings : public Settings {
+class MultiNdt : public Common {
  public:
-  using Settings::Settings;
-
   /// Whether this test requires input.
   static constexpr bool needs_input = false;
-
-  ~MultiNdtSettings() noexcept override;
-
-  void serialize_into(nlohmann::json *doc) const override;
 };
 
 /// Full settings for the NDT network performance test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-022-ndt.md.
-class NdtSettings : public Settings {
+class Ndt : public Common {
  public:
-  using Settings::Settings;
-
   /// Whether this test requires input.
   static constexpr bool needs_input = false;
-
-  ~NdtSettings() noexcept override;
-
-  void serialize_into(nlohmann::json *doc) const override;
 };
 
 /// Full settings for OONI's TCP connect test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-008-tcp-connect.md.
-class TcpConnectSettings : public Settings {
+class TcpConnect : public Common {
  public:
-  using Settings::Settings;
-
   /// Whether this test requires input.
   static constexpr bool needs_input = true;
-
-  ~TcpConnectSettings() noexcept override;
-
-  void serialize_into(nlohmann::json *doc) const override;
 };
 
 /// Full settings for OONI's Telegram test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-020-telegram.md.
-class TelegramSettings : public Settings {
+class Telegram : public Common {
  public:
-  using Settings::Settings;
-
   /// Whether this test requires input.
   static constexpr bool needs_input = false;
-
-  ~TelegramSettings() noexcept override;
-
-  void serialize_into(nlohmann::json *doc) const override;
 };
 
 /// Full settings for OONI's Web Connectivity test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-017-web-connectivity.md.
-class WebConnectivitySettings : public Settings {
+class WebConnectivity : public Common {
  public:
-  using Settings::Settings;
-
   /// Whether this test requires input.
   static constexpr bool needs_input = true;
-
-  ~WebConnectivitySettings() noexcept override;
-
-  void serialize_into(nlohmann::json *doc) const override;
 };
 
 /// Full settings for OONI's WhatsApp test. See
 /// https://github.com/ooni/spec/blob/master/test-specs/ts-018-whatsapp.md.
-class WhatsappSettings : public Settings {
+class Whatsapp : public Common {
  public:
-  using Settings::Settings;
-
-  /// Whether to check all WhatsApp endpoints.
-  bool all_endpoints = false;
-
   /// Whether this test requires input.
   static constexpr bool needs_input = false;
 
-  ~WhatsappSettings() noexcept override;
-
-  void serialize_into(nlohmann::json *doc) const override;
+  /// Whether to check all WhatsApp endpoints.
+  bool all_endpoints = false;
 };
 
 }  // namespace settings
 
-/// Runs network tests and routes their events. Because most events are emitted
-/// by all tests and just a couple of them are specific of specific tests, we
-/// have not created a runner class for each test. Rather we have this one for
-/// all the tests that we support in MK.
+/// Runs network tests and routes their events.
 class Runner {
  public:
-  /// Called when the FailureAsnLookup event occurs.
-  virtual void on_failure_asn_lookup(const event::FailureAsnLookup &) {
-    // TODO: override this callback if you're interested
-  }
+  // Event handlers
+  // --------------
 
-  /// Called when the FailureCcLookup event occurs.
-  virtual void on_failure_cc_lookup(const event::FailureCcLookup &) {
-    // TODO: override this callback if you're interested
-  }
+  /// Called when the FailureAsnLookup event occurs. Override
+  /// this method if you are interested to this event.
+  virtual void on_failure_asn_lookup(const event::FailureAsnLookup &);
 
-  /// Called when the FailureIpLookup event occurs.
-  virtual void on_failure_ip_lookup(const event::FailureIpLookup &) {
-    // TODO: override this callback if you're interested
-  }
+  /// Called when the FailureCcLookup event occurs. Override
+  /// this method if you are interested to this event.
+  virtual void on_failure_cc_lookup(const event::FailureCcLookup &);
 
-  /// Called when the FailureMeasurement event occurs.
-  virtual void on_failure_measurement(const event::FailureMeasurement &) {
-    // TODO: override this callback if you're interested
-  }
+  /// Called when the FailureIpLookup event occurs. Override
+  /// this method if you are interested to this event.
+  virtual void on_failure_ip_lookup(const event::FailureIpLookup &);
 
-  /// Called when the FailureMeasurementSubmission event occurs.
+  /// Called when the FailureMeasurement event occurs. Override
+  /// this method if you are interested to this event.
+  virtual void on_failure_measurement(const event::FailureMeasurement &);
+
+  /// Called when the FailureMeasurementSubmission event occurs. Override
+  /// this method if you are interested to this event.
   virtual void on_failure_measurement_submission(
-      const event::FailureMeasurementSubmission &) {
-    // TODO: override this callback if you're interested
-  }
+      const event::FailureMeasurementSubmission &);
 
-  /// Called when the FailureReportCreate event occurs.
-  virtual void on_failure_report_create(const event::FailureReportCreate &) {
-    // TODO: override this callback if you're interested
-  }
+  /// Called when the FailureReportCreate event occurs. Override
+  /// this method if you are interested to this event.
+  virtual void on_failure_report_create(const event::FailureReportCreate &);
 
-  /// Called when the FailureReportClose event occurs.
-  virtual void on_failure_report_close(const event::FailureReportClose &) {
-    // TODO: override this callback if you're interested
-  }
+  /// Called when the FailureReportClose event occurs. Override
+  /// this method if you are interested to this event.
+  virtual void on_failure_report_close(const event::FailureReportClose &);
 
-  /// Called when the FailureResolverLookup event occurs.
-  virtual void on_failure_resolver_lookup(
-      const event::FailureResolverLookup &) {
-    // TODO: override this callback if you're interested
-  }
+  /// Called when the FailureResolverLookup event occurs. Override
+  /// this method if you are interested to this event.
+  virtual void on_failure_resolver_lookup(const event::FailureResolverLookup &);
 
-  /// Called when the FailureStartup event occurs.
-  virtual void on_failure_startup(const event::FailureStartup &) {
-    // TODO: override this callback if you're interested
-  }
+  /// Called when the FailureStartup event occurs. Override
+  /// this method if you are interested to this event.
+  virtual void on_failure_startup(const event::FailureStartup &);
 
-  /// Called when the Log event occurs.
-  virtual void on_log(const event::Log &) {
-    // TODO: override this callback if you're interested
-  }
+  /// Called when the Log event occurs. Override
+  /// this method if you are interested to this event.
+  virtual void on_log(const event::Log &);
 
-  /// Called when the Measurement event occurs.
-  virtual void on_measurement(const event::Measurement &) {
-    // TODO: override this callback if you're interested
-  }
+  /// Called when the Measurement event occurs. Override
+  /// this method if you are interested to this event.
+  virtual void on_measurement(const event::Measurement &);
 
-  /// Called when the StatusEnd event occurs.
-  virtual void on_status_end(const event::StatusEnd &) {
-    // TODO: override this callback if you're interested
-  }
+  /// Called when the StatusEnd event occurs. Override
+  /// this method if you are interested to this event.
+  virtual void on_status_end(const event::StatusEnd &);
 
-  /// Called when the StatusGeoipLookup event occurs.
-  virtual void on_status_geoip_lookup(const event::StatusGeoipLookup &) {
-    // TODO: override this callback if you're interested
-  }
+  /// Called when the StatusGeoipLookup event occurs. Override
+  /// this method if you are interested to this event.
+  virtual void on_status_geoip_lookup(const event::StatusGeoipLookup &);
 
-  /// Called when the StatusProgress event occurs.
-  virtual void on_status_progress(const event::StatusProgress &) {
-    // TODO: override this callback if you're interested
-  }
+  /// Called when the StatusProgress event occurs. Override
+  /// this method if you are interested to this event.
+  virtual void on_status_progress(const event::StatusProgress &);
 
-  /// Called when the StatusQueued event occurs.
-  virtual void on_status_queued(const event::StatusQueued &) {
-    // TODO: override this callback if you're interested
-  }
+  /// Called when the StatusQueued event occurs. Override
+  /// this method if you are interested to this event.
+  virtual void on_status_queued(const event::StatusQueued &);
 
-  /// Called when the StatusMeasurementStart event occurs.
+  /// Called when the StatusMeasurementStart event occurs. Override
+  /// this method if you are interested to this event.
   virtual void on_status_measurement_start(
-      const event::StatusMeasurementStart &) {
-    // TODO: override this callback if you're interested
-  }
+      const event::StatusMeasurementStart &);
 
-  /// Called when the StatusMeasurementSubmission event occurs.
+  /// Called when the StatusMeasurementSubmission event occurs. Override
+  /// this method if you are interested to this event.
   virtual void on_status_measurement_submission(
-      const event::StatusMeasurementSubmission &) {
-    // TODO: override this callback if you're interested
-  }
+      const event::StatusMeasurementSubmission &);
 
-  /// Called when the StatusMeasurementDone event occurs.
-  virtual void on_status_measurement_done(
-      const event::StatusMeasurementDone &) {
-    // TODO: override this callback if you're interested
-  }
+  /// Called when the StatusMeasurementDone event occurs. Override
+  /// this method if you are interested to this event.
+  virtual void on_status_measurement_done(const event::StatusMeasurementDone &);
 
-  /// Called when the StatusReportClose event occurs.
-  virtual void on_status_report_close(const event::StatusReportClose &) {
-    // TODO: override this callback if you're interested
-  }
+  /// Called when the StatusReportClose event occurs. Override
+  /// this method if you are interested to this event.
+  virtual void on_status_report_close(const event::StatusReportClose &);
 
-  /// Called when the StatusReportCreate event occurs.
-  virtual void on_status_report_create(const event::StatusReportCreate &) {
-    // TODO: override this callback if you're interested
-  }
+  /// Called when the StatusReportCreate event occurs. Override
+  /// this method if you are interested to this event.
+  virtual void on_status_report_create(const event::StatusReportCreate &);
 
-  /// Called when the StatusResolverLookup event occurs.
-  virtual void on_status_resolver_lookup(const event::StatusResolverLookup &) {
-    // TODO: override this callback if you're interested
-  }
+  /// Called when the StatusResolverLookup event occurs. Override
+  /// this method if you are interested to this event.
+  virtual void on_status_resolver_lookup(const event::StatusResolverLookup &);
 
-  /// Called when the StatusStarted event occurs.
-  virtual void on_status_started(const event::StatusStarted &) {
-    // TODO: override this callback if you're interested
-  }
+  /// Called when the StatusStarted event occurs. Override
+  /// this method if you are interested to this event.
+  virtual void on_status_started(const event::StatusStarted &);
 
-  /// Called when the StatusUpdatePerformance event occurs.
+  /// Called when the StatusUpdatePerformance event occurs. Override
+  /// this method if you are interested to this event.
   virtual void on_status_update_performance(
-      const event::StatusUpdatePerformance &) {
-    // TODO: override this callback if you're interested
-  }
+      const event::StatusUpdatePerformance &);
 
-  /// Called when the StatusUpdateWebsites event occurs.
-  virtual void on_status_update_websites(const event::StatusUpdateWebsites &) {
-    // TODO: override this callback if you're interested
-  }
+  /// Called when the StatusUpdateWebsites event occurs. Override
+  /// this method if you are interested to this event.
+  virtual void on_status_update_websites(const event::StatusUpdateWebsites &);
 
-  /// Called when the TaskTerminated event occurs.
-  virtual void on_task_terminated(const event::TaskTerminated &) {
-    // TODO: override this callback if you're interested
-  }
+  /// Called when the TaskTerminated event occurs. Override
+  /// this method if you are interested to this event.
+  virtual void on_task_terminated(const event::TaskTerminated &);
 
-  /// Default constructor.
-  Runner() noexcept {}
+  // Runners
+  // -------
 
-  /// Runs the nettest until completion. @throw std::exception when it is not
+  /// Runs captive_portal until completion. @throw std::exception when it is not
   /// possible to marshal/unmarshal data structures from/to JSON as well as
   /// if unexpected error conditions occurs. @remark in the event in which an
   /// exception is thrown, the stack will unwind, the currently running test
   /// will be interrupted and the thread in which it is running will be joined.
-  void run(const settings::Settings &settings);
+  void run_captive_portal(const settings::CaptivePortal &settings);
+
+  /// Runs dash until completion. @throw std::exception when it is not
+  /// possible to marshal/unmarshal data structures from/to JSON as well as
+  /// if unexpected error conditions occurs. @remark in the event in which an
+  /// exception is thrown, the stack will unwind, the currently running test
+  /// will be interrupted and the thread in which it is running will be joined.
+  void run_dash(const settings::Dash &settings);
+
+  /// Runs dns_injection until completion. @throw std::exception when it is not
+  /// possible to marshal/unmarshal data structures from/to JSON as well as
+  /// if unexpected error conditions occurs. @remark in the event in which an
+  /// exception is thrown, the stack will unwind, the currently running test
+  /// will be interrupted and the thread in which it is running will be joined.
+  void run_dns_injection(const settings::DnsInjection &settings);
+
+  /// Runs facebook_messenger until completion. @throw std::exception when it is
+  /// not possible to marshal/unmarshal data structures from/to JSON as well as
+  /// if unexpected error conditions occurs. @remark in the event in which an
+  /// exception is thrown, the stack will unwind, the currently running test
+  /// will be interrupted and the thread in which it is running will be joined.
+  void run_facebook_messenger(const settings::FacebookMessenger &settings);
+
+  /// Runs http_header_field_manipulation until completion. @throw
+  /// std::exception when it is not possible to marshal/unmarshal data
+  /// structures from/to JSON as well as if unexpected error conditions occurs.
+  /// @remark in the event in which an exception is thrown, the stack will
+  /// unwind, the currently running test will be interrupted and the thread in
+  /// which it is running will be joined.
+  void run_http_header_field_manipulation(
+      const settings::HttpHeaderFieldManipulation &settings);
+
+  /// Runs http_invalid_request_line until completion. @throw std::exception
+  /// when it is not possible to marshal/unmarshal data structures from/to JSON
+  /// as well as if unexpected error conditions occurs. @remark in the event in
+  /// which an exception is thrown, the stack will unwind, the currently running
+  /// test will be interrupted and the thread in which it is running will be
+  /// joined.
+  void run_http_invalid_request_line(
+      const settings::HttpInvalidRequestLine &settings);
+
+  /// Runs meek_fronted_requests until completion. @throw std::exception when it
+  /// is not possible to marshal/unmarshal data structures from/to JSON as well
+  /// as if unexpected error conditions occurs. @remark in the event in which an
+  /// exception is thrown, the stack will unwind, the currently running test
+  /// will be interrupted and the thread in which it is running will be joined.
+  void run_meek_fronted_requests(const settings::MeekFrontedRequests &settings);
+
+  /// Runs multi_ndt until completion. @throw std::exception when it is not
+  /// possible to marshal/unmarshal data structures from/to JSON as well as
+  /// if unexpected error conditions occurs. @remark in the event in which an
+  /// exception is thrown, the stack will unwind, the currently running test
+  /// will be interrupted and the thread in which it is running will be joined.
+  void run_multi_ndt(const settings::MultiNdt &settings);
+
+  /// Runs ndt until completion. @throw std::exception when it is not
+  /// possible to marshal/unmarshal data structures from/to JSON as well as
+  /// if unexpected error conditions occurs. @remark in the event in which an
+  /// exception is thrown, the stack will unwind, the currently running test
+  /// will be interrupted and the thread in which it is running will be joined.
+  void run_ndt(const settings::Ndt &settings);
+
+  /// Runs tcp_connect until completion. @throw std::exception when it is not
+  /// possible to marshal/unmarshal data structures from/to JSON as well as
+  /// if unexpected error conditions occurs. @remark in the event in which an
+  /// exception is thrown, the stack will unwind, the currently running test
+  /// will be interrupted and the thread in which it is running will be joined.
+  void run_tcp_connect(const settings::TcpConnect &settings);
+
+  /// Runs telegram until completion. @throw std::exception when it is not
+  /// possible to marshal/unmarshal data structures from/to JSON as well as
+  /// if unexpected error conditions occurs. @remark in the event in which an
+  /// exception is thrown, the stack will unwind, the currently running test
+  /// will be interrupted and the thread in which it is running will be joined.
+  void run_telegram(const settings::Telegram &settings);
+
+  /// Runs web_connectivity until completion. @throw std::exception when it is
+  /// not possible to marshal/unmarshal data structures from/to JSON as well as
+  /// if unexpected error conditions occurs. @remark in the event in which an
+  /// exception is thrown, the stack will unwind, the currently running test
+  /// will be interrupted and the thread in which it is running will be joined.
+  void run_web_connectivity(const settings::WebConnectivity &settings);
+
+  /// Runs whatsapp until completion. @throw std::exception when it is not
+  /// possible to marshal/unmarshal data structures from/to JSON as well as
+  /// if unexpected error conditions occurs. @remark in the event in which an
+  /// exception is thrown, the stack will unwind, the currently running test
+  /// will be interrupted and the thread in which it is running will be joined.
+  void run_whatsapp(const settings::Whatsapp &settings);
+
+  // Misc
+  // ----
+
+  Runner() noexcept;
 
   virtual ~Runner() noexcept;
+
+ private:
+  void run(nlohmann::json &&doc, const settings::Common &common);
 };
 
 /*-
@@ -965,6 +932,9 @@ class Runner {
  */
 #ifndef MK_NETTEST_NO_INLINE_IMPL
 
+// Utility classes
+// ---------------
+
 class TaskDeleter {
  public:
   void operator()(mk_task_t *task) noexcept { mk_task_destroy(task); }
@@ -977,156 +947,192 @@ class EventDeleter {
 };
 using UniqueEvent = std::unique_ptr<mk_event_t, EventDeleter>;
 
-namespace settings {
+// Empty event handlers
+// --------------------
 
-Settings::~Settings() noexcept {}
+void Runner::on_failure_asn_lookup(const event::FailureAsnLookup &) {}
 
-void Settings::serialize_into(nlohmann::json *doc) const {
-  assert(doc != nullptr);
-  (*doc)["annotations"] = annotations;
-  (*doc)["disabled_events"] = disabled_events;
-  (*doc)["inputs"] = inputs;
-  (*doc)["input_filepaths"] = input_filepaths;
-  (*doc)["log_filepath"] = log_filepath;
-  (*doc)["log_level"] = log_level;
-  (*doc)["output_filepath"] = output_filepath;
-  {
-    nlohmann::json so;
-    so["bouncer_base_url"] = bouncer_base_url;
-    so["collector_base_url"] = collector_base_url;
-    so["dns/nameserver"] = dns_nameserver;
-    so["dns/engine"] = dns_engine;
-    so["geoip_asn_path"] = geoip_asn_path;
-    so["geoip_country_path"] = geoip_country_path;
-    so["ignore_bouncer_error"] = (int64_t)ignore_bouncer_error;
-    so["ignore_open_report_error"] = (int64_t)ignore_open_report_error;
-    so["max_runtime"] = max_runtime;
-    so["net/ca_bundle_path"] = net_ca_bundle_path;
-    so["net/timeout"] = net_timeout;
-    so["no_bouncer"] = (int64_t)no_bouncer;
-    so["no_collector"] = (int64_t)no_collector;
-    so["no_asn_lookup"] = (int64_t)no_asn_lookup;
-    so["no_cc_lookup"] = (int64_t)no_cc_lookup;
-    so["no_ip_lookup"] = (int64_t)no_ip_lookup;
-    so["no_file_report"] = (int64_t)no_file_report;
-    so["no_resolver_lookup"] = (int64_t)no_resolver_lookup;
-    so["probe_asn"] = probe_asn;
-    so["probe_cc"] = probe_cc;
-    so["probe_ip"] = probe_ip;
-    so["randomize_input"] = (int64_t)randomize_input;
-    so["save_real_probe_asn"] = (int64_t)save_real_probe_asn;
-    so["save_real_probe_cc"] = (int64_t)save_real_probe_cc;
-    so["save_real_probe_ip"] = (int64_t)save_real_probe_ip;
-    so["save_real_resolver_ip"] = (int64_t)save_real_resolver_ip;
-    so["software_name"] = software_name;
-    so["software_version"] = software_version;
-    (*doc)["options"] = so;
-  }
+void Runner::on_failure_cc_lookup(const event::FailureCcLookup &) {}
+
+void Runner::on_failure_ip_lookup(const event::FailureIpLookup &) {}
+
+void Runner::on_failure_measurement(const event::FailureMeasurement &) {}
+
+void Runner::on_failure_measurement_submission(
+    const event::FailureMeasurementSubmission &) {}
+
+void Runner::on_failure_report_create(const event::FailureReportCreate &) {}
+
+void Runner::on_failure_report_close(const event::FailureReportClose &) {}
+
+void Runner::on_failure_resolver_lookup(const event::FailureResolverLookup &) {}
+
+void Runner::on_failure_startup(const event::FailureStartup &) {}
+
+void Runner::on_log(const event::Log &) {}
+
+void Runner::on_measurement(const event::Measurement &) {}
+
+void Runner::on_status_end(const event::StatusEnd &) {}
+
+void Runner::on_status_geoip_lookup(const event::StatusGeoipLookup &) {}
+
+void Runner::on_status_progress(const event::StatusProgress &) {}
+
+void Runner::on_status_queued(const event::StatusQueued &) {}
+
+void Runner::on_status_measurement_start(
+    const event::StatusMeasurementStart &) {}
+
+void Runner::on_status_measurement_submission(
+    const event::StatusMeasurementSubmission &) {}
+
+void Runner::on_status_measurement_done(const event::StatusMeasurementDone &) {}
+
+void Runner::on_status_report_close(const event::StatusReportClose &) {}
+
+void Runner::on_status_report_create(const event::StatusReportCreate &) {}
+
+void Runner::on_status_resolver_lookup(const event::StatusResolverLookup &) {}
+
+void Runner::on_status_started(const event::StatusStarted &) {}
+
+void Runner::on_status_update_performance(
+    const event::StatusUpdatePerformance &) {}
+
+void Runner::on_status_update_websites(const event::StatusUpdateWebsites &) {}
+
+void Runner::on_task_terminated(const event::TaskTerminated &) {}
+
+// Running nettests
+// ----------------
+
+void Runner::run_captive_portal(const settings::CaptivePortal &settings) {
+  nlohmann::json doc;
+  doc["name"] = "CaptivePortal";
+  run(std::move(doc), settings);
 }
 
-CaptivePortalSettings::~CaptivePortalSettings() noexcept {}
-
-void CaptivePortalSettings::serialize_into(nlohmann::json *doc) const {
-  Settings::serialize_into(doc);
-  (*doc)["name"] = "CaptivePortal";
+void Runner::run_dash(const settings::Dash &settings) {
+  nlohmann::json doc;
+  doc["name"] = "Dash";
+  run(std::move(doc), settings);
 }
 
-DashSettings::~DashSettings() noexcept {}
-
-void DashSettings::serialize_into(nlohmann::json *doc) const {
-  Settings::serialize_into(doc);
-  (*doc)["name"] = "Dash";
+void Runner::run_dns_injection(const settings::DnsInjection &settings) {
+  nlohmann::json doc;
+  doc["name"] = "DnsInjection";
+  run(std::move(doc), settings);
 }
 
-DnsInjectionSettings::~DnsInjectionSettings() noexcept {}
-
-void DnsInjectionSettings::serialize_into(nlohmann::json *doc) const {
-  Settings::serialize_into(doc);
-  (*doc)["name"] = "DnsInjection";
+void Runner::run_facebook_messenger(
+    const settings::FacebookMessenger &settings) {
+  nlohmann::json doc;
+  doc["name"] = "FacebookMessenger";
+  run(std::move(doc), settings);
 }
 
-FacebookMessengerSettings::~FacebookMessengerSettings() noexcept {}
-
-void FacebookMessengerSettings::serialize_into(nlohmann::json *doc) const {
-  Settings::serialize_into(doc);
-  (*doc)["name"] = "FacebookMessenger";
+void Runner::run_http_header_field_manipulation(
+    const settings::HttpHeaderFieldManipulation &settings) {
+  nlohmann::json doc;
+  doc["name"] = "HttpHeaderFieldManipulation";
+  run(std::move(doc), settings);
 }
 
-HttpHeaderFieldManipulationSettings::
-    ~HttpHeaderFieldManipulationSettings() noexcept {}
-
-void HttpHeaderFieldManipulationSettings::serialize_into(
-    nlohmann::json *doc) const {
-  Settings::serialize_into(doc);
-  (*doc)["name"] = "HttpHeaderFieldManipulation";
+void Runner::run_http_invalid_request_line(
+    const settings::HttpInvalidRequestLine &settings) {
+  nlohmann::json doc;
+  doc["name"] = "HttpInvalidRequestLine";
+  run(std::move(doc), settings);
 }
 
-HttpInvalidRequestLineSettings::~HttpInvalidRequestLineSettings() noexcept {}
-
-void HttpInvalidRequestLineSettings::serialize_into(nlohmann::json *doc) const {
-  Settings::serialize_into(doc);
-  (*doc)["name"] = "HttpInvalidRequestLine";
+void Runner::run_meek_fronted_requests(
+    const settings::MeekFrontedRequests &settings) {
+  nlohmann::json doc;
+  doc["name"] = "MeekFrontedRequests";
+  run(std::move(doc), settings);
 }
 
-MeekFrontedRequestsSettings::~MeekFrontedRequestsSettings() noexcept {}
-
-void MeekFrontedRequestsSettings::serialize_into(nlohmann::json *doc) const {
-  Settings::serialize_into(doc);
-  (*doc)["name"] = "MeekFrontedRequests";
+void Runner::run_multi_ndt(const settings::MultiNdt &settings) {
+  nlohmann::json doc;
+  doc["name"] = "MultiNdt";
+  run(std::move(doc), settings);
 }
 
-MultiNdtSettings::~MultiNdtSettings() noexcept {}
-
-void MultiNdtSettings::serialize_into(nlohmann::json *doc) const {
-  Settings::serialize_into(doc);
-  (*doc)["name"] = "MultiNdt";
+void Runner::run_ndt(const settings::Ndt &settings) {
+  nlohmann::json doc;
+  doc["name"] = "Ndt";
+  run(std::move(doc), settings);
 }
 
-NdtSettings::~NdtSettings() noexcept {}
-
-void NdtSettings::serialize_into(nlohmann::json *doc) const {
-  Settings::serialize_into(doc);
-  (*doc)["name"] = "Ndt";
+void Runner::run_tcp_connect(const settings::TcpConnect &settings) {
+  nlohmann::json doc;
+  doc["name"] = "TcpConnect";
+  run(std::move(doc), settings);
 }
 
-TcpConnectSettings::~TcpConnectSettings() noexcept {}
-
-void TcpConnectSettings::serialize_into(nlohmann::json *doc) const {
-  Settings::serialize_into(doc);
-  (*doc)["name"] = "TcpConnect";
+void Runner::run_telegram(const settings::Telegram &settings) {
+  nlohmann::json doc;
+  doc["name"] = "Telegram";
+  run(std::move(doc), settings);
 }
 
-TelegramSettings::~TelegramSettings() noexcept {}
-
-void TelegramSettings::serialize_into(nlohmann::json *doc) const {
-  Settings::serialize_into(doc);
-  (*doc)["name"] = "Telegram";
+void Runner::run_web_connectivity(const settings::WebConnectivity &settings) {
+  nlohmann::json doc;
+  doc["name"] = "WebConnectivity";
+  run(std::move(doc), settings);
 }
 
-WebConnectivitySettings::~WebConnectivitySettings() noexcept {}
-
-void WebConnectivitySettings::serialize_into(nlohmann::json *doc) const {
-  Settings::serialize_into(doc);
-  (*doc)["name"] = "WebConnectivity";
+void Runner::run_whatsapp(const settings::Whatsapp &settings) {
+  nlohmann::json doc;
+  doc["name"] = "Whatsapp";
+  doc["options"]["all_endpoints"] = (int64_t)settings.all_endpoints;
+  run(std::move(doc), settings);
 }
 
-WhatsappSettings::~WhatsappSettings() noexcept {}
-
-void WhatsappSettings::serialize_into(nlohmann::json *doc) const {
-  Settings::serialize_into(doc);
-  (*doc)["name"] = "Whatsapp";
-  (*doc)["options"]["all_endpoints"] = (int64_t)all_endpoints;
-}
-
-}  // namespace settings
-
-Runner::~Runner() noexcept {}
-
-void Runner::run(const settings::Settings &settings) {
+void Runner::run(nlohmann::json &&doc, const settings::Common &cs) {
   UniqueTask task;
   {
-    nlohmann::json doc;
-    settings.serialize_into(&doc);
+    {
+      doc["annotations"] = cs.annotations;
+      doc["disabled_events"] = cs.disabled_events;
+      doc["inputs"] = cs.inputs;
+      doc["input_filepaths"] = cs.input_filepaths;
+      doc["log_filepath"] = cs.log_filepath;
+      doc["log_level"] = cs.log_level;
+      doc["output_filepath"] = cs.output_filepath;
+      {
+        auto &o = doc["options"];
+        o["bouncer_base_url"] = cs.bouncer_base_url;
+        o["collector_base_url"] = cs.collector_base_url;
+        o["dns/nameserver"] = cs.dns_nameserver;
+        o["dns/engine"] = cs.dns_engine;
+        o["geoip_asn_path"] = cs.geoip_asn_path;
+        o["geoip_country_path"] = cs.geoip_country_path;
+        o["ignore_bouncer_error"] = (int64_t)cs.ignore_bouncer_error;
+        o["ignore_open_report_error"] = (int64_t)cs.ignore_open_report_error;
+        o["max_runtime"] = cs.max_runtime;
+        o["net/ca_bundle_path"] = cs.net_ca_bundle_path;
+        o["net/timeout"] = cs.net_timeout;
+        o["no_bouncer"] = (int64_t)cs.no_bouncer;
+        o["no_collector"] = (int64_t)cs.no_collector;
+        o["no_asn_lookup"] = (int64_t)cs.no_asn_lookup;
+        o["no_cc_lookup"] = (int64_t)cs.no_cc_lookup;
+        o["no_ip_lookup"] = (int64_t)cs.no_ip_lookup;
+        o["no_file_report"] = (int64_t)cs.no_file_report;
+        o["no_resolver_lookup"] = (int64_t)cs.no_resolver_lookup;
+        o["probe_asn"] = cs.probe_asn;
+        o["probe_cc"] = cs.probe_cc;
+        o["probe_ip"] = cs.probe_ip;
+        o["randomize_input"] = (int64_t)cs.randomize_input;
+        o["save_real_probe_asn"] = (int64_t)cs.save_real_probe_asn;
+        o["save_real_probe_cc"] = (int64_t)cs.save_real_probe_cc;
+        o["save_real_probe_ip"] = (int64_t)cs.save_real_probe_ip;
+        o["save_real_resolver_ip"] = (int64_t)cs.save_real_resolver_ip;
+        o["software_name"] = cs.software_name;
+        o["software_version"] = cs.software_version;
+      }
+    }
     auto str = doc.dump();
 #ifdef MK_NETTEST_TRACE
     std::clog << "NETTEST: settings: " << str << std::endl;
@@ -1152,31 +1158,31 @@ void Runner::run(const settings::Settings &settings) {
 #endif
       ev = nlohmann::json::parse(str);
     }
-    if (ev.at("key") == "failure.asn_lookup") {
+    if (ev.at("key") == event::FailureAsnLookup::key) {
       event::FailureAsnLookup event;
       event.failure = ev.at("value").at("failure");
       on_failure_asn_lookup(event);
       continue;
     }
-    if (ev.at("key") == "failure.cc_lookup") {
+    if (ev.at("key") == event::FailureCcLookup::key) {
       event::FailureCcLookup event;
       event.failure = ev.at("value").at("failure");
       on_failure_cc_lookup(event);
       continue;
     }
-    if (ev.at("key") == "failure.ip_lookup") {
+    if (ev.at("key") == event::FailureIpLookup::key) {
       event::FailureIpLookup event;
       event.failure = ev.at("value").at("failure");
       on_failure_ip_lookup(event);
       continue;
     }
-    if (ev.at("key") == "failure.measurement") {
+    if (ev.at("key") == event::FailureMeasurement::key) {
       event::FailureMeasurement event;
       event.failure = ev.at("value").at("failure");
       on_failure_measurement(event);
       continue;
     }
-    if (ev.at("key") == "failure.measurement_submission") {
+    if (ev.at("key") == event::FailureMeasurementSubmission::key) {
       event::FailureMeasurementSubmission event;
       event.failure = ev.at("value").at("failure");
       event.idx = ev.at("value").at("idx");
@@ -1184,45 +1190,45 @@ void Runner::run(const settings::Settings &settings) {
       on_failure_measurement_submission(event);
       continue;
     }
-    if (ev.at("key") == "failure.report_create") {
+    if (ev.at("key") == event::FailureReportCreate::key) {
       event::FailureReportCreate event;
       event.failure = ev.at("value").at("failure");
       on_failure_report_create(event);
       continue;
     }
-    if (ev.at("key") == "failure.report_close") {
+    if (ev.at("key") == event::FailureReportClose::key) {
       event::FailureReportClose event;
       event.failure = ev.at("value").at("failure");
       on_failure_report_close(event);
       continue;
     }
-    if (ev.at("key") == "failure.resolver_lookup") {
+    if (ev.at("key") == event::FailureResolverLookup::key) {
       event::FailureResolverLookup event;
       event.failure = ev.at("value").at("failure");
       on_failure_resolver_lookup(event);
       continue;
     }
-    if (ev.at("key") == "failure.startup") {
+    if (ev.at("key") == event::FailureStartup::key) {
       event::FailureStartup event;
       event.failure = ev.at("value").at("failure");
       on_failure_startup(event);
       continue;
     }
-    if (ev.at("key") == "log") {
+    if (ev.at("key") == event::Log::key) {
       event::Log event;
       event.log_level = ev.at("value").at("log_level");
       event.message = ev.at("value").at("message");
       on_log(event);
       continue;
     }
-    if (ev.at("key") == "measurement") {
+    if (ev.at("key") == event::Measurement::key) {
       event::Measurement event;
       event.idx = ev.at("value").at("idx");
       event.json_str = ev.at("value").at("json_str");
       on_measurement(event);
       continue;
     }
-    if (ev.at("key") == "status.end") {
+    if (ev.at("key") == event::StatusEnd::key) {
       event::StatusEnd event;
       event.downloaded_kb = ev.at("value").at("downloaded_kb");
       event.uploaded_kb = ev.at("value").at("uploaded_kb");
@@ -1230,7 +1236,7 @@ void Runner::run(const settings::Settings &settings) {
       on_status_end(event);
       continue;
     }
-    if (ev.at("key") == "status.geoip_lookup") {
+    if (ev.at("key") == event::StatusGeoipLookup::key) {
       event::StatusGeoipLookup event;
       event.probe_ip = ev.at("value").at("probe_ip");
       event.probe_asn = ev.at("value").at("probe_asn");
@@ -1239,61 +1245,61 @@ void Runner::run(const settings::Settings &settings) {
       on_status_geoip_lookup(event);
       continue;
     }
-    if (ev.at("key") == "status.progress") {
+    if (ev.at("key") == event::StatusProgress::key) {
       event::StatusProgress event;
       event.percentage = ev.at("value").at("percentage");
       event.message = ev.at("value").at("message");
       on_status_progress(event);
       continue;
     }
-    if (ev.at("key") == "status.queued") {
+    if (ev.at("key") == event::StatusQueued::key) {
       event::StatusQueued event;
       on_status_queued(event);
       continue;
     }
-    if (ev.at("key") == "status.measurement_start") {
+    if (ev.at("key") == event::StatusMeasurementStart::key) {
       event::StatusMeasurementStart event;
       event.idx = ev.at("value").at("idx");
       event.input = ev.at("value").at("input");
       on_status_measurement_start(event);
       continue;
     }
-    if (ev.at("key") == "status.measurement_submission") {
+    if (ev.at("key") == event::StatusMeasurementSubmission::key) {
       event::StatusMeasurementSubmission event;
       event.idx = ev.at("value").at("idx");
       on_status_measurement_submission(event);
       continue;
     }
-    if (ev.at("key") == "status.measurement_done") {
+    if (ev.at("key") == event::StatusMeasurementDone::key) {
       event::StatusMeasurementDone event;
       event.idx = ev.at("value").at("idx");
       on_status_measurement_done(event);
       continue;
     }
-    if (ev.at("key") == "status.report_close") {
+    if (ev.at("key") == event::StatusReportClose::key) {
       event::StatusReportClose event;
       event.report_id = ev.at("value").at("report_id");
       on_status_report_close(event);
       continue;
     }
-    if (ev.at("key") == "status.report_create") {
+    if (ev.at("key") == event::StatusReportCreate::key) {
       event::StatusReportCreate event;
       event.report_id = ev.at("value").at("report_id");
       on_status_report_create(event);
       continue;
     }
-    if (ev.at("key") == "status.resolver_lookup") {
+    if (ev.at("key") == event::StatusResolverLookup::key) {
       event::StatusResolverLookup event;
       event.ip_address = ev.at("value").at("ip_address");
       on_status_resolver_lookup(event);
       continue;
     }
-    if (ev.at("key") == "status.started") {
+    if (ev.at("key") == event::StatusStarted::key) {
       event::StatusStarted event;
       on_status_started(event);
       continue;
     }
-    if (ev.at("key") == "status.update_performance") {
+    if (ev.at("key") == event::StatusUpdatePerformance::key) {
       event::StatusUpdatePerformance event;
       event.direction = ev.at("value").at("direction");
       event.elapsed = ev.at("value").at("elapsed");
@@ -1302,14 +1308,14 @@ void Runner::run(const settings::Settings &settings) {
       on_status_update_performance(event);
       continue;
     }
-    if (ev.at("key") == "status.update.websites") {
+    if (ev.at("key") == event::StatusUpdateWebsites::key) {
       event::StatusUpdateWebsites event;
       event.url = ev.at("value").at("url");
       event.status = ev.at("value").at("status");
       on_status_update_websites(event);
       continue;
     }
-    if (ev.at("key") == "task_terminated") {
+    if (ev.at("key") == event::TaskTerminated::key) {
       event::TaskTerminated event;
       on_task_terminated(event);
       continue;
@@ -1321,8 +1327,16 @@ void Runner::run(const settings::Settings &settings) {
     }
   }
 }
-#endif  // MK_NETTEST_NO_INLINE_IMPL
 
+// Misc
+// ----
+
+Runner::Runner() noexcept {}
+
+Runner::~Runner() noexcept {}
+
+#endif  // MK_NETTEST_NO_INLINE_IMPL
 }  // namespace nettest
 }  // namespace mk
+/// @}
 #endif  // MEASUREMENT_KIT_NETTEST_NETTEST_HPP

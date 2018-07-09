@@ -14,31 +14,31 @@ class MyRunner : public mk::nettest::Runner {
  public:
   using mk::nettest::Runner::Runner;
 
-  void on_log(const mk::nettest::events::Log &e) override {
+  void on_log(const mk::nettest::event::Log &e) override {
     std::clog << "LOG: <" << e.log_level << "> " << e.message << std::endl;
   }
 
   void on_status_progress(
-      const mk::nettest::events::StatusProgress &e) override {
+      const mk::nettest::event::StatusProgress &e) override {
     std::clog << "PROGRESS: " << e.percentage << " " << e.message << std::endl;
   }
 
-  void on_status_queued(const mk::nettest::events::StatusQueued &) override {
+  void on_status_queued(const mk::nettest::event::StatusQueued &) override {
     std::clog << "QUEUED" << std::endl;
   }
 };
 
 int main(int argc, char **argv) {
-  mk::nettest::settings::WebConnectivitySettings my_settings;
-  my_settings.inputs.push_back("www.kernel.org");
+  mk::nettest::settings::WebConnectivity settings;
+  settings.inputs.push_back("www.kernel.org");
   --argc, ++argv;
   while (argc > 0) {
-    my_settings.input_filepaths.push_back(*argv);
+    settings.input_filepaths.push_back(*argv);
     --argc, ++argv;
   }
   MyRunner my_runner;
   try {
-    my_runner.run(my_settings);
+    my_runner.run_web_connectivity(settings);
   } catch (const std::exception &exc) {
     std::clog << "EXCEPTION: " << exc.what() << std::endl;
     return EXIT_FAILURE;

@@ -35,14 +35,14 @@
 /// ```
 /// #include <measurement_kit/nettest/nettest.hpp>
 ///
-/// mk::nettest::settings::WebConnectivitySettings mySettings;
+/// mk::nettest::settings::Whatsapp settings;
 /// ```
 ///
-/// Configure the settings you care about. Some settings are shared by all
-/// network tests while others are nettest specific.
+/// Then, if needed, configure options specific of the network test.
 ///
 /// ```
-/// mySettings.log_level = mySettings.log_level_debug;
+/// settings.all_endpoints = true;
+/// settings.log_level = settings.log_level_debug;
 /// ```
 ///
 /// Write a derived class of Runner where you override the virtual methods
@@ -66,11 +66,18 @@
 /// ```
 /// MyRunner runner;
 /// try {
-///   runner.run(mySettings);
+///   runner.run_whatsapp(settings);
 /// } catch (const std::exception &exc) {
 ///   // TODO: handle
 /// }
 /// ```
+///
+/// If an exception is thrown, the running network test is automatically
+/// stopped and the related thread is joined.
+///
+/// @addtogroup nettest Nettest API
+/// @brief C++11 API for running nettests.
+/// @{
 
 #include <assert.h>
 #include <stdint.h>
@@ -100,26 +107,23 @@ namespace event {
 /// {{ event.docs }}
 class {{ event.key.to_pascal_case() }} {
  public:
-  /// The key that uniquely identifies an event. To disable an event, append
-  /// this key to the settings::Settings::disabled_events array.
-  static constexpr const char *event_key = "{{ event.key }}";
+  /// The key that uniquely identifies an event.
+  static constexpr const char *key = "{{ event.key }}";
 
   {% for attribute in event.attributes %}
-    /// {{ attribute.docs }}
-    {{ attribute.base_type.decl("cxx") }} {{ attribute.key.to_snake_case() }} = {{ attribute.base_type.default_value("cxx") }};
+  /// {{ attribute.docs }}
+  {{ attribute.base_type.decl("cxx") }} {{ attribute.key.to_snake_case() }} = {{ attribute.base_type.default_value("cxx") }};
   {% endfor %}
 };
 {% endfor %}
 
 }  // namespace event
 
-/// Contains the settings classes. We have a specific setting class for
-/// each supported network test. This inherits from generic settings
-/// defined by a base class called settings::Settings.
+/// Contains the settings classes.
 namespace settings {
 
-/// Generic settings of a network test.
-class Settings {
+/// Settings common to all network tests.
+class Common {
  public:
   {% for log_level in log_levels %}
   /// {{ log_level.docs }}.
@@ -127,64 +131,63 @@ class Settings {
   {% endfor %}
 
   {% for attribute in settings if not attribute.low_level %}
-    /// {{ attribute.docs }}
-    {{ attribute.base_type.decl("cxx") }} {{ attribute.key.to_snake_case() }} = {{ attribute.base_type.default_value("cxx") }};
+  /// {{ attribute.docs }}
+  {{ attribute.base_type.decl("cxx") }} {{ attribute.key.to_snake_case() }} = {{ attribute.base_type.default_value("cxx") }};
   {% endfor %}
 
   {% for attribute in options %}
-    /// {{ attribute.docs }}
-    {{ attribute.base_type.decl("cxx") }} {{ attribute.key.to_snake_case() }} = {{ attribute.base_type.default_value("cxx") }};
+  /// {{ attribute.docs }}
+  {{ attribute.base_type.decl("cxx") }} {{ attribute.key.to_snake_case() }} = {{ attribute.base_type.default_value("cxx") }};
   {% endfor %}
-
-  virtual ~Settings() noexcept;
-
-  virtual void serialize_into(nlohmann::json *doc) const;
 };
 
 {% for nettest in nettests %}
-  /// Full settings for {{ nettest.docs }}. See {{ nettest.reference_url }}.
-  class {{ nettest.key.to_pascal_case() }}Settings : public Settings {
-   public:
-    using Settings::Settings;
-    {% if nettest.options is not none %}{% for option in nettest.options %}
-      /// {{ option.docs }}
-      {{ option.base_type.decl("cxx") }} {{ option.key.to_snake_case() }} = {{ option.base_type.default_value("cxx") }};{% endfor %}{% endif %}
+/// Full settings for {{ nettest.docs }}. See {{ nettest.reference_url }}.
+class {{ nettest.key.to_pascal_case() }} : public Common {
+ public:
+  /// Whether this test requires input.
+  static constexpr bool needs_input = {{ nettest.needs_input.default_value("cxx") }};
 
-    /// Whether this test requires input.
-    static constexpr bool needs_input = {{ nettest.needs_input.default_value("cxx") }};
-
-    ~{{ nettest.key.to_pascal_case() }}Settings() noexcept override;
-
-     void serialize_into(nlohmann::json *doc) const override;
-  };
+  {% if nettest.options is not none %}{% for option in nettest.options %}/// {{ option.docs }}
+  {{ option.base_type.decl("cxx") }} {{ option.key.to_snake_case() }} = {{ option.base_type.default_value("cxx") }};{% endfor %}{% endif %}
+};
 {% endfor %}
 
 }  // namespace settings
 
-/// Runs network tests and routes their events. Because most events are emitted
-/// by all tests and just a couple of them are specific of specific tests, we
-/// have not created a runner class for each test. Rather we have this one for
-/// all the tests that we support in MK.
+/// Runs network tests and routes their events.
 class Runner {
  public:
+  // Event handlers
+  // --------------
+
   {% for event in events %}
-    /// Called when the {{ event.key.to_pascal_case() }} event occurs.
-    virtual void on_{{ event.key.to_snake_case() }}(const event::{{ event.key.to_pascal_case() }} &) {
-      // TODO: override this callback if you're interested
-    }
+  /// Called when the {{ event.key.to_pascal_case() }} event occurs. Override
+  /// this method if you are interested to this event.
+  virtual void on_{{ event.key.to_snake_case() }}(const event::{{ event.key.to_pascal_case() }} &);
   {% endfor %}
 
-  /// Default constructor.
-  Runner() noexcept {}
+  // Runners
+  // -------
 
-  /// Runs the nettest until completion. @throw std::exception when it is not
+  {% for nettest in nettests %}
+  /// Runs {{ nettest.key }} until completion. @throw std::exception when it is not
   /// possible to marshal/unmarshal data structures from/to JSON as well as
   /// if unexpected error conditions occurs. @remark in the event in which an
   /// exception is thrown, the stack will unwind, the currently running test
   /// will be interrupted and the thread in which it is running will be joined.
-  void run(const settings::Settings &settings);
+  void run_{{ nettest.key.to_snake_case() }}(const settings::{{ nettest.key.to_pascal_case() }} &settings);
+  {% endfor %}
+
+  // Misc
+  // ----
+
+  Runner() noexcept;
 
   virtual ~Runner() noexcept;
+
+ private:
+  void run(nlohmann::json &&doc, const settings::Common &common);
 };
 
 /*-
@@ -203,6 +206,9 @@ class Runner {
  */
 #ifndef MK_NETTEST_NO_INLINE_IMPL
 
+// Utility classes
+// ---------------
+
 class TaskDeleter {
  public:
   void operator()(mk_task_t *task) noexcept { mk_task_destroy(task); }
@@ -215,39 +221,34 @@ class EventDeleter {
 };
 using UniqueEvent = std::unique_ptr<mk_event_t, EventDeleter>;
 
-namespace settings {
+// Empty event handlers
+// --------------------
 
-Settings::~Settings() noexcept {}
-
-void Settings::serialize_into(nlohmann::json *doc) const {
-  assert(doc != nullptr);
-  {% for attribute in settings if not attribute.low_level %} (*doc)["{{ attribute.key }}"] = {{ attribute.base_type.to_json_cast("cxx") }} {{ attribute.key.to_snake_case() }}; {% endfor %}
-  {
-    nlohmann::json so;
-    {% for attribute in options %} so["{{ attribute.key }}"] = {{ attribute.base_type.to_json_cast("cxx") }} {{ attribute.key.to_snake_case() }}; {% endfor %}
-    (*doc)["options"] = so;
-  }
-}
-
-{% for nettest in nettests %}
-  {{ nettest.key.to_pascal_case() }}Settings::~{{ nettest.key.to_pascal_case() }}Settings() noexcept {}
-
-  void {{ nettest.key.to_pascal_case() }}Settings::serialize_into(nlohmann::json *doc) const {
-    Settings::serialize_into(doc);
-    (*doc)["name"] = "{{ nettest.key.to_pascal_case() }}";
-    {% if nettest.options is not none %}{% for option in nettest.options %} (*doc)["options"]["{{ option.key }}"] = {{ option.base_type.to_json_cast("cxx") }} {{ option.key.to_snake_case() }}; {% endfor %} {% endif %}
-  }
+{% for event in events %}
+void Runner::on_{{ event.key.to_snake_case() }}(const event::{{ event.key.to_pascal_case() }} &) {}
 {% endfor %}
 
-}  // namespace settings
+// Running nettests
+// ----------------
 
-Runner::~Runner() noexcept {}
+{% for nettest in nettests %}
+void Runner::run_{{ nettest.key.to_snake_case() }}(const settings::{{ nettest.key.to_pascal_case() }} &settings) {
+  nlohmann::json doc;
+  doc["name"] = "{{ nettest.key.to_pascal_case() }}";{% if nettest.options is not none %}{% for option in nettest.options %} doc["options"]["{{ option.key }}"] = {{ option.base_type.to_json_cast("cxx") }}settings.{{ option.key.to_snake_case() }};{% endfor %}{% endif %}
+  run(std::move(doc), settings);
+}
+{% endfor %}
 
-void Runner::run(const settings::Settings &settings) {
+void Runner::run(nlohmann::json &&doc, const settings::Common &cs) {
   UniqueTask task;
   {
-    nlohmann::json doc;
-    settings.serialize_into(&doc);
+    {
+      {% for attribute in settings if not attribute.low_level %} doc["{{ attribute.key }}"] = {{ attribute.base_type.to_json_cast("cxx") }}cs.{{ attribute.key.to_snake_case() }}; {% endfor %}
+      {
+        auto &o = doc["options"];
+        {% for attribute in options %} o["{{ attribute.key }}"] = {{ attribute.base_type.to_json_cast("cxx") }}cs.{{ attribute.key.to_snake_case() }}; {% endfor %}
+      }
+    }
     auto str = doc.dump();
 #ifdef MK_NETTEST_TRACE
     std::clog << "NETTEST: settings: " << str << std::endl;
@@ -273,7 +274,7 @@ void Runner::run(const settings::Settings &settings) {
 #endif
       ev = nlohmann::json::parse(str);
     }
-    {% for event in events %}if (ev.at("key") == "{{ event.key }}") {
+    {% for event in events %}if (ev.at("key") == event::{{ event.key.to_pascal_case() }}::key) {
       event::{{ event.key.to_pascal_case() }} event; {% for attribute in event.attributes %} event.{{ attribute.key.to_snake_case() }} = {{ attribute.base_type.from_json_cast("cxx") }} ev.at("value").at("{{ attribute.key }}"); {% endfor %}
       on_{{ event.key.to_snake_case() }}(event);
       continue;
@@ -285,8 +286,16 @@ void Runner::run(const settings::Settings &settings) {
     }
   }
 }
-#endif  // MK_NETTEST_NO_INLINE_IMPL
 
+// Misc
+// ----
+
+Runner::Runner() noexcept {}
+
+Runner::~Runner() noexcept {}
+
+#endif  // MK_NETTEST_NO_INLINE_IMPL
 }  // namespace nettest
 }  // namespace mk
+/// @}
 #endif  // MEASUREMENT_KIT_NETTEST_NETTEST_HPP

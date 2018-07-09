@@ -194,8 +194,8 @@ void Task::interrupt() {
 Task::~Task() noexcept {
   if (thread_.joinable()) {
     // Configurable because this was not the default behavior in the
-    // MK implementation, so I want to explicitly break compat.
-#ifdef MK_FFI_TASK_INTERRUPT_ON_DESTROY
+    // MK implementation, so I want to explicitly remember that.
+#ifndef MK_FFI_TASK_NO_INTERRUPT_ON_DESTROY
     interrupt();
 #endif
     thread_.join();
