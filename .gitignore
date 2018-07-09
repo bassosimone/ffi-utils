@@ -1,7 +1,12 @@
 *.hpp.gch
 *.pyc
 /.gradle
+/CMakeCache.txt
+/CMakeFiles/
+/Makefile
 /build
+/cmake_install.cmake
 /html
 /latex
+/libffimock.dylib
 /venv
