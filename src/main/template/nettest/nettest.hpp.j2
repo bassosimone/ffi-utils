@@ -29,8 +29,10 @@
 /// As a general rule, use documented features. Undocumented features are
 /// much more likely to be replaced or changed without notice.
 ///
-/// Usage is as follows. Instantiate a settings class for the network test
-/// that you want to execute. For example:
+/// Usage is as follows:
+///
+/// 1) Instantiate a settings class for the network test that you want
+/// to run. For example:
 ///
 /// ```
 /// #include <measurement_kit/nettest/nettest.hpp>
@@ -45,7 +47,11 @@
 /// settings.log_level = settings.log_level_debug;
 /// ```
 ///
-/// Write a derived class of Runner where you override the virtual methods
+/// There is a common base class for all settings that contains the options
+/// settable by more than one nettest. This design should allow you to easily
+/// write sections of code that set options common to many tests.
+///
+/// 2) Write a derived class of Runner where you override the virtual methods
 /// handling the events that you would like to process.
 ///
 /// ```
