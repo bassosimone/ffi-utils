@@ -2,7 +2,7 @@
 // Measurement Kit is free software under the BSD license. See AUTHORS
 // and LICENSE for more information on the copying conditions. */
 
-#define MK_NETTEST_TRACE 1 // force nettest.hpp to emit diagnostics
+//#define MK_NETTEST_TRACE 1 // force nettest.hpp to emit diagnostics
 
 #include <measurement_kit/nettest/nettest.hpp>
 
