@@ -59,6 +59,7 @@ class Bool(Type):
         return {
             "cxx": "bool",
             "docs": "int",
+            "java": "boolean",
             "json": "number_integer",
         }[language]
 
@@ -66,6 +67,7 @@ class Bool(Type):
         return {
             "cxx": json.dumps(self._value),
             "docs": json.dumps(int(self._value)),
+            "java": json.dumps(self._value),
         }[language]
 
     def to_json_cast(self, language):
@@ -90,6 +92,7 @@ class Double(Type):
         return {
             "cxx": "double",
             "docs": "float",
+            "java": "double",
             "json": "number_float",
         }[language]
 
@@ -97,6 +100,7 @@ class Double(Type):
         return {
             "cxx": self._value,
             "docs": self._value,
+            "java": self._value,
         }[language]
 
     def example(self, context):
@@ -111,6 +115,7 @@ class Int64(Type):
         return {
             "cxx": "int64_t",
             "docs": "int",
+            "java": "long",
             "json": "number_integer",
         }[language]
 
@@ -118,6 +123,7 @@ class Int64(Type):
         return {
             "cxx": self._value,
             "docs": self._value,
+            "java": self._value,
         }[language]
 
     def example(self, context):
@@ -132,6 +138,7 @@ class String(Type):
         return {
             "cxx": "std::string",
             "docs": "string",
+            "java": "String",
             "json": "string",
         }[language]
 
@@ -139,6 +146,7 @@ class String(Type):
         return {
             "cxx": json.dumps(self._value),
             "docs": json.dumps(self._value),
+            "java": json.dumps(self._value),
         }[language]
 
     def example(self, context):
@@ -156,6 +164,7 @@ class MapStringString(Type):
         return {
             "cxx": "std::map<std::string, std::string>",
             "docs": "object",
+            "java": "java.util.Map<String, String>",
             "json": "object",
         }[language]
 
@@ -163,6 +172,7 @@ class MapStringString(Type):
         return {
             "cxx": "{}",
             "docs": "{}",
+            "java": "new java.util.HashMap<String, String>()",
         }[language]
 
     def example(self, context):
@@ -181,6 +191,7 @@ class VectorString(Type):
         return {
             "cxx": "std::vector<std::string>",
             "docs": "array",
+            "java": "java.util.Vector<String>",
             "json": "array",
         }[language]
 
@@ -188,6 +199,7 @@ class VectorString(Type):
         return {
             "cxx": "{}",
             "docs": "[]",
+            "java": "new java.util.Vector<String>()",
         }[language]
 
     def example(self, context):
