@@ -14,8 +14,8 @@ python src/main/spec/nettest.py src/main/template/nettest/nettest.hpp.j2 \
     src/main/java/io/ooni/mk/nettest/swig
 )
 
-#python src/main/spec/nettest.py src/main/template/nettest/nettest.java.j2 \
-#    > src/main/java/io/ooni/mk/nettest.java
+python src/main/spec/nettest.py src/main/template/nettest/nettest.java.j2 \
+    | ./script/cutter
 
 python src/main/spec/nettest.py src/main/template/ffi/nettest.hpp.j2 \
     | clang-format - > include/measurement_kit/ffi/nettest.hpp

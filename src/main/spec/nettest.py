@@ -50,6 +50,15 @@ class Type(object):
     def example(self, context):
         raise NotImplementedError
 
+    def is_scalar(self):
+        return True
+
+    def is_map(self):
+        return False
+
+    def is_vector(self):
+        return False
+
 class Bool(Type):
     def __init__(self, value=False):
         super().__init__()
@@ -183,6 +192,12 @@ class MapStringString(Type):
             }
         }.get(context, dict()))
 
+    def is_scalar(self):
+        return False
+
+    def is_map(self):
+        return True
+
 class VectorString(Type):
     def __init__(self):
         super().__init__()
@@ -209,6 +224,12 @@ class VectorString(Type):
             "input_filepaths": ["./list-1.txt", "./list-7.txt", "./list-4.txt"],
         }.get(context, list()))
 
+    def is_scalar(self):
+        return False
+
+    def is_vector(self):
+        return True
+
 class Options(Type):
     def __init__(self):
         super().__init__()
@@ -226,6 +247,12 @@ class Options(Type):
 
     def example(self, context):
         return json.dumps({})
+
+    def is_scalar(self):
+        return False
+
+    def is_map(self):
+        return True
 
 class Name(String):
 
