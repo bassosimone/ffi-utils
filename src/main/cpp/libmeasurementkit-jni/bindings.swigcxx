@@ -2,22 +2,22 @@
    Measurement Kit is free software under the BSD license. See AUTHORS
    and LICENSE for more information on the copying conditions. */
 
-/* SWIG interface file for libndt
-   ============================== */
+/* SWIG interface file for mk::nettest
+   =================================== */
 
-%module(directors="1") Libndt
+%module(directors="1") MkNettest
 
 %{
-#include <measurement_kit/cxx11.hpp>
+#include <measurement_kit/nettest/nettest.hpp>
 %}
 
 %include "stl.i"
 %include "stdint.i"
 %include "std_string.i"
 
-%feature("director") Nettest;
+%feature("director") Runner;
 
 %template(MapStringString) std::map<std::string, std::string>;
 %template(VectorString) std::vector<std::string>;
 
-%include <measurement_kit/cxx11.hpp>
+%include <measurement_kit/nettest/nettest.hpp>

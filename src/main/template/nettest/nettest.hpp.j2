@@ -204,7 +204,7 @@ class Runner {
  * This is handy if you want to include this code in many translation
  * units to include the implementation into a single object.
  */
-#ifndef MK_NETTEST_NO_INLINE_IMPL
+#if !defined MK_NETTEST_NO_INLINE_IMPL && !defined SWIG
 
 // Utility classes
 // ---------------
@@ -294,7 +294,7 @@ Runner::Runner() noexcept {}
 
 Runner::~Runner() noexcept {}
 
-#endif  // MK_NETTEST_NO_INLINE_IMPL
+#endif  // !MK_NETTEST_NO_INLINE_IMPL && !SWIG
 }  // namespace nettest
 }  // namespace mk
 /// @}
