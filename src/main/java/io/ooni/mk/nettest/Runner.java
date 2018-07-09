@@ -128,8 +128,7 @@ public class Runner {
     io.ooni.mk.nettest.swig.CaptivePortal swigSettings = new io.ooni.mk.nettest.swig.CaptivePortal();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    //Runner swigRunner = new RunnerWrapper(this);
-    io.ooni.mk.nettest.swig.Runner swigRunner = new io.ooni.mk.nettest.swig.Runner();
+    Runner swigRunner = new RunnerWrapper(this);
     swigRunner.run_captive_portal(swigSettings);
   }
 
@@ -137,8 +136,7 @@ public class Runner {
     io.ooni.mk.nettest.swig.Dash swigSettings = new io.ooni.mk.nettest.swig.Dash();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    //Runner swigRunner = new RunnerWrapper(this);
-    io.ooni.mk.nettest.swig.Runner swigRunner = new io.ooni.mk.nettest.swig.Runner();
+    Runner swigRunner = new RunnerWrapper(this);
     swigRunner.run_dash(swigSettings);
   }
 
@@ -146,8 +144,7 @@ public class Runner {
     io.ooni.mk.nettest.swig.DnsInjection swigSettings = new io.ooni.mk.nettest.swig.DnsInjection();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    //Runner swigRunner = new RunnerWrapper(this);
-    io.ooni.mk.nettest.swig.Runner swigRunner = new io.ooni.mk.nettest.swig.Runner();
+    Runner swigRunner = new RunnerWrapper(this);
     swigRunner.run_dns_injection(swigSettings);
   }
 
@@ -155,8 +152,7 @@ public class Runner {
     io.ooni.mk.nettest.swig.FacebookMessenger swigSettings = new io.ooni.mk.nettest.swig.FacebookMessenger();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    //Runner swigRunner = new RunnerWrapper(this);
-    io.ooni.mk.nettest.swig.Runner swigRunner = new io.ooni.mk.nettest.swig.Runner();
+    Runner swigRunner = new RunnerWrapper(this);
     swigRunner.run_facebook_messenger(swigSettings);
   }
 
@@ -164,8 +160,7 @@ public class Runner {
     io.ooni.mk.nettest.swig.HttpHeaderFieldManipulation swigSettings = new io.ooni.mk.nettest.swig.HttpHeaderFieldManipulation();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    //Runner swigRunner = new RunnerWrapper(this);
-    io.ooni.mk.nettest.swig.Runner swigRunner = new io.ooni.mk.nettest.swig.Runner();
+    Runner swigRunner = new RunnerWrapper(this);
     swigRunner.run_http_header_field_manipulation(swigSettings);
   }
 
@@ -173,8 +168,7 @@ public class Runner {
     io.ooni.mk.nettest.swig.HttpInvalidRequestLine swigSettings = new io.ooni.mk.nettest.swig.HttpInvalidRequestLine();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    //Runner swigRunner = new RunnerWrapper(this);
-    io.ooni.mk.nettest.swig.Runner swigRunner = new io.ooni.mk.nettest.swig.Runner();
+    Runner swigRunner = new RunnerWrapper(this);
     swigRunner.run_http_invalid_request_line(swigSettings);
   }
 
@@ -182,8 +176,7 @@ public class Runner {
     io.ooni.mk.nettest.swig.MeekFrontedRequests swigSettings = new io.ooni.mk.nettest.swig.MeekFrontedRequests();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    //Runner swigRunner = new RunnerWrapper(this);
-    io.ooni.mk.nettest.swig.Runner swigRunner = new io.ooni.mk.nettest.swig.Runner();
+    Runner swigRunner = new RunnerWrapper(this);
     swigRunner.run_meek_fronted_requests(swigSettings);
   }
 
@@ -191,8 +184,7 @@ public class Runner {
     io.ooni.mk.nettest.swig.MultiNdt swigSettings = new io.ooni.mk.nettest.swig.MultiNdt();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    //Runner swigRunner = new RunnerWrapper(this);
-    io.ooni.mk.nettest.swig.Runner swigRunner = new io.ooni.mk.nettest.swig.Runner();
+    Runner swigRunner = new RunnerWrapper(this);
     swigRunner.run_multi_ndt(swigSettings);
   }
 
@@ -200,8 +192,7 @@ public class Runner {
     io.ooni.mk.nettest.swig.Ndt swigSettings = new io.ooni.mk.nettest.swig.Ndt();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    //Runner swigRunner = new RunnerWrapper(this);
-    io.ooni.mk.nettest.swig.Runner swigRunner = new io.ooni.mk.nettest.swig.Runner();
+    Runner swigRunner = new RunnerWrapper(this);
     swigRunner.run_ndt(swigSettings);
   }
 
@@ -209,8 +200,7 @@ public class Runner {
     io.ooni.mk.nettest.swig.TcpConnect swigSettings = new io.ooni.mk.nettest.swig.TcpConnect();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    //Runner swigRunner = new RunnerWrapper(this);
-    io.ooni.mk.nettest.swig.Runner swigRunner = new io.ooni.mk.nettest.swig.Runner();
+    Runner swigRunner = new RunnerWrapper(this);
     swigRunner.run_tcp_connect(swigSettings);
   }
 
@@ -218,8 +208,7 @@ public class Runner {
     io.ooni.mk.nettest.swig.Telegram swigSettings = new io.ooni.mk.nettest.swig.Telegram();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    //Runner swigRunner = new RunnerWrapper(this);
-    io.ooni.mk.nettest.swig.Runner swigRunner = new io.ooni.mk.nettest.swig.Runner();
+    Runner swigRunner = new RunnerWrapper(this);
     swigRunner.run_telegram(swigSettings);
   }
 
@@ -227,8 +216,7 @@ public class Runner {
     io.ooni.mk.nettest.swig.WebConnectivity swigSettings = new io.ooni.mk.nettest.swig.WebConnectivity();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
-    //Runner swigRunner = new RunnerWrapper(this);
-    io.ooni.mk.nettest.swig.Runner swigRunner = new io.ooni.mk.nettest.swig.Runner();
+    Runner swigRunner = new RunnerWrapper(this);
     swigRunner.run_web_connectivity(swigSettings);
   }
 
@@ -236,8 +224,7 @@ public class Runner {
     io.ooni.mk.nettest.swig.Whatsapp swigSettings = new io.ooni.mk.nettest.swig.Whatsapp();
     swigSettings.setAll_endpoints(settings.allEndpoints);
     setCommonOptions(settings, swigSettings);
-    //Runner swigRunner = new RunnerWrapper(this);
-    io.ooni.mk.nettest.swig.Runner swigRunner = new io.ooni.mk.nettest.swig.Runner();
+    Runner swigRunner = new RunnerWrapper(this);
     swigRunner.run_whatsapp(swigSettings);
   }
 
@@ -311,3 +298,4 @@ public class Runner {
     swigSettings.setSoftware_version(settings.softwareVersion);
   }
 }
+

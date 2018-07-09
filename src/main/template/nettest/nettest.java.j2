@@ -48,8 +48,7 @@ public class Runner {
     io.ooni.mk.nettest.swig.{{ nettest.key.to_pascal_case() }} swigSettings = new io.ooni.mk.nettest.swig.{{ nettest.key.to_pascal_case() }}();
     {% if nettest.options is not none %}{% for option in nettest.options %}swigSettings.set{{ option.key.to_snake_case() | capitalize }}(settings.{{ option.key.to_camel_case() }});{% endfor %}{% else %}/* No nettest specific options. */{% endif %}
     setCommonOptions(settings, swigSettings);
-    //Runner swigRunner = new RunnerWrapper(this);
-    io.ooni.mk.nettest.swig.Runner swigRunner = new io.ooni.mk.nettest.swig.Runner();
+    Runner swigRunner = new RunnerWrapper(this);
     swigRunner.run_{{ nettest.key.to_snake_case() }}(swigSettings);
   }
   {% endfor %}
@@ -79,4 +78,28 @@ public class Runner {
     {% endfor %}
     {% for attribute in options if not attribute.low_level %}swigSettings.set{{ attribute.key.to_snake_case() | capitalize }}(settings.{{ attribute.key.to_camel_case() }});{{ "\n    " if not loop.last }}{% endfor %}
   }
+}
+
+// --->8 src/main/java/io/ooni/mk/nettest/RunnerWrapper.java 8<---
+
+package io.ooni.mk.nettest;
+
+class RunnerWrapper extends io.ooni.mk.nettest.swig.Runner {
+  public RunnerWrapper(Runner parent) {
+    this.parent = parent;
+  }
+  {% for event in events %}
+  @Override
+  public void on_{{ event.key.to_snake_case() }}(io.ooni.mk.nettest.swig.{{ event.key.to_pascal_case() }} swigEvent) {
+    io.ooni.mk.nettest.event.{{ event.key.to_pascal_case() }} event = new io.ooni.mk.nettest.event.{{ event.key.to_pascal_case() }}();
+    {% if event.attributes | length > 0 %}{% for attribute in event.attributes %}event.{{ attribute.key.to_camel_case() }} = swigEvent.get{{ attribute.key.to_snake_case() | capitalize }}();{{ "\n    " if not loop.last }}{% endfor %}{% else %}/* No event specific attributes */{% endif %}
+    parent.on{{ event.key.to_pascal_case() }}(event);
+  }
+  {% endfor %}{% for nettest in nettests %}
+  @Override
+  public void run_{{ nettest.key.to_snake_case() }}(io.ooni.mk.nettest.swig.{{ nettest.key.to_pascal_case() }} swigSettings) {
+    super.run_{{ nettest.key.to_snake_case() }}(swigSettings);
+  }
+  {% endfor %}
+  private Runner parent;
 }
