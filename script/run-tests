@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -e
+ROOTDIR=$(cd $(dirname $0)/../ && pwd -P)
+cd $ROOTDIR
+
+echo "java -Djava.library.path=`pwd` -cp build/classes/java/main:build/classes/java/test main.Integration"
+java -Djava.library.path=`pwd` -cp build/classes/java/main:build/classes/java/test main.Integration

@@ -5,27 +5,28 @@
 package main;
 
 import io.ooni.mk.nettest.Runner;
-import io.ooni.mk.nettest.event.Log;
-import io.ooni.mk.nettest.event.StatusProgress;
-import io.ooni.mk.nettest.event.StatusQueued;
+import io.ooni.mk.nettest.event.LogEvent;
+import io.ooni.mk.nettest.event.StatusProgressEvent;
+import io.ooni.mk.nettest.event.StatusQueuedEvent;
 import io.ooni.mk.nettest.settings.WebConnectivitySettings;
 
 public class Integration {
   static class MyRunner extends Runner {
-    public void onLog(Log e) {
+    public void onLog(LogEvent e) {
       System.out.println("LOG: <" + e.logLevel + "> " + e.message);
     }
 
-    public void onStatusProgress(StatusProgress e) {
+    public void onStatusProgress(StatusProgressEvent e) {
       System.out.println("PROGRESS: " + e.percentage + " " + e.message);
     }
 
-    public void onStatusQueued(StatusQueued e) {
+    public void onStatusQueued(StatusQueuedEvent e) {
       System.out.println("QUEUED");
     }
   }
 
   public static void main(String[] args) {
+    System.loadLibrary("measurementkit-jni");
     WebConnectivitySettings settings = new WebConnectivitySettings();
     settings.inputs.add("www.kernel.org");
     for (String v : args) {
