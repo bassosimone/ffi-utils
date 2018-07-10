@@ -18,7 +18,7 @@
 package io.ooni.mk.nettest.event;
 
 public class StatusUpdatePerformanceEvent {
-  public static final String key = "status.update_performance";
+  public static final String key = "status.update.performance";
   public String direction = "";
   public double elapsed = 0.0;
   public long numStreams = 0;

@@ -462,7 +462,7 @@ def main():
                        performance measurement. This event is, of course,
                        only emitted by network tests that measure the network
                        performance.""",
-                    "status.update_performance",
+                    "status.update.performance",
                     Attribute(
                         """The direction of the performance measurement. Either
                            'download', for download measurements, or 'upload'

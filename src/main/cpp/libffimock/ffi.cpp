@@ -2,7 +2,7 @@
 // Measurement Kit is free software under the BSD license. See AUTHORS
 // and LICENSE for more information on the copying conditions. */
 
-#include <measurement_kit/ffi/ffi.h>
+#include <measurement_kit/ffi.h>
 
 #include <chrono>
 #include <fstream>

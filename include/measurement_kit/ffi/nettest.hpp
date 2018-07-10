@@ -117,7 +117,7 @@ class NettestHelper : public Task {
   // Helper method to emit the status.started event
   void emit_status_started();
 
-  // Helper method to emit the status.update_performance event
+  // Helper method to emit the status.update.performance event
   void emit_status_update_performance(std::string direction, double elapsed,
                                       int64_t num_streams, double speed_kbps);
 
@@ -310,7 +310,7 @@ nlohmann::json NettestHelper::possibly_validate_event(nlohmann::json &&ev) {
         break;
       }
 
-      if (ev.at("key") == "status.update_performance") {
+      if (ev.at("key") == "status.update.performance") {
         known_event_key = true;
         std::string direction = ev.at("value").at("direction");
         (void)direction;
@@ -447,7 +447,7 @@ bool NettestHelper::check_settings(const nlohmann::json &settings) {
           elem != "status.measurement_submission" &&
           elem != "status.measurement_done" && elem != "status.report_close" &&
           elem != "status.report_create" && elem != "status.resolver_lookup" &&
-          elem != "status.started" && elem != "status.update_performance" &&
+          elem != "status.started" && elem != "status.update.performance" &&
           elem != "status.update.websites" && elem != "task_terminated") {
         return false;
       }
@@ -817,7 +817,7 @@ void NettestHelper::emit_status_update_performance(std::string direction,
                                                    int64_t num_streams,
                                                    double speed_kbps) {
   nlohmann::json doc;
-  doc["key"] = "status.update_performance";
+  doc["key"] = "status.update.performance";
   doc["value"] = nlohmann::json::object();
   doc["value"]["direction"] = direction;
   doc["value"]["elapsed"] = elapsed;

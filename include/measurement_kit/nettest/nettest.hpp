@@ -109,7 +109,7 @@
 #include <utility>
 #include <vector>
 
-#include <measurement_kit/ffi/ffi.h>
+#include <measurement_kit/ffi.h>
 #include <nlohmann/json.hpp>
 
 /// Contains MK code.
@@ -396,7 +396,7 @@ class StatusStarted {
 class StatusUpdatePerformance {
  public:
   /// The key that uniquely identifies an event.
-  static constexpr const char *key = "status.update_performance";
+  static constexpr const char *key = "status.update.performance";
 
   /// The direction of the performance measurement. Either 'download', for
   /// download measurements, or 'upload' for upload measurements.

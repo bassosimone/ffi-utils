@@ -20,7 +20,7 @@ we have implemented for several languages. Specifically:
 
 Measurement Kit is a network measurement engine. By default, as mentioned,
 it exposes a FFI friendly C like API. To use this API, include
-`<measurement_kit/ffi/ffi.h>`. See also the API documentation available
+`<measurement_kit/ffi.h>`. See also the API documentation available
 at [codedocs.xyz/measurement-kit/measurement-kit](
 https://codedocs.xyz/measurement-kit/measurement-kit).
 
@@ -436,7 +436,7 @@ The following events are defined:
 
 - `"status.started"`: (object) [documentation](#statusstarted)
 
-- `"status.update_performance"`: (object) [documentation](#statusupdate_performance)
+- `"status.update.performance"`: (object) [documentation](#statusupdateperformance)
 
 - `"status.update.websites"`: (object) [documentation](#statusupdatewebsites)
 
@@ -937,7 +937,7 @@ The JSON returned by this event is like:
 }
 ```
 
-### status.update_performance
+### status.update.performance
 
 Status update regarding the currently ongoing network performance measurement.
 This event is, of course, only emitted by network tests that measure the
@@ -962,7 +962,7 @@ The JSON returned by this event is like:
 
 ```JSON
 {
-  "key": "status.update_performance",
+  "key": "status.update.performance",
   "value": {  
     "direction": "",
     "elapsed": 0.0,
