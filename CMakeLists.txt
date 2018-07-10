@@ -19,10 +19,10 @@ target_include_directories(measurementkit-jni PUBLIC include
                            ${JNI_INCLUDE_DIRS})
 target_link_libraries(measurementkit-jni ffimock)
 
-add_executable(mock-ffi src/main/cpp/mock-ffi/main.cpp)
+add_executable(mock-ffi src/test/cpp/mock-ffi/main.cpp)
 target_link_libraries(mock-ffi ffimock)
 target_include_directories(mock-ffi PUBLIC include)
 
-add_executable(mock src/main/cpp/mock/main.cpp)
+add_executable(mock src/test/cpp/mock/main.cpp)
 target_link_libraries(mock ffimock)
 target_include_directories(mock PUBLIC include)
