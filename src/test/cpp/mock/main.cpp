@@ -4,7 +4,7 @@
 
 //#define MK_NETTEST_TRACE 1 // force nettest.hpp to emit diagnostics
 
-#include <measurement_kit/nettest/nettest.hpp>
+#include <measurement_kit/nettest.hpp>
 
 #include <stdlib.h>
 

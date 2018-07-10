@@ -2,7 +2,7 @@
 set -e
 
 python src/main/spec/nettest.py src/main/template/nettest/nettest.hpp.j2 \
-    | clang-format - > include/measurement_kit/nettest/nettest.hpp
+    | clang-format - > include/measurement_kit/nettest.hpp
 
 rm -rf src/main/java/io/ooni/mk
 install -d src/main/java/io/ooni/mk/nettest/event

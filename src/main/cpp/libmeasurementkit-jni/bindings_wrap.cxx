@@ -682,7 +682,7 @@ namespace Swig {
   }
 }
 
-#include <measurement_kit/nettest/nettest.hpp>
+#include <measurement_kit/nettest.hpp>
 
 
 #include <typeinfo>

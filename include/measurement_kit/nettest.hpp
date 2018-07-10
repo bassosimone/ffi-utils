@@ -17,7 +17,7 @@
  * See https://github.com/measurement-kit/ffi-tools for more information.
  */
 
-/// @file measurement_kit/nettest/nettest.hpp
+/// @file measurement_kit/nettest.hpp
 ///
 /// This file contains Measurement Kit "nettest" API. This API allows you to
 /// run network tests in a uniform way from a C++11 environment.
@@ -35,7 +35,7 @@
 /// to run. For example:
 ///
 /// ```
-/// #include <measurement_kit/nettest/nettest.hpp>
+/// #include <measurement_kit/nettest.hpp>
 ///
 /// mk::nettest::settings::Whatsapp settings;
 /// ```

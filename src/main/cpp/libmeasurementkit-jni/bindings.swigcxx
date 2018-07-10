@@ -8,7 +8,7 @@
 %module(directors="1") MkNettest
 
 %{
-#include <measurement_kit/nettest/nettest.hpp>
+#include <measurement_kit/nettest.hpp>
 %}
 
 %include "stl.i"
@@ -20,4 +20,4 @@
 %template(MapStringString) std::map<std::string, std::string>;
 %template(VectorString) std::vector<std::string>;
 
-%include <measurement_kit/nettest/nettest.hpp>
+%include <measurement_kit/nettest.hpp>

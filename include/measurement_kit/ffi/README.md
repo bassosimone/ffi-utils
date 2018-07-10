@@ -14,7 +14,7 @@ we have implemented for several languages. Specifically:
   https://github.com/measurement-kit/go-measurement-kit);
 
 - for C++11 and better, and Objective C, you should use our
-  [C++11 API](../nettest/nettest.hpp).
+  [C++11 API](nettest.hpp).
 
 ## Introduction and synopsis
 
@@ -50,7 +50,7 @@ events from such queue using `mk_task_wait_for_next_event`. This is a _blocking_
 function that returns when a new event is posted into the queue. To
 process an event, use `mk_event_serialize` to obtain its JSON serialization,
 then parse the JSON into some high level data structure, and process it. See
-the [C++14](../nettest/nettest.hpp) events processing code to have an idea of
+the [C++14](nettest.hpp) events processing code to have an idea of
 how this could be implemented. (Or, if we have already written an API that
 does that works for your use case, perhaps just use such API.)
 
@@ -67,7 +67,7 @@ respectively, `mk_event_destroy` and `mk_task_destroy`.
 
 You can find working examples of usage of the FFI API inside the
 [example/ffi](../../example/ffi) directory. Another usage example of
-the FFI API is [nettest.hpp](../nettest/nettest.hpp), where we wrap the
+the FFI API is [nettest.hpp](nettest.hpp), where we wrap the
 FFI API into a more-user-friendly C++11 interface.
 
 ## Tasks
