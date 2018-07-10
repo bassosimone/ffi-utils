@@ -1,29 +1,29 @@
 {% for event in events %}
-// --->8 src/main/java/io/ooni/mk/nettest/event/{{ event.key.to_pascal_case() }}.java 8<---
+// --->8 src/main/java/io/ooni/mk/nettest/event/{{ event.key.to_pascal_case() }}Event.java 8<---
 
 package io.ooni.mk.nettest.event;
 
-public class {{ event.key.to_pascal_case() }} {
+public class {{ event.key.to_pascal_case() }}Event {
   public static final String key = "{{ event.key }}";
   {% if event.attributes|length > 0 %}{% for attribute in event.attributes %}public {{ attribute.base_type.decl("java") }} {{ attribute.key.to_camel_case() }} = {{ attribute.base_type.default_value("java") }};{{ "\n  " if not loop.last }}{% endfor %}{% else %}/* No event specific attributes. */{% endif %}
 }{% endfor %}
 
-// --->8 src/main/java/io/ooni/mk/nettest/settings/Common.java 8<---
+// --->8 src/main/java/io/ooni/mk/nettest/settings/CommonSettings.java 8<---
 
 package io.ooni.mk.nettest.settings;
 
-public class Common {
+public class CommonSettings {
   {% for log_level in log_levels %}public static final String {{log_level.key.to_camel_case() }} = "{{ log_level.key.to_snake_case_upper() }}";{{ "\n  " if not loop.last }}{% endfor %}
   {% for attribute in settings if not attribute.low_level %}public {{ attribute.base_type.decl("java") }} {{ attribute.key.to_camel_case() }} = {{ attribute.base_type.default_value("java") }};{{ "\n  " if not loop.last }}{% endfor %}
   {% for attribute in options %}public {{ attribute.base_type.decl("java") }} {{ attribute.key.to_camel_case() }} = {{ attribute.base_type.default_value("java") }};{{ "\n  " if not loop.last }}{% endfor %}
 }
 
 {% for nettest in nettests %}
-// --->8 src/main/java/io/ooni/mk/nettest/settings/{{ nettest.key.to_pascal_case() }}.java 8<---
+// --->8 src/main/java/io/ooni/mk/nettest/settings/{{ nettest.key.to_pascal_case() }}Settings.java 8<---
 
 package io.ooni.mk.nettest.settings;
 
-public class {{ nettest.key.to_pascal_case() }} extends Common {
+public class {{ nettest.key.to_pascal_case() }}Settings extends CommonSettings {
   public static final boolean needsInput = {{ nettest.needs_input.default_value("java") }};
   {% if nettest.options is not none %}{% for option in nettest.options %}public {{ option.base_type.decl("java") }} {{ option.key.to_camel_case() }} = {{ option.base_type.default_value("java") }};{{ "\n  " if not loop.last }}{% endfor %}{% else %}/* No nettest specific options. */{% endif %}
 }
@@ -37,14 +37,14 @@ public class Runner {
   // Handlers
   // --------
   {% for event in events %}
-  void on{{ event.key.to_pascal_case() }}(io.ooni.mk.nettest.event.{{ event.key.to_pascal_case() }} event) {
+  public void on{{ event.key.to_pascal_case() }}(io.ooni.mk.nettest.event.{{ event.key.to_pascal_case() }}Event event) {
     // TODO: override this callback if you're interested
   }
   {% endfor %}
   // Runners
   // -------
   {% for nettest in nettests %}
-  String prepare{{ nettest.key.to_pascal_case() }}(io.ooni.mk.nettest.settings.{{ nettest.key.to_pascal_case() }} settings) {
+  public String prepare{{ nettest.key.to_pascal_case() }}(io.ooni.mk.nettest.settings.{{ nettest.key.to_pascal_case() }}Settings settings) {
     io.ooni.mk.nettest.swig.{{ nettest.key.to_pascal_case() }} swigSettings = new io.ooni.mk.nettest.swig.{{ nettest.key.to_pascal_case() }}();
     {% if nettest.options is not none %}{% for option in nettest.options %}swigSettings.set{{ option.key.to_snake_case() | capitalize }}(settings.{{ option.key.to_camel_case() }});{% endfor %}{% else %}/* No nettest specific options. */{% endif %}
     setCommonOptions(settings, swigSettings);
@@ -62,7 +62,7 @@ public class Runner {
   // Private stuff
   // -------------
 
-  private void setCommonOptions(io.ooni.mk.nettest.settings.Common settings, io.ooni.mk.nettest.swig.Common swigSettings) {
+  private void setCommonOptions(io.ooni.mk.nettest.settings.CommonSettings settings, io.ooni.mk.nettest.swig.Common swigSettings) {
     {% for attribute in settings if not attribute.low_level and attribute.base_type.is_scalar() %}swigSettings.set{{ attribute.key.to_snake_case() | capitalize }}(settings.{{ attribute.key.to_camel_case() }});{{ "\n    " if not loop.last }}{% endfor %}
 
     {% for attribute in settings if not attribute.low_level and attribute.base_type.is_map() %}{
@@ -97,7 +97,7 @@ class RunnerWrapper extends io.ooni.mk.nettest.swig.Runner {
   {% for event in events %}
   @Override
   public void on_{{ event.key.to_snake_case() }}(io.ooni.mk.nettest.swig.{{ event.key.to_pascal_case() }} swigEvent) {
-    io.ooni.mk.nettest.event.{{ event.key.to_pascal_case() }} event = new io.ooni.mk.nettest.event.{{ event.key.to_pascal_case() }}();
+    io.ooni.mk.nettest.event.{{ event.key.to_pascal_case() }}Event event = new io.ooni.mk.nettest.event.{{ event.key.to_pascal_case() }}Event();
     {% if event.attributes | length > 0 %}{% for attribute in event.attributes %}event.{{ attribute.key.to_camel_case() }} = swigEvent.get{{ attribute.key.to_snake_case() | capitalize }}();{{ "\n    " if not loop.last }}{% endfor %}{% else %}/* No event specific attributes */{% endif %}
     parent.on{{ event.key.to_pascal_case() }}(event);
   }

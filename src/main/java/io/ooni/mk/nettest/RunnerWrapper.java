@@ -24,35 +24,35 @@ class RunnerWrapper extends io.ooni.mk.nettest.swig.Runner {
 
   @Override
   public void on_failure_asn_lookup(io.ooni.mk.nettest.swig.FailureAsnLookup swigEvent) {
-    io.ooni.mk.nettest.event.FailureAsnLookup event = new io.ooni.mk.nettest.event.FailureAsnLookup();
+    io.ooni.mk.nettest.event.FailureAsnLookupEvent event = new io.ooni.mk.nettest.event.FailureAsnLookupEvent();
     event.failure = swigEvent.getFailure();
     parent.onFailureAsnLookup(event);
   }
 
   @Override
   public void on_failure_cc_lookup(io.ooni.mk.nettest.swig.FailureCcLookup swigEvent) {
-    io.ooni.mk.nettest.event.FailureCcLookup event = new io.ooni.mk.nettest.event.FailureCcLookup();
+    io.ooni.mk.nettest.event.FailureCcLookupEvent event = new io.ooni.mk.nettest.event.FailureCcLookupEvent();
     event.failure = swigEvent.getFailure();
     parent.onFailureCcLookup(event);
   }
 
   @Override
   public void on_failure_ip_lookup(io.ooni.mk.nettest.swig.FailureIpLookup swigEvent) {
-    io.ooni.mk.nettest.event.FailureIpLookup event = new io.ooni.mk.nettest.event.FailureIpLookup();
+    io.ooni.mk.nettest.event.FailureIpLookupEvent event = new io.ooni.mk.nettest.event.FailureIpLookupEvent();
     event.failure = swigEvent.getFailure();
     parent.onFailureIpLookup(event);
   }
 
   @Override
   public void on_failure_measurement(io.ooni.mk.nettest.swig.FailureMeasurement swigEvent) {
-    io.ooni.mk.nettest.event.FailureMeasurement event = new io.ooni.mk.nettest.event.FailureMeasurement();
+    io.ooni.mk.nettest.event.FailureMeasurementEvent event = new io.ooni.mk.nettest.event.FailureMeasurementEvent();
     event.failure = swigEvent.getFailure();
     parent.onFailureMeasurement(event);
   }
 
   @Override
   public void on_failure_measurement_submission(io.ooni.mk.nettest.swig.FailureMeasurementSubmission swigEvent) {
-    io.ooni.mk.nettest.event.FailureMeasurementSubmission event = new io.ooni.mk.nettest.event.FailureMeasurementSubmission();
+    io.ooni.mk.nettest.event.FailureMeasurementSubmissionEvent event = new io.ooni.mk.nettest.event.FailureMeasurementSubmissionEvent();
     event.failure = swigEvent.getFailure();
     event.idx = swigEvent.getIdx();
     event.jsonStr = swigEvent.getJson_str();
@@ -61,35 +61,35 @@ class RunnerWrapper extends io.ooni.mk.nettest.swig.Runner {
 
   @Override
   public void on_failure_report_create(io.ooni.mk.nettest.swig.FailureReportCreate swigEvent) {
-    io.ooni.mk.nettest.event.FailureReportCreate event = new io.ooni.mk.nettest.event.FailureReportCreate();
+    io.ooni.mk.nettest.event.FailureReportCreateEvent event = new io.ooni.mk.nettest.event.FailureReportCreateEvent();
     event.failure = swigEvent.getFailure();
     parent.onFailureReportCreate(event);
   }
 
   @Override
   public void on_failure_report_close(io.ooni.mk.nettest.swig.FailureReportClose swigEvent) {
-    io.ooni.mk.nettest.event.FailureReportClose event = new io.ooni.mk.nettest.event.FailureReportClose();
+    io.ooni.mk.nettest.event.FailureReportCloseEvent event = new io.ooni.mk.nettest.event.FailureReportCloseEvent();
     event.failure = swigEvent.getFailure();
     parent.onFailureReportClose(event);
   }
 
   @Override
   public void on_failure_resolver_lookup(io.ooni.mk.nettest.swig.FailureResolverLookup swigEvent) {
-    io.ooni.mk.nettest.event.FailureResolverLookup event = new io.ooni.mk.nettest.event.FailureResolverLookup();
+    io.ooni.mk.nettest.event.FailureResolverLookupEvent event = new io.ooni.mk.nettest.event.FailureResolverLookupEvent();
     event.failure = swigEvent.getFailure();
     parent.onFailureResolverLookup(event);
   }
 
   @Override
   public void on_failure_startup(io.ooni.mk.nettest.swig.FailureStartup swigEvent) {
-    io.ooni.mk.nettest.event.FailureStartup event = new io.ooni.mk.nettest.event.FailureStartup();
+    io.ooni.mk.nettest.event.FailureStartupEvent event = new io.ooni.mk.nettest.event.FailureStartupEvent();
     event.failure = swigEvent.getFailure();
     parent.onFailureStartup(event);
   }
 
   @Override
   public void on_log(io.ooni.mk.nettest.swig.Log swigEvent) {
-    io.ooni.mk.nettest.event.Log event = new io.ooni.mk.nettest.event.Log();
+    io.ooni.mk.nettest.event.LogEvent event = new io.ooni.mk.nettest.event.LogEvent();
     event.logLevel = swigEvent.getLog_level();
     event.message = swigEvent.getMessage();
     parent.onLog(event);
@@ -97,7 +97,7 @@ class RunnerWrapper extends io.ooni.mk.nettest.swig.Runner {
 
   @Override
   public void on_measurement(io.ooni.mk.nettest.swig.Measurement swigEvent) {
-    io.ooni.mk.nettest.event.Measurement event = new io.ooni.mk.nettest.event.Measurement();
+    io.ooni.mk.nettest.event.MeasurementEvent event = new io.ooni.mk.nettest.event.MeasurementEvent();
     event.idx = swigEvent.getIdx();
     event.jsonStr = swigEvent.getJson_str();
     parent.onMeasurement(event);
@@ -105,7 +105,7 @@ class RunnerWrapper extends io.ooni.mk.nettest.swig.Runner {
 
   @Override
   public void on_status_end(io.ooni.mk.nettest.swig.StatusEnd swigEvent) {
-    io.ooni.mk.nettest.event.StatusEnd event = new io.ooni.mk.nettest.event.StatusEnd();
+    io.ooni.mk.nettest.event.StatusEndEvent event = new io.ooni.mk.nettest.event.StatusEndEvent();
     event.downloadedKb = swigEvent.getDownloaded_kb();
     event.uploadedKb = swigEvent.getUploaded_kb();
     event.failure = swigEvent.getFailure();
@@ -114,7 +114,7 @@ class RunnerWrapper extends io.ooni.mk.nettest.swig.Runner {
 
   @Override
   public void on_status_geoip_lookup(io.ooni.mk.nettest.swig.StatusGeoipLookup swigEvent) {
-    io.ooni.mk.nettest.event.StatusGeoipLookup event = new io.ooni.mk.nettest.event.StatusGeoipLookup();
+    io.ooni.mk.nettest.event.StatusGeoipLookupEvent event = new io.ooni.mk.nettest.event.StatusGeoipLookupEvent();
     event.probeIp = swigEvent.getProbe_ip();
     event.probeAsn = swigEvent.getProbe_asn();
     event.probeCc = swigEvent.getProbe_cc();
@@ -124,7 +124,7 @@ class RunnerWrapper extends io.ooni.mk.nettest.swig.Runner {
 
   @Override
   public void on_status_progress(io.ooni.mk.nettest.swig.StatusProgress swigEvent) {
-    io.ooni.mk.nettest.event.StatusProgress event = new io.ooni.mk.nettest.event.StatusProgress();
+    io.ooni.mk.nettest.event.StatusProgressEvent event = new io.ooni.mk.nettest.event.StatusProgressEvent();
     event.percentage = swigEvent.getPercentage();
     event.message = swigEvent.getMessage();
     parent.onStatusProgress(event);
@@ -132,14 +132,14 @@ class RunnerWrapper extends io.ooni.mk.nettest.swig.Runner {
 
   @Override
   public void on_status_queued(io.ooni.mk.nettest.swig.StatusQueued swigEvent) {
-    io.ooni.mk.nettest.event.StatusQueued event = new io.ooni.mk.nettest.event.StatusQueued();
+    io.ooni.mk.nettest.event.StatusQueuedEvent event = new io.ooni.mk.nettest.event.StatusQueuedEvent();
     /* No event specific attributes */
     parent.onStatusQueued(event);
   }
 
   @Override
   public void on_status_measurement_start(io.ooni.mk.nettest.swig.StatusMeasurementStart swigEvent) {
-    io.ooni.mk.nettest.event.StatusMeasurementStart event = new io.ooni.mk.nettest.event.StatusMeasurementStart();
+    io.ooni.mk.nettest.event.StatusMeasurementStartEvent event = new io.ooni.mk.nettest.event.StatusMeasurementStartEvent();
     event.idx = swigEvent.getIdx();
     event.input = swigEvent.getInput();
     parent.onStatusMeasurementStart(event);
@@ -147,49 +147,49 @@ class RunnerWrapper extends io.ooni.mk.nettest.swig.Runner {
 
   @Override
   public void on_status_measurement_submission(io.ooni.mk.nettest.swig.StatusMeasurementSubmission swigEvent) {
-    io.ooni.mk.nettest.event.StatusMeasurementSubmission event = new io.ooni.mk.nettest.event.StatusMeasurementSubmission();
+    io.ooni.mk.nettest.event.StatusMeasurementSubmissionEvent event = new io.ooni.mk.nettest.event.StatusMeasurementSubmissionEvent();
     event.idx = swigEvent.getIdx();
     parent.onStatusMeasurementSubmission(event);
   }
 
   @Override
   public void on_status_measurement_done(io.ooni.mk.nettest.swig.StatusMeasurementDone swigEvent) {
-    io.ooni.mk.nettest.event.StatusMeasurementDone event = new io.ooni.mk.nettest.event.StatusMeasurementDone();
+    io.ooni.mk.nettest.event.StatusMeasurementDoneEvent event = new io.ooni.mk.nettest.event.StatusMeasurementDoneEvent();
     event.idx = swigEvent.getIdx();
     parent.onStatusMeasurementDone(event);
   }
 
   @Override
   public void on_status_report_close(io.ooni.mk.nettest.swig.StatusReportClose swigEvent) {
-    io.ooni.mk.nettest.event.StatusReportClose event = new io.ooni.mk.nettest.event.StatusReportClose();
+    io.ooni.mk.nettest.event.StatusReportCloseEvent event = new io.ooni.mk.nettest.event.StatusReportCloseEvent();
     event.reportId = swigEvent.getReport_id();
     parent.onStatusReportClose(event);
   }
 
   @Override
   public void on_status_report_create(io.ooni.mk.nettest.swig.StatusReportCreate swigEvent) {
-    io.ooni.mk.nettest.event.StatusReportCreate event = new io.ooni.mk.nettest.event.StatusReportCreate();
+    io.ooni.mk.nettest.event.StatusReportCreateEvent event = new io.ooni.mk.nettest.event.StatusReportCreateEvent();
     event.reportId = swigEvent.getReport_id();
     parent.onStatusReportCreate(event);
   }
 
   @Override
   public void on_status_resolver_lookup(io.ooni.mk.nettest.swig.StatusResolverLookup swigEvent) {
-    io.ooni.mk.nettest.event.StatusResolverLookup event = new io.ooni.mk.nettest.event.StatusResolverLookup();
+    io.ooni.mk.nettest.event.StatusResolverLookupEvent event = new io.ooni.mk.nettest.event.StatusResolverLookupEvent();
     event.ipAddress = swigEvent.getIp_address();
     parent.onStatusResolverLookup(event);
   }
 
   @Override
   public void on_status_started(io.ooni.mk.nettest.swig.StatusStarted swigEvent) {
-    io.ooni.mk.nettest.event.StatusStarted event = new io.ooni.mk.nettest.event.StatusStarted();
+    io.ooni.mk.nettest.event.StatusStartedEvent event = new io.ooni.mk.nettest.event.StatusStartedEvent();
     /* No event specific attributes */
     parent.onStatusStarted(event);
   }
 
   @Override
   public void on_status_update_performance(io.ooni.mk.nettest.swig.StatusUpdatePerformance swigEvent) {
-    io.ooni.mk.nettest.event.StatusUpdatePerformance event = new io.ooni.mk.nettest.event.StatusUpdatePerformance();
+    io.ooni.mk.nettest.event.StatusUpdatePerformanceEvent event = new io.ooni.mk.nettest.event.StatusUpdatePerformanceEvent();
     event.direction = swigEvent.getDirection();
     event.elapsed = swigEvent.getElapsed();
     event.numStreams = swigEvent.getNum_streams();
@@ -199,7 +199,7 @@ class RunnerWrapper extends io.ooni.mk.nettest.swig.Runner {
 
   @Override
   public void on_status_update_websites(io.ooni.mk.nettest.swig.StatusUpdateWebsites swigEvent) {
-    io.ooni.mk.nettest.event.StatusUpdateWebsites event = new io.ooni.mk.nettest.event.StatusUpdateWebsites();
+    io.ooni.mk.nettest.event.StatusUpdateWebsitesEvent event = new io.ooni.mk.nettest.event.StatusUpdateWebsitesEvent();
     event.url = swigEvent.getUrl();
     event.status = swigEvent.getStatus();
     parent.onStatusUpdateWebsites(event);
@@ -207,7 +207,7 @@ class RunnerWrapper extends io.ooni.mk.nettest.swig.Runner {
 
   @Override
   public void on_task_terminated(io.ooni.mk.nettest.swig.TaskTerminated swigEvent) {
-    io.ooni.mk.nettest.event.TaskTerminated event = new io.ooni.mk.nettest.event.TaskTerminated();
+    io.ooni.mk.nettest.event.TaskTerminatedEvent event = new io.ooni.mk.nettest.event.TaskTerminatedEvent();
     /* No event specific attributes */
     parent.onTaskTerminated(event);
   }

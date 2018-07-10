@@ -4,6 +4,10 @@ set -e
 python src/main/spec/nettest.py src/main/template/nettest/nettest.hpp.j2 \
     | clang-format - > include/measurement_kit/nettest/nettest.hpp
 
+rm -rf src/main/java/io/ooni/mk
+install -d src/main/java/io/ooni/mk/nettest/event
+install -d src/main/java/io/ooni/mk/nettest/settings
+
 (
   swig -Iinclude -c++ -java -package io.ooni.mk.nettest.swig \
     src/main/cpp/libmeasurementkit-jni/bindings.swigcxx

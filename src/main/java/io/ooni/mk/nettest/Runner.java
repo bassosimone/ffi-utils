@@ -21,110 +21,110 @@ public class Runner {
   // Handlers
   // --------
 
-  void onFailureAsnLookup(io.ooni.mk.nettest.event.FailureAsnLookup event) {
+  public void onFailureAsnLookup(io.ooni.mk.nettest.event.FailureAsnLookupEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onFailureCcLookup(io.ooni.mk.nettest.event.FailureCcLookup event) {
+  public void onFailureCcLookup(io.ooni.mk.nettest.event.FailureCcLookupEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onFailureIpLookup(io.ooni.mk.nettest.event.FailureIpLookup event) {
+  public void onFailureIpLookup(io.ooni.mk.nettest.event.FailureIpLookupEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onFailureMeasurement(io.ooni.mk.nettest.event.FailureMeasurement event) {
+  public void onFailureMeasurement(io.ooni.mk.nettest.event.FailureMeasurementEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onFailureMeasurementSubmission(io.ooni.mk.nettest.event.FailureMeasurementSubmission event) {
+  public void onFailureMeasurementSubmission(io.ooni.mk.nettest.event.FailureMeasurementSubmissionEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onFailureReportCreate(io.ooni.mk.nettest.event.FailureReportCreate event) {
+  public void onFailureReportCreate(io.ooni.mk.nettest.event.FailureReportCreateEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onFailureReportClose(io.ooni.mk.nettest.event.FailureReportClose event) {
+  public void onFailureReportClose(io.ooni.mk.nettest.event.FailureReportCloseEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onFailureResolverLookup(io.ooni.mk.nettest.event.FailureResolverLookup event) {
+  public void onFailureResolverLookup(io.ooni.mk.nettest.event.FailureResolverLookupEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onFailureStartup(io.ooni.mk.nettest.event.FailureStartup event) {
+  public void onFailureStartup(io.ooni.mk.nettest.event.FailureStartupEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onLog(io.ooni.mk.nettest.event.Log event) {
+  public void onLog(io.ooni.mk.nettest.event.LogEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onMeasurement(io.ooni.mk.nettest.event.Measurement event) {
+  public void onMeasurement(io.ooni.mk.nettest.event.MeasurementEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onStatusEnd(io.ooni.mk.nettest.event.StatusEnd event) {
+  public void onStatusEnd(io.ooni.mk.nettest.event.StatusEndEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onStatusGeoipLookup(io.ooni.mk.nettest.event.StatusGeoipLookup event) {
+  public void onStatusGeoipLookup(io.ooni.mk.nettest.event.StatusGeoipLookupEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onStatusProgress(io.ooni.mk.nettest.event.StatusProgress event) {
+  public void onStatusProgress(io.ooni.mk.nettest.event.StatusProgressEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onStatusQueued(io.ooni.mk.nettest.event.StatusQueued event) {
+  public void onStatusQueued(io.ooni.mk.nettest.event.StatusQueuedEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onStatusMeasurementStart(io.ooni.mk.nettest.event.StatusMeasurementStart event) {
+  public void onStatusMeasurementStart(io.ooni.mk.nettest.event.StatusMeasurementStartEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onStatusMeasurementSubmission(io.ooni.mk.nettest.event.StatusMeasurementSubmission event) {
+  public void onStatusMeasurementSubmission(io.ooni.mk.nettest.event.StatusMeasurementSubmissionEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onStatusMeasurementDone(io.ooni.mk.nettest.event.StatusMeasurementDone event) {
+  public void onStatusMeasurementDone(io.ooni.mk.nettest.event.StatusMeasurementDoneEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onStatusReportClose(io.ooni.mk.nettest.event.StatusReportClose event) {
+  public void onStatusReportClose(io.ooni.mk.nettest.event.StatusReportCloseEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onStatusReportCreate(io.ooni.mk.nettest.event.StatusReportCreate event) {
+  public void onStatusReportCreate(io.ooni.mk.nettest.event.StatusReportCreateEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onStatusResolverLookup(io.ooni.mk.nettest.event.StatusResolverLookup event) {
+  public void onStatusResolverLookup(io.ooni.mk.nettest.event.StatusResolverLookupEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onStatusStarted(io.ooni.mk.nettest.event.StatusStarted event) {
+  public void onStatusStarted(io.ooni.mk.nettest.event.StatusStartedEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onStatusUpdatePerformance(io.ooni.mk.nettest.event.StatusUpdatePerformance event) {
+  public void onStatusUpdatePerformance(io.ooni.mk.nettest.event.StatusUpdatePerformanceEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onStatusUpdateWebsites(io.ooni.mk.nettest.event.StatusUpdateWebsites event) {
+  public void onStatusUpdateWebsites(io.ooni.mk.nettest.event.StatusUpdateWebsitesEvent event) {
     // TODO: override this callback if you're interested
   }
 
-  void onTaskTerminated(io.ooni.mk.nettest.event.TaskTerminated event) {
+  public void onTaskTerminated(io.ooni.mk.nettest.event.TaskTerminatedEvent event) {
     // TODO: override this callback if you're interested
   }
 
   // Runners
   // -------
 
-  String prepareCaptivePortal(io.ooni.mk.nettest.settings.CaptivePortal settings) {
+  public String prepareCaptivePortal(io.ooni.mk.nettest.settings.CaptivePortalSettings settings) {
     io.ooni.mk.nettest.swig.CaptivePortal swigSettings = new io.ooni.mk.nettest.swig.CaptivePortal();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
@@ -133,7 +133,7 @@ public class Runner {
     return swigRunner.prepare_captive_portal(swigSettings);
   }
 
-  String prepareDash(io.ooni.mk.nettest.settings.Dash settings) {
+  public String prepareDash(io.ooni.mk.nettest.settings.DashSettings settings) {
     io.ooni.mk.nettest.swig.Dash swigSettings = new io.ooni.mk.nettest.swig.Dash();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
@@ -142,7 +142,7 @@ public class Runner {
     return swigRunner.prepare_dash(swigSettings);
   }
 
-  String prepareDnsInjection(io.ooni.mk.nettest.settings.DnsInjection settings) {
+  public String prepareDnsInjection(io.ooni.mk.nettest.settings.DnsInjectionSettings settings) {
     io.ooni.mk.nettest.swig.DnsInjection swigSettings = new io.ooni.mk.nettest.swig.DnsInjection();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
@@ -151,7 +151,7 @@ public class Runner {
     return swigRunner.prepare_dns_injection(swigSettings);
   }
 
-  String prepareFacebookMessenger(io.ooni.mk.nettest.settings.FacebookMessenger settings) {
+  public String prepareFacebookMessenger(io.ooni.mk.nettest.settings.FacebookMessengerSettings settings) {
     io.ooni.mk.nettest.swig.FacebookMessenger swigSettings = new io.ooni.mk.nettest.swig.FacebookMessenger();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
@@ -160,7 +160,7 @@ public class Runner {
     return swigRunner.prepare_facebook_messenger(swigSettings);
   }
 
-  String prepareHttpHeaderFieldManipulation(io.ooni.mk.nettest.settings.HttpHeaderFieldManipulation settings) {
+  public String prepareHttpHeaderFieldManipulation(io.ooni.mk.nettest.settings.HttpHeaderFieldManipulationSettings settings) {
     io.ooni.mk.nettest.swig.HttpHeaderFieldManipulation swigSettings = new io.ooni.mk.nettest.swig.HttpHeaderFieldManipulation();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
@@ -169,7 +169,7 @@ public class Runner {
     return swigRunner.prepare_http_header_field_manipulation(swigSettings);
   }
 
-  String prepareHttpInvalidRequestLine(io.ooni.mk.nettest.settings.HttpInvalidRequestLine settings) {
+  public String prepareHttpInvalidRequestLine(io.ooni.mk.nettest.settings.HttpInvalidRequestLineSettings settings) {
     io.ooni.mk.nettest.swig.HttpInvalidRequestLine swigSettings = new io.ooni.mk.nettest.swig.HttpInvalidRequestLine();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
@@ -178,7 +178,7 @@ public class Runner {
     return swigRunner.prepare_http_invalid_request_line(swigSettings);
   }
 
-  String prepareMeekFrontedRequests(io.ooni.mk.nettest.settings.MeekFrontedRequests settings) {
+  public String prepareMeekFrontedRequests(io.ooni.mk.nettest.settings.MeekFrontedRequestsSettings settings) {
     io.ooni.mk.nettest.swig.MeekFrontedRequests swigSettings = new io.ooni.mk.nettest.swig.MeekFrontedRequests();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
@@ -187,7 +187,7 @@ public class Runner {
     return swigRunner.prepare_meek_fronted_requests(swigSettings);
   }
 
-  String prepareMultiNdt(io.ooni.mk.nettest.settings.MultiNdt settings) {
+  public String prepareMultiNdt(io.ooni.mk.nettest.settings.MultiNdtSettings settings) {
     io.ooni.mk.nettest.swig.MultiNdt swigSettings = new io.ooni.mk.nettest.swig.MultiNdt();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
@@ -196,7 +196,7 @@ public class Runner {
     return swigRunner.prepare_multi_ndt(swigSettings);
   }
 
-  String prepareNdt(io.ooni.mk.nettest.settings.Ndt settings) {
+  public String prepareNdt(io.ooni.mk.nettest.settings.NdtSettings settings) {
     io.ooni.mk.nettest.swig.Ndt swigSettings = new io.ooni.mk.nettest.swig.Ndt();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
@@ -205,7 +205,7 @@ public class Runner {
     return swigRunner.prepare_ndt(swigSettings);
   }
 
-  String prepareTcpConnect(io.ooni.mk.nettest.settings.TcpConnect settings) {
+  public String prepareTcpConnect(io.ooni.mk.nettest.settings.TcpConnectSettings settings) {
     io.ooni.mk.nettest.swig.TcpConnect swigSettings = new io.ooni.mk.nettest.swig.TcpConnect();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
@@ -214,7 +214,7 @@ public class Runner {
     return swigRunner.prepare_tcp_connect(swigSettings);
   }
 
-  String prepareTelegram(io.ooni.mk.nettest.settings.Telegram settings) {
+  public String prepareTelegram(io.ooni.mk.nettest.settings.TelegramSettings settings) {
     io.ooni.mk.nettest.swig.Telegram swigSettings = new io.ooni.mk.nettest.swig.Telegram();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
@@ -223,7 +223,7 @@ public class Runner {
     return swigRunner.prepare_telegram(swigSettings);
   }
 
-  String prepareWebConnectivity(io.ooni.mk.nettest.settings.WebConnectivity settings) {
+  public String prepareWebConnectivity(io.ooni.mk.nettest.settings.WebConnectivitySettings settings) {
     io.ooni.mk.nettest.swig.WebConnectivity swigSettings = new io.ooni.mk.nettest.swig.WebConnectivity();
     /* No nettest specific options. */
     setCommonOptions(settings, swigSettings);
@@ -232,7 +232,7 @@ public class Runner {
     return swigRunner.prepare_web_connectivity(swigSettings);
   }
 
-  String prepareWhatsapp(io.ooni.mk.nettest.settings.Whatsapp settings) {
+  public String prepareWhatsapp(io.ooni.mk.nettest.settings.WhatsappSettings settings) {
     io.ooni.mk.nettest.swig.Whatsapp swigSettings = new io.ooni.mk.nettest.swig.Whatsapp();
     swigSettings.setAll_endpoints(settings.allEndpoints);
     setCommonOptions(settings, swigSettings);
@@ -250,7 +250,7 @@ public class Runner {
   // Private stuff
   // -------------
 
-  private void setCommonOptions(io.ooni.mk.nettest.settings.Common settings, io.ooni.mk.nettest.swig.Common swigSettings) {
+  private void setCommonOptions(io.ooni.mk.nettest.settings.CommonSettings settings, io.ooni.mk.nettest.swig.Common swigSettings) {
     swigSettings.setLog_filepath(settings.logFilepath);
     swigSettings.setLog_level(settings.logLevel);
     swigSettings.setOutput_filepath(settings.outputFilepath);
