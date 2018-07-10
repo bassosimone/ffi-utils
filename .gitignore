@@ -1,3 +1,4 @@
+*.class
 *.hpp.gch
 *.pyc
 /.gradle
